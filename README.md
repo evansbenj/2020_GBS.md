@@ -96,7 +96,7 @@ for file in $1/*_cut.R1.fastq.gz ; do         # Use ./* ... NEVER bare *
   	if [[ $v -eq 1 ]]
 	then # if/then branch
 		  java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE ${file::-16}_cut.R1.fastq.gz ${file::-16}_cut.R2.fastq.g
-z ${file::-16}_cuttrim.R1.fq.gz ${file::-16}_cuttrim.R2.fq.gz SLIDINGWINDOW:4:15 MINLEN:36
+z ${file::-16}_cuttrim.R1.fq.gz ${file::-16}_cuttrim.R2.fq.gz SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:3
 		  v=0
 	else # else branch
   		v=1
