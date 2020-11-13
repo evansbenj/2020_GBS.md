@@ -136,3 +136,10 @@ for file in $1/*.fq.gz ; do
   fi
 done
 ```
+
+
+I renamed and concatenated data from the same sample and organized them by species here:
+```
+/home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates
+
+```
