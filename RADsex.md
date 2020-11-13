@@ -35,3 +35,24 @@ Once this is done I can summarize it using a file that specifies whether the ind
 ```
 
 And this can be done for clivii, muelleri, fischbergi, and parafraseri. 
+
+I can print the output like this:
+```R
+#https://github.com/SexGenomicsToolkit/radsex
+
+
+setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/submitted/XB_sex_determining_gene/RADsex")
+
+library(sgtr)
+library(ggplot2)
+
+distrib_plot <- radsex_distrib("clivii_short_distribution.tsv",
+                               groups = c("M", "F"),
+                               group_labels = c("Males", "Females"),
+                               title = "Distribution of markers",
+                               significance_color = "green",
+                               bins = c(0,1,5,10,20,35,100,1000),
+                               colors = c("white", "blue"))
+
+ggsave("Rplot_clivii_short.pdf", width = 5, height = 4, dpi = 200)
+```
