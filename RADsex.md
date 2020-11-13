@@ -29,3 +29,9 @@ l_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_a
 ```
 
 Once this is done I can summarize it using a file that specifies whether the individuals are male or female.
+
+```
+/home/ben/projects/rrg-ben/ben/2020_radsex/bin/radsex distrib --markers-table /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_allo_markers_table.tsv --output-file /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_allo_distribution.tsv --popmap /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates_allofraseri_sex --min-depth 5 --groups M,F
+```
+
+And this can be done for clivii, muelleri, fischbergi, and parafraseri. 
