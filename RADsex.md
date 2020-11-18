@@ -83,6 +83,12 @@ pecies_across_three_plates/parafraseri_sex_R1R2cat --genome-file ~/projects/rrg-
 ome.fa.gz --min-quality 20 --min-frequency 0.1 --min-depth 1 --groups M,F
 
 ```
+
+Get rid of scaffolds like this:
+```
+sed '/Sca/d' /home/ben/projects/rrg-ben/ben/2020_radsex/bin/2017_cliv_markers_alignment_all.tsv > /home/ben/projects/rrg-ben/ben/2020_radsex/bin/2017_cliv_markers_alignment_all_chronly.tsv
+```
+
 The "radsex_map_circos" in the sgtr package is broken, so I just printed the results by chr using ggplot:
 ```
 setwd("/Users/Shared/Previously Relocated Items/Security/projects/2020_fisch_clivii_muel_allo_RADseq/RADsex")
