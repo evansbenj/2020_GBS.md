@@ -143,3 +143,39 @@ I renamed and concatenated data from the same sample and organized them by speci
 /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates
 
 ```
+
+Indel realignment
+```
+#!/bin/sh
+#SBATCH --job-name=RealignerTargetCreator
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=12:00:00
+#SBATCH --mem=32gb
+#SBATCH --output=RealignerTargetCreator.%J.out
+#SBATCH --error=RealignerTargetCreator.%J.err
+#SBATCH --account=def-ben
+
+
+# This script will read in the *_sorted.bam file names in a directory, and 
+# make and execute the GATK command "RealignerTargetCreator" on these files. 
+
+# execute like this:
+# ./RealignerTargetCreator.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa.gz /home/ben/projects/r
+rg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/clivii/ 
+
+module load nixpkgs/16.09 gatk/3.8
+
+commandline="java -jar $EBROOTGATK/GenomeAnalysisTK.jar -T RealignerTargetCreator"
+
+for file in ${2}*_sorted.bam
+do
+    commandline+=" -I ${file}"
+done
+
+
+commandline+=" -R ${1} -o ${2}forIndelRealigner.intervals";
+echo $commandline
+
+$commandline
+```
