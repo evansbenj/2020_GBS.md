@@ -143,6 +143,30 @@ I renamed and concatenated data from the same sample and organized them by speci
 /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates
 
 ```
+add readgroups
+```
+#!/bin/sh
+#SBATCH --job-name=readgroups
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=24:00:00
+#SBATCH --mem=8gb
+#SBATCH --output=readgroups.%J.out
+#SBATCH --error=readgroups.%J.err
+#SBATCH --account=def-ben
+
+# run by passing an argument like this
+# sbatch ./2021_picard_add_read_groups.sh /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutadd
+apted_by_species_across_three_plates/clivii/ 
+
+module load picard/2.23.3
+
+for file in ${1}*_sorted.bam
+do
+    java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups I=${file} O=${file}_rg.bam RGID=4 RGLB=$(basename $file) RGP
+L=ILLUMINA RGPU=$(basename $file) RGSM=$(basename $file)
+done
+```
 
 Indel realignment
 ```
