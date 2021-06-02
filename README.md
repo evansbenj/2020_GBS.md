@@ -168,16 +168,16 @@ L=ILLUMINA RGPU=$(basename $file) RGSM=$(basename $file)
 done
 ```
 
-Indel realignment
+Indel realignment is not longer recommended for GATK version 4.  Instead go directly to HaplotypeCaller and output g.vcfs
 ```
 #!/bin/sh
-#SBATCH --job-name=RealignerTargetCreator
+#SBATCH --job-name=HaplotypeCaller
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=12:00:00
 #SBATCH --mem=32gb
-#SBATCH --output=RealignerTargetCreator.%J.out
-#SBATCH --error=RealignerTargetCreator.%J.err
+#SBATCH --output=HaplotypeCaller.%J.out
+#SBATCH --error=HaplotypeCaller.%J.err
 #SBATCH --account=def-ben
 
 
@@ -185,21 +185,15 @@ Indel realignment
 # make and execute the GATK command "RealignerTargetCreator" on these files. 
 
 # execute like this:
-# ./RealignerTargetCreator.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa.gz /home/ben/projects/r
-rg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/clivii/ 
+# sbatch 2021_HaplotypeCaller.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa /hom
+e/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plate
+s/clivii/ 
 
-module load nixpkgs/16.09 gatk/3.8
+module load nixpkgs/16.09 gatk/4.1.0.0
 
-commandline="java -jar $EBROOTGATK/GenomeAnalysisTK.jar -T RealignerTargetCreator"
-
-for file in ${2}*_sorted.bam
+for file in ${2}*_sorted.bam_rg.bam
 do
-    commandline+=" -I ${file}"
+    gatk --java-options -Xmx24G HaplotypeCaller  -I ${file} -R ${1} -O ${file}.g.vcf -ERC GVCF
 done
-
-
-commandline+=" -R ${1} -o ${2}forIndelRealigner.intervals";
-echo $commandline
-
-$commandline
 ```
+
