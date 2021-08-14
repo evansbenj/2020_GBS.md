@@ -143,11 +143,8 @@ I renamed and concatenated data from the same sample and organized them by speci
 
 ```
 # Map data
-For muel and fisch I used the XB genome:
-```
-/home/ben/projects/rrg-ben/ben/2018_Austin_XB_genome/Austin_genome/Xbo.v1.fa
-```
-For cliv, allo, para, and laevis I used the XL genome:
+
+For cliv, allo, para, muel, fisch, and laevis I used the XL genome:
 ```
 /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa
 ```
