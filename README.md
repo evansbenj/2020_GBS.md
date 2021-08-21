@@ -297,7 +297,7 @@ do
     commandline+=" -V ${file}"
 done
 
-commandline+=" -L ${3} --tmp-dir=${4} --batch-size 96 --genomicsdb-workspace-pat
+commandline+=" -L ${3} --tmp-dir=${4} --batch-size 50 --genomicsdb-workspace-pat
 h ${5}_${3}"
 
 ${commandline}
