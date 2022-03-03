@@ -1,5 +1,5 @@
 In this directory on graham:
-``
+```
 /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/laevis/bin
 ```
 
