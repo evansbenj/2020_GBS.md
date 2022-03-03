@@ -64,11 +64,7 @@ module load StdEnv/2020
 module load scipy-stack/2020b
 module load python/3.8.2
 
-echo python3 ABBABABAwindows.py -g ./VCF_processing/${1}.geno.gz -f phased -o ./VCF_processing/${1}_${2}_${3}_${4}_${5
-}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile pops.txt --writeFai
-ledWindows --windType coordinate
+echo python3 /home/ben/projects/rrg-ben/ben/2017_SEAsian_macaques/SEAsian_macaques_bam/with_papio/2020_Nov_filtered_by_depth_3sigmas/final_data_including_sites_with_lots_of_missing_data/genomics_general/VCF_processing/ABBABABAwindows.py -g ./VCF_processing/${1}.geno.gz -f phased -o ./VCF_processing/${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile pops.txt --writeFailedWindows --windType coordinate
 
-python3 ABBABABAwindows.py -g ./VCF_processing/${1}.geno.gz -f phased -o ./VCF_processing/${1}_${2}_${3}_${4}_${5}.csv
- -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile pops.txt --writeFailedWi
-ndows --windType coordinate
+python3 /home/ben/projects/rrg-ben/ben/2017_SEAsian_macaques/SEAsian_macaques_bam/with_papio/2020_Nov_filtered_by_depth_3sigmas/final_data_including_sites_with_lots_of_missing_data/genomics_general/VCF_processing/ABBABABAwindows.py -g ./VCF_processing/${1}.geno.gz -f phased -o ./VCF_processing/${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile pops.txt --writeFailedWindows --windType coordinate
 ```
