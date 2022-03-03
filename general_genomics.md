@@ -36,7 +36,7 @@ and so on for each chr
 
 
 Then it is necessary to swap any astrisks with Ns:
-``
+```
 gunzip chr18.geno.gz
 sed -i 's/\*/N/g' chr18.geno 
 gzip -c chr18.geno > chr18.geno.gz
