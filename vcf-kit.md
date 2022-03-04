@@ -4,6 +4,7 @@ In this directory on graham:
 ```
 Make a nj tree:
 ```
+module load gcc bwa samtools bcftools blast muscle primer3 python/3
 create a virtual environment and activate it
 virtualenv --no-download vcf_env
 source vcf_env/bin/activate
