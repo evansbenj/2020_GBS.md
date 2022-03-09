@@ -1,4 +1,6 @@
-# This is a great tool to convert vcf files to fasta/nexus/phylip files, including IUPAC symbols:
+# Phylogeny
+
+This is a great tool to convert vcf files to fasta/nexus/phylip files, including IUPAC symbols:
 ```
 https://github.com/edgardomortiz/vcf2phylip
 ```
