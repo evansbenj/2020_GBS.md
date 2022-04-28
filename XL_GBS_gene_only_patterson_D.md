@@ -23,3 +23,7 @@ bcftools view -R gene_only_plusminus_10000bp_Lsubgenome_only.bed allchr_filtered
 
 bcftools view -R gene_only_plusminus_10000bp_Ssubgenome_only.bed allchr_filtered_removed_subgenomeSonly.vcf.gz -Oz -o allchr_filtered_removed_subgenomeSonly_genicwith10kbuffer_only.vcf.gz
 ```
+# Extract individual chrs
+```
+bcftools view -r chr1L allchr_filtered_removed_subgenomeLonly_genicwith10kbuffer_only.vcf.gz -Oz -o allchr_filtered_removed_subgenomeLonly_genicwith10kbuffer_only_chr1Lonly.vcf.gz
+```
