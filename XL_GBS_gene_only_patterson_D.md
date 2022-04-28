@@ -4,3 +4,9 @@ locally:
 cat XLv9.2_xenbase_annotations.gff | grep 'gene' | grep 'chr' | cut -f1,4,5 > gene_only_bed.bed
 ```
 # Now use excel to add a buffer of 10,000 bp on either side
+
+# Make beds plus buffer for L and S subgenomes only
+```
+grep 'L' gene_only_plusminus_10000bp_bed.bed > gene_only_plusminus_10000bp_Lsubgenome_only.bed
+gene_only_bed ben$ grep 'S' gene_only_plusminus_10000bp_bed.bed > gene_only_plusminus_10000bp_Ssubgenome_only.bed
+```
