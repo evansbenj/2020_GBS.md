@@ -30,4 +30,26 @@ The first column is the family ID (just zeros here).  The second column is the s
 Also this flag "--const-fid 0" sets the family id to zero and tells plink to use the vcf sample name as the sample ID irrespective of whether there is an underscore in the name.
 
 This flag "--chr-set 36" allows extra chrs.  They will be numbers in the order they are encountered in the vcf file (I think - this will need to be confirmed...)
+module load nixpkgs/16.09 plink/1.9b_5.2-x86_64
+
+# Example commandlines
+```
+module load nixpkgs/16.09 plink/1.9b_5.2-x86_64
+
+plink --vcf pygmaeus_filtered_removed_allchrs.vcf.gz --recode --const-fid 0 --chr-set 36 no-y no-xy no-mt --allow-extra-chr --out pygmaeus_filtered_removed_allchrs.vcf.gz_myplink
+
+plink --file pygmaeus_filtered_removed_allchrs.vcf.gz_myplink --pheno sex_phenotype --assoc --allow-no-sex --allow-extra-chr
+
+mv plink.assoc pygmaeus_filtered_removed_allchrs.vcf.gz_plink.assoc
+```
+
+# get rid of rows with no P value
+```R
+setwd("./")
+library(ggplot2)
+dat<-read.table("./pygmaeus_filtered_removed_allchrs.vcf.gz_plink.assoc",header=TRUE)
+newdat <- dat[!is.na(dat$P),]
+write.table(newdat, file = "pygmaeus_filtered_removed_allchrs.vcf.gz_plink_noNAs.assoc", sep = "\t", quote = FALSE)
+,row.names = TRUE, col.names = NA)
+```
 
