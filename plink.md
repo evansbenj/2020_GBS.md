@@ -3,7 +3,7 @@
 module load StdEnv/2020  gcc/9.3.0 bcftools/1.13
 ```
 ```
-bcftools concat DB_new_chr1L_genotyped.vcf DB_new_chr1S_genotyped.vcf DB_new_chr2L_genotyped.vcf DB_new_chr2S_genotyped.vcf DB_new_chr3L_genotyped.vcf DB_new_chr3S_genotyped.vcf DB_new_chr4L_genotyped.vcf DB_new_chr4S_genotyped.vcf DB_new_chr5L_genotyped.vcf DB_new_chr5S_genotyped.vcf DB_new_chr6L_genotyped.vcf DB_new_chr6S_genotyped.vcf DB_new_chr7L_genotyped.vcf DB_new_chr7S_genotyped.vcf DB_new_chr8L_genotyped.vcf DB_new_chr8S_genotyped.vcf DB_new_chr9_10L_genotyped.vcf DB_new_chr9_10S_genotyped.vcf -O z -o clivii_unfiltered_allchrs.vcf.gz
+bcftools concat DB_new_Chr1L_genotyped.vcf DB_new_Chr1S_genotyped.vcf DB_new_Chr2L_genotyped.vcf DB_new_Chr2S_genotyped.vcf DB_new_Chr3L_genotyped.vcf DB_new_Chr3S_genotyped.vcf DB_new_Chr4L_genotyped.vcf DB_new_Chr4S_genotyped.vcf DB_new_Chr5L_genotyped.vcf DB_new_Chr5S_genotyped.vcf DB_new_Chr6L_genotyped.vcf DB_new_Chr6S_genotyped.vcf DB_new_Chr7L_genotyped.vcf DB_new_Chr7S_genotyped.vcf DB_new_Chr8L_genotyped.vcf DB_new_Chr8S_genotyped.vcf DB_new_Chr9_10L_genotyped.vcf DB_new_Chr9_10S_genotyped.vcf -O z -o clivii_unfiltered_allChrs.vcf.gz
 ```
 # Plink
 
