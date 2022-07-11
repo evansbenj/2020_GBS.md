@@ -41,6 +41,11 @@ gunzip chr18.geno.gz
 sed -i 's/\*/N/g' chr18.geno 
 gzip -c chr18.geno > chr18.geno.gz
 ```
+for XL project, geno files are here:
+```
+/home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/laevis/vcfs_after_filtering_and_removal
+```
+
 
 for autosomes:
 ```
