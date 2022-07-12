@@ -82,4 +82,5 @@ module load StdEnv/2020
 module load scipy-stack/2022a
 module load python/3.8.2
 ```
+the other thing that made progress is to zcat it to a temp file and use head to pipe to a partial file that had less lines.  This showed that the first portion fo the file was fine and I was able to find the offending line and delete it to make the whole file work.
 Then I tried to run them on cedar and they worked!  Yeay!
