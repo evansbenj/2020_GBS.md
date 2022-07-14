@@ -1,6 +1,15 @@
 I am making another script to look for sex-specific regions. It works from a tab file made from vcftools:
+first make sure the vcf file is gzipped and tabixed
 ```
+module load tabix
+bgzip -c file.vcf > file.vcf.gz
+tabix -p vcf file.vcf.gz
 ```
+Now use vcftools to make a tab delimited file:
+```
+module load vcftools
+zcat file.vcf.gz | vcf-to-tab > out.tab
+'''
 
 Here it is:
 ```
