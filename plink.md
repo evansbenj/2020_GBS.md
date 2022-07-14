@@ -62,4 +62,9 @@ If the file is still large (it was for the XB WGS data) you can split the file b
 grep -m1 'Chr5L' file_name
 ```
 
-And then using head or whatever to split it up (need to add the column header to the second half)...
+And then using head or sed to split it up (need to add the column header to the second half)...
+
+to print a range of lines (eg lines 5-8 in this example):
+```
+sed -n 5,8p file
+```
