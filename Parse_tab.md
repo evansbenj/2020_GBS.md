@@ -7,7 +7,7 @@ tabix -p vcf file.vcf.gz
 ```
 Now use vcftools to make a tab delimited file:
 ```
-module load vcftools
+module load StdEnv/2020 vcftools/0.1.16
 zcat file.vcf.gz | vcf-to-tab > out.tab
 '''
 
