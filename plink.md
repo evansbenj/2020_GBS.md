@@ -52,4 +52,14 @@ newdat <- dat[!is.na(dat$P),]
 write.table(newdat, file = "pygmaeus_filtered_removed_allchrs.vcf.gz_plink_noNAs.assoc", sep = "\t", quote = FALSE)
 ,row.names = TRUE, col.names = NA)
 ```
+or using unix (much faster):
+```
+awk '$9 == "NA" { next } { print }' XB_WGS_not_filted_allchrs.vcf.gz_plink.assoc > XB_WGS_not_filtered_allchrs.vcf.gz_plink_noNAs.assoc
+```
+If the file is still large (it was for the XB WGS data) you can split the file by filing the first occurance of Chr5L like this:
 
+```
+grep -m1 'Chr5L' file_name
+```
+
+And then using head or whatever to split it up (need to add the column header to the second half)...
