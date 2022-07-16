@@ -29,7 +29,7 @@ use List::MoreUtils qw/ uniq /;
 #  by vcftools (vcf2tab) and searches for sites that are homozygous
 #  in one sex for one SNP and at least partially heterozygous in the other sex
 
-# to execute type Parse_tab.pl inputfile.tab 1111100110000111100011100110010100002200 output1.txt proportion
+# to execute type Parse_tab.pl inputfile.tab 1111100110000111100011100110010100002200 interesting_sites.out proportion
 # where 1111100110000111100011100110010100002200 refers to whether or not each individual in the ingroup 
 # in the vcf file is (0) male, (1) female, and or (2) skipped
 
@@ -43,32 +43,41 @@ use List::MoreUtils qw/ uniq /;
 # we will also use this proportion to be a requirement for male-specific or female-specific SNPs, meaning at least
 # this proportion of the individuals within each sex is required to have a genotype.
 
-# output1.txt is the output file which has the positions and chr of interesting sites
+# het_sites.out sex_specific_sites.out diverged_sites.out are the output files that have the positions and chr of interesting sites
 
 # example for clivii
-# perl Parse_tab.pl clivii_unfiltered_removed_allchrs.vcf.tab 111111111111111111111111110000000000000000000 out.txt 0.35
+# perl Parse_tab.pl clivii_unfiltered_removed_allchrs.vcf.tab 111111111111111111111111110000000000000000000 interesting_sites.out 0.35
 # include only Eritrea:
 # 222222221111111111111112222222222200000000222
 
 # exclude Eritrea:
 # 111111112222222222222221110000000022222222000
 
+# Example for XB_WGS
+# perl Parse_tab.pl XB_WGS_not_filtered_allchrs.vcf.gz.tab 100110011101010000102222 interesting_sites.out 0.5
+
 my $inputfile = $ARGV[0];
 my $input2 = $ARGV[1];
-my $outputfile = $ARGV[2];
+my $outputfile1 = $ARGV[2];
 my $proportion = $ARGV[3];
+
+print "hello ",$proportion,"\n";
 
 unless (open DATAINPUT, $inputfile) {
 	print "Can not find the input file.\n";
 	exit;
 }
 
-unless (open(OUTFILE, ">$outputfile"))  {
-	print "I can\'t write to $outputfile\n";
+unless (open(OUTFILE1, ">$outputfile1"))  {
+	print "I can\'t write to $outputfile1\n";
 	exit;
 }
-print "Creating output file: $outputfile\n";
-print OUTFILE "CHR\tPOS\tCATEGORY\tn_FEMs\tn_MALS\n";
+print "Creating output file: $outputfile1\n";
+print OUTFILE1 "CHR\tPOS\tTYPE\tCATEGORY\tn_FEMs\tn_MALS\n";
+
+
+
+
 my @sexes = split("",$ARGV[1]);
 
 my @males=();
@@ -100,7 +109,8 @@ while ( my $line = <DATAINPUT>) {
 	@temp=split /[\t\/]/,$line;
 	if($temp[0] ne '#CHROM'){
 		if($#temp ne (($#sexes+1)*2)+2){
-			print "The number of individuals in the input line does not match the number of individuals genotyped ", 			$#temp," ",(($#sexes+1)*2)+2,"\n";
+			print "The number of individuals in the input line does not match the number of individuals genotyped ",
+			$temp[0],"\t",$temp[1],"\t",$#temp," ",(($#sexes+1)*2)+2,"\n";
 		}
 
 		# parse the bases in all genotypes in each sex
@@ -130,7 +140,7 @@ while ( my $line = <DATAINPUT>) {
 		if(($#unique_male_nucleotides != -1)&&($#unique_female_nucleotides != -1)){
 			# we can compare homoz and het genotypes because both sexes have data
 			if(($#unique_male_nucleotides == 0)&&($#unique_female_nucleotides > 0)){
-				# all males are homoz but at least some females are hets
+				# all males are homoz but at least some females are hets or homoz for another SNP
 				# check if the proportion of divergent positions in females is high enough
 				$diverged=0;
 				for ($x = 0 ; $x <= $#females ; $x++ ) {
@@ -139,11 +149,26 @@ while ( my $line = <DATAINPUT>) {
 					}
 				}
 				if($diverged > $proportion*($#females+1)){	
-					print OUTFILE $temp[0],"\t",$temp[1],"\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; # 1 means ZW or female specific
-				}	
+					print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_SNP\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+					# Sex_specific_SNP
+					# Category of 1 means ZW or a female-specific SNP
+				}
+				# now check for the extreme case where all females are heterozygous and all males are homoz
+				# this is rare because we expect some genotypes in females to be undercalled, even in sex-linked regions
+				$diverged=0;
+				for ($x = 0 ; $x <= $#females ; $x=$x+2 ) {
+					if($females[$x] ne $females[$x+1]){
+						$diverged+=1;
+					}
+				}
+				if($diverged == ($#females+1)/2){	
+					print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_heterozygosity\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+					# Sex_specific_heterozygosity
+					# 1 means all females are hets and all males are homoz
+				}					
 			}
 			elsif(($#unique_male_nucleotides > 0)&&($#unique_female_nucleotides == 0)){
-				# all females are homoz but at least some males are hets
+				# all females are homoz but at least some males are hets or homoz for another SNP
 				# check if the proportion of divergent positions in males is high enough
 				$diverged=0;
 				for ($x = 0 ; $x <= $#males ; $x++ ) {
@@ -152,33 +177,72 @@ while ( my $line = <DATAINPUT>) {
 					}
 				}
 				if($diverged > $proportion*($#males+1)){	
-					print OUTFILE $temp[0],"\t",$temp[1],"\t-1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; # -1 means XY or male specific 
+					print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_SNP\t-1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+					# Sex_specific_SNP
+					# -1 means XY or a male-specific SNP
 				}	
+				# now check for the extreme case where all females are heterozygous and all males are homoz
+				# this is rare because we expect some genotypes in females to be undercalled, even in sex-linked regions
+				$diverged=0;
+				for ($x = 0 ; $x <= $#males ; $x=$x+2 ) {
+					if($males[$x] ne $males[$x+1]){
+						$diverged+=1;
+					}
+				}
+				if($diverged == ($#males+1)/2){	
+					print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_heterozygosity\t-1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+					# Sex_specific_heterozygosity
+					# -1 means all males are hets and all females are homoz
+				}
 			}
 			elsif(($#unique_male_nucleotides == 0)&&
 			($#unique_female_nucleotides == 0)&&
-			($unique_male_nucleotides[0] ne $unique_male_nucleotides[0])){
-				# males are homoz, females are homoz, but fixed for a different nucleotide
-				print OUTFILE $temp[0],"\t",$temp[1],"\t0\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; # 0 means diverged
+			($unique_male_nucleotides[0] ne $unique_female_nucleotides[0])){
+				# males are homoz, females are homoz, but fixed for a different diverged nucleotide
+				print OUTFILE1 $temp[0],"\t",$temp[1],"\tFixed_divergence\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+				# Fixed_divergence
+				# 1 means diverged
 			}
 		}
 		elsif(($#unique_male_nucleotides != -1)&&($#unique_female_nucleotides == -1)){
 			# females have no data
 			# could be male-specific
 			if((($#males +1)/2) > $proportion*$number_of_male_individuals_genotyped){
-				print OUTFILE $temp[0],"\t",$temp[1],"\t-1\t",($#females+1)/2,"\t",($#males+1)/2,"\n";# -1 means XY or male specific
+				print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_nucleotides\t-1\t",($#females+1)/2,"\t",($#males+1)/2,"\n";
+				# Sex_specific_nucleotides
+				# -1 means male specific or male specific
 			}	
 		}
 		elsif(($#unique_male_nucleotides == -1)&&($#unique_female_nucleotides != -1)){
 			# males have no data
 			# could be female-specific
 			if((($#females +1)/2) > $proportion*$number_of_female_individuals_genotyped){
-				print OUTFILE $temp[0],"\t",$temp[1],"\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; # 1 means ZW or female specific
+				print OUTFILE1 $temp[0],"\t",$temp[1],"\tSex_specific_nucleotides\t1\t",($#females+1)/2,"\t",($#males+1)/2,"\n"; 
+				# Sex_specific_nucleotides
+				# 1 means fem specific or female specific
 			}	
 		}
 	}
 } # end while	
-close OUTFILE;
+close OUTFILE1;
+```
+	
+Execute this using a sbatch script like this:
+```
+	#!/bin/sh                                                                                                          
+#SBATCH --job-name=parsetab                                                                                        
+#SBATCH --nodes=1                                                                                                  
+#SBATCH --ntasks-per-node=1                                                                                        
+#SBATCH --time=48:00:00                                                                                            
+#SBATCH --mem=2gb                                                                                                  
+#SBATCH --output=parsetab.%J.out                                                                                   
+#SBATCH --error=parsetab.%J.err                                                                                    
+#SBATCH --account=def-ben                                                                                          
 
+# sbatch 2022_Parse_tab.sh XB_WGS_not_filtered_allchrs.vcf.gz.tab 100110011101010000102222 0.5                     
 
+module load perl
+
+perl Parse_tab.pl ${1} ${2} ${1}_${3}_out.txt ${3}
+	
 ```
