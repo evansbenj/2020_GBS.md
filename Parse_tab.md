@@ -229,7 +229,7 @@ close OUTFILE1;
 	
 Execute this using a sbatch script like this:
 ```
-	#!/bin/sh                                                                                                          
+#!/bin/sh                                                                                                          
 #SBATCH --job-name=parsetab                                                                                        
 #SBATCH --nodes=1                                                                                                  
 #SBATCH --ntasks-per-node=1                                                                                        
