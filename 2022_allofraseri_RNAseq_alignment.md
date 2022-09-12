@@ -56,7 +56,7 @@ STAR --genomeDir /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/ \
 --readFilesCommand zcat
 ```
 
-# Need to fix the map quality scores using GATK (2021_SplitNCigarReads.sh):
+# Need to fix the cigars in the bam file using GATK (2021_SplitNCigarReads.sh):
 ```
 #!/bin/sh
 #SBATCH --job-name=SplitNCigarReads
@@ -75,4 +75,33 @@ module load nixpkgs/16.09 gatk/4.1.0.0
 commandline="gatk --java-options -Xmx24G SplitNCigarReads -R ${1} -I ${2} -O ${2}_SplitNCigarReads.bam"
 ${commandline} 
 #${commandline}
+```
+
+# Calling genotypes with haplotypecaller
+
+I am setting the threshold for map quality to be very low because I saw different thresholds for homozgous ref and alt genotypes in this paper, Fig. 3: https://acsess.onlinelibrary.wiley.com/doi/10.3835/plantgenome2019.01.0002
+ https://doi.org/10.3835/plantgenome2019.01.0002
+```
+#!/bin/sh
+#SBATCH --job-name=HaplotypeCaller
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=96:00:00
+#SBATCH --mem=30gb
+#SBATCH --output=HaplotypeCaller.%J.out
+#SBATCH --error=HaplotypeCaller.%J.err
+#SBATCH --account=def-ben
+
+
+# This script will read in the *_sorted.bam file names in a directory, and 
+# make and execute the GATK command "RealignerTargetCreator" on these files. 
+
+# execute like this:
+# sbatch 2021_HaplotypeCaller.sh ref bam chr
+# sbatch 2021_HaplotypeCaller.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa bam chr
+
+module load nixpkgs/16.09 gatk/4.1.0.0
+
+gatk --java-options -Xmx24G HaplotypeCaller  -I ${2} -R ${1} -L ${3} -O ${2}_${3}.g.vcf -ERC BP_RESOLUTION --output-mode EMIT_ALL
+_CONFIDENT_SITES --read-filter MappingQualityReadFilter --minimum-mapping-quality 5
 ```
