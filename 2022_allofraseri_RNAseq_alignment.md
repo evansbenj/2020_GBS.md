@@ -188,7 +188,7 @@ gatk --java-options -Xmx8G SelectVariants \
         -O ${1}_filtered_removed.vcf.gz
 ```
 
-# Calculate polymorphism using angsd
+# Calculate polymorphism using angsd as detailed here (http://popgen.dk/angsd/index.php/Thetas,Tajima,Neutrality_tests#Full_command_list_for_below_examples):
 ```
 angsd -bam bamfilelist -doSaf 1 -anc ../../2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa -GL 1 -out out
 realSFS out.saf.idx -P 24 -fold 1 > out.sfs
