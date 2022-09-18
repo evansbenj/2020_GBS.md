@@ -137,3 +137,53 @@ commandline="gatk --java-options -Xmx24G GenotypeGVCFs -R ${1} -V ${2} -L ${3} -
 ng 5 --output ${2}_${3}_allsites_thresh_5.vcf"
 ${commandline}
 ```
+# Get rid of sites with no data (using bcftools)
+
+```
+#!/bin/sh
+#SBATCH --job-name=bcftools
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=0:10:00
+#SBATCH --mem=2gb
+#SBATCH --output=bcftools.%J.out
+#SBATCH --error=bcftools.%J.err
+#SBATCH --account=def-ben
+
+# execute like this: ./2021_bcftools_extract_sections_from_vcf.sh path_and_filename_of_coordinate_file chr
+# load these modules before running:
+module load StdEnv/2020 gcc/9.3.0 bcftools/1.11
+
+bcftools filter -s LowQual -e 'FORMAT/DP<1' -O z -o ${1}_filtered.vcf.gz ${1}
+```
+# index the vcf file
+```
+module load tabix 
+tabix -p vcf XXX_filtered.vcf.gz
+```
+
+# Remove filtered sites
+```
+#!/bin/sh
+#SBATCH --job-name=SelectVariants
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=36:00:00
+#SBATCH --mem=10gb
+#SBATCH --output=SelectVariants.%J.out
+#SBATCH --error=SelectVariants.%J.err
+#SBATCH --account=def-ben
+
+
+# This script will execute the GATK command "SelectVariants" on a file
+
+# execute like this:
+# sbatch 2021_SelectVariants.sh pathandfile
+
+module load nixpkgs/16.09 gatk/4.1.0.0
+
+gatk --java-options -Xmx8G SelectVariants \
+        --exclude-filtered \
+        -V ${1} \
+        -O ${1}_filtered_removed.vcf.gz
+```
