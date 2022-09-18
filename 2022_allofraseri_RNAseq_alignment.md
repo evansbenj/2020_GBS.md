@@ -187,3 +187,11 @@ gatk --java-options -Xmx8G SelectVariants \
         -V ${1} \
         -O ${1}_filtered_removed.vcf.gz
 ```
+
+# Calculate polymorphism using angsd
+```
+angsd -bam bamfilelist -doSaf 1 -anc ../../2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa -GL 1 -out out
+realSFS out.saf.idx -P 24 -fold 1 > out.sfs
+realSFS saf2theta out.saf.idx -outname out -sfs out.sfs -fold 1
+thetaStat do_stat out.thetas.idx -win 50000 -step 10000  -outnames theta.thetasWindow.gz
+```
