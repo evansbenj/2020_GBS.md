@@ -56,6 +56,10 @@ or using unix (much faster):
 ```
 awk '$9 == "NA" { next } { print }' XB_WGS_not_filted_allchrs.vcf.gz_plink.assoc > XB_WGS_not_filtered_allchrs.vcf.gz_plink_noNAs.assoc
 ```
+And further thin by getting rid of non-significant positions:
+```
+awk '$9 > 0.01 { next } { print }' allsites_Scafs.g.vcf.gz_genotyped.vcf.gz_myplink_plink_noNAs.assoc > allsites_Scafs.g.vcf.gz_genotyped.vcf.gz_myplink_plink_noNAs_Pval_gt_0.01.assoc
+```
 If the file is still large (it was for the XB WGS data) you can split the file by filing the first occurance of Chr5L like this:
 
 ```
