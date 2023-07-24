@@ -5,6 +5,14 @@ directory:
 ```
 /home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2022_allofraseri/2018_2022_genotyped_after_filtering
 ```
+for allofraseri I had to change the name of two individuals that previously had the wrong sex:
+```
+sed -i 's/allo_fem1_Z23696_GATG_cuttrim_sorted.bam/allo_mal1_Z23696_GATG_cuttrim_sorted.bam/g' DB_newnew_chr9_10S_genotyped.vcf_filtered.vcf.gz_filtered_removed.vcf
+
+sed -i 's/allo_fem2_Z23719_AACCGAGA_cuttrim_sorted.bam	allo_fem2_Z23721_CGCGATAT_cuttrim_sorted.bam/allo_fem2_Z23719_AACCGAGA_cuttrim_sorted.bam	allo_mal2_Z23721_CGCGATAT_cuttrim_sorted.bam/g' DB_newnew_chr9_10S_genotyped.vcf_filtered.vcf.gz_filtered_removed.vcf
+
+
+```
 
 Now filter individuals that are from one family:
 
