@@ -1,0 +1,61 @@
+# Sex-specific recombination landscapes
+
+Best to work with filtered files
+directory:
+```
+/home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2022_allofraseri/2018_2022_genotyped_after_filtering
+```
+
+Now filter individuals that are from one family:
+
+```
+module load bcftools
+bcftools view -S allo_family_one.txt infile > outfile
+bcftools view -S allo_family_one.txt DB_newnew_chr9_10S_genotyped.vcf_filtered.vcf.gz_filtered_removed.vcf > allo_family_one_chr9_10S_filtered.vcf
+```
+
+where `allo_family_one.txt` is:
+```
+allo_Cam_female_4_F_AGGAT_TAATA_sorted.bam
+allo_Cam_male_1_M_GGTGT_GTCAA_sorted.bam
+allo_fem1_CAS265119_CGCTT_sorted.bam
+allo_fem1_CAS265165_TCAG_sorted.bam
+allo_fem1_Z23697_AGCG_sorted.bam
+allo_fem1_Z23698_GTAA_sorted.bam
+allo_fem1_Z23699_CGAT_sorted.bam
+allo_fem1_Z23705_TGCA_sorted.bam
+allo_fem1_Z23707_CTCG_sorted.bam
+allo_fem1_Z23708_TTCCTGGA_sorted.bam
+allo_fem1_Z23709_TATCGGGA_sorted.bam
+allo_fem1_Z23710_GTGAGGGT_sorted.bam
+allo_fem1_Z23711_GGATTGGT_sorted.bam
+allo_fem1_Z23712_GCTGTGGA_sorted.bam
+allo_fem1_Z23720_CGCCTTAT_sorted.bam
+allo_fem1_Z23724_TGCAAGGA_sorted.bam
+allo_fem1_Z23725_TAGGCCAT_sorted.bam
+allo_fem1_Z23726_TAGCATGG_sorted.bam
+allo_fem1_Z23727_ACGACTAG_sorted.bam
+allo_fem1_Z23728_TGCTGGA_sorted.bam
+allo_fem1_Z23730_TCGAAGA_sorted.bam
+allo_fem1_Z23731_TAGCGGA_sorted.bam
+allo_fem1_Z23732_GCGGAAT_sorted.bam
+allo_fem1_Z23733_CTACGGA_sorted.bam
+allo_fem1_Z23734_CGGTAGA_sorted.bam
+allo_fem1_Z23736_CATAAGT_sorted.bam
+allo_fem1_Z23737_ATTGGAT_sorted.bam
+allo_fem1_Z23740_AATATGG_sorted.bam
+allo_mal1_CAS265071_TCACG_sorted.bam
+allo_mal1_CAS265072_CTAGG_sorted.bam
+allo_mal1_CAS265118_TGCGA_sorted.bam
+allo_mal1_Z23696_GATG_sorted.bam
+allo_mal1_Z23722_TCTCAGTG_sorted.bam
+allo_mal1_Z23723_TGGTACGT_sorted.bam
+allo_mal1_Z23729_TCTGTGA_sorted.bam
+allo_mal1_Z23735_CGCTGAT_sorted.bam
+allo_mal1_Z23738_ATTAATT_sorted.bam
+allo_mal1_Z23739_ACGTGTT_sorted.bam
+allo_mal1_Z23741_AACGCCT_sorted.bam
+allo_mal1_Z23742_GTCGATT_sorted.bam
+allo_mal1_Z23743_GGACCTA_sorted.bam
+allo_mal1_Z23749_GAACTTG_sorted.bam
+```
