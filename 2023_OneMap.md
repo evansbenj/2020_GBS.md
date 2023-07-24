@@ -67,3 +67,10 @@ allo_mal1_Z23742_GTCGATT_cuttrim_sorted.bam
 allo_mal1_Z23743_GGACCTA_cuttrim_sorted.bam
 allo_mal1_Z23749_GAACTTG_cuttrim_sorted.bam
 ```
+Then I compressed and indexed this file:
+```
+module load tabix
+bgzip -c allo_family_one_chr9_10S_filtered.vcf > allo_family_one_chr9_10S_filtered.vcf.gz
+tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
+```
+
