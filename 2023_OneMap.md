@@ -285,3 +285,28 @@ write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide.txt
 
 
 ```
+
+Run like this:
+```
+sbatch ../../../ben_scripts/2023_Rscript_OneMap.sh allo_family_one_chr1S_filtered.vcf allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam allo_1_chr1S
+```
+where the sbatch file is:
+```sh
+#!/bin/sh
+#SBATCH --job-name=Rscript
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=4
+#SBATCH --time=6:00:00
+#SBATCH --mem=2gb
+#SBATCH --output=Rscript.%J.out
+#SBATCH --error=Rscript.%J.err
+#SBATCH --account=def-ben
+
+module load  StdEnv/2020 r/4.3.1
+export R_LIBS=~/.local/R/$EBVERSIONR/
+
+# execute in the directory that has the 2023_OneMap.R script and also the inputfile
+
+Rscript "2023_OneMap.R" --args inputfile_C=${1} mom_C=${2} dad_C=${3} prefix_C=${4}
+```
+
