@@ -310,3 +310,124 @@ export R_LIBS=~/.local/R/$EBVERSIONR/
 Rscript "2023_OneMap.R" --args inputfile_C=${1} mom_C=${2} dad_C=${3} prefix_C=${4}
 ```
 
+# Draft processing script for OneMap output
+```R
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap')
+
+# read in the OneMap data 
+chr7S_mat <- read.table("./allo_1_chr7S_mat_progeny_haplot_wide.txt", header = T)
+chr7S_pat <- read.table("./allo_1_chr7S_pat_progeny_haplot_wide.txt", header = T)
+chr9_10S_mat <- read.table("./allo_1_9_10S_mat_progeny_haplot_wide.txt", header = T)
+chr9_10S_pat <- read.table("./allo_1_chr9_10S_pat_progeny_haplot_wide.txt", header = T)
+
+# make a column with the genomic coordinates
+chr7S_mat$coord <- as.numeric(str_split_i(chr7S_mat$marker, "_",2))
+chr7S_pat$coord <- as.numeric(str_split_i(chr7S_pat$marker, "_",2))
+chr9_10S_mat$coord <- as.numeric(str_split_i(chr9_10S_mat$marker, "_",3)) # need to use a 3 because Chr9_10 has an underscore
+chr9_10S_pat$coord <- as.numeric(str_split_i(chr9_10S_pat$marker, "_",3)) # need to use a 3 because Chr9_10 has an underscore
+
+# make a column with the chr
+chr7S_mat$CHR <- str_split_i(chr7S_mat$marker, "_",1)
+chr7S_pat$CHR <- str_split_i(chr7S_pat$marker, "_",1)
+chr9_10S_mat$CHR<- paste(str_split_i(chr9_10S_mat$marker, "_",1),"_",str_split_i(chr9_10S_mat$marker, "_",2), sep = "") # need to use a 3 because Chr9_10L has an underscore
+chr9_10S_pat$CHR <- paste(str_split_i(chr9_10S_pat$marker, "_",1),"_",str_split_i(chr9_10S_pat$marker, "_",2), sep = "") # need to use a 3 because Chr9_10S has an underscore
+
+#chr7S_mat_recomb <- data.frame()
+
+chr7S_recomb <- data.frame(Positions=integer(),
+                 Parent=character(),
+                 stringsAsFactors=F)
+
+buffer <- 500000
+switch=0
+
+
+
+# Figure out where recombination occurred during oogenesis
+for(i in 1:(nrow(chr7S_mat)-1)) {       # for-loop over rows
+  if(chr7S_mat[i,"P1_H1"] != chr7S_mat[i+1,"P1_H1"]){ # recombination occurred here
+    # populate a vector with the locations of maternal recombination events
+    print(paste(chr7S_mat[i,"P1_H1"]," ",chr7S_mat[i+1,"P1_H1"]," ",mean(chr7S_mat[i,"coord"],chr7S_mat[i+1,"coord"]),sep=""))
+    # test whether this marker conflicts with the next marker and if so whether it it nearby
+    if(switch == 0){
+      chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(chr7S_mat[i,"coord"],chr7S_mat[i+1,"coord"])
+      chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- "mat"
+      switch=1
+    }
+    if((switch != 0)
+       &&
+       ((chr7S_mat[i+1,"P1_H1"] == chr7S_mat[i+2,"P1_H1"]) # this means that at least two consecutive markers support a recombination event
+       &&
+       (as.numeric(chr7S_mat[i,"coord"]) - as.numeric(chr7S_recomb[nrow(chr7S_recomb),"Positions"]) > buffer)
+       )) # this means that the previous recombination event was at least $buffer before this one
+      { 
+      chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(chr7S_mat[i,"coord"],chr7S_mat[i+1,"coord"])
+      chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- "mat" 
+    }  
+  }
+}
+#View(chr7S_recomb)
+
+switch=0
+# Figure out where recombination occurred during oogenesis
+for(i in 1:(nrow(chr7S_pat)-1)) {       # for-loop over rows
+  if(chr7S_pat[i,"P1_H1"] != chr7S_pat[i+1,"P1_H1"]){ # recombination occurred here
+    # populate a vector with the locations of paternal recombination events
+    print(paste(chr7S_pat[i,"P1_H1"]," ",chr7S_pat[i+1,"P1_H1"]," ",mean(chr7S_pat[i,"coord"],chr7S_pat[i+1,"coord"]),sep=""))
+    # test whether this marker conflicts with the next marker and if so whether it it nearby
+    if(switch == 0){
+      chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(chr7S_pat[i,"coord"],chr7S_pat[i+1,"coord"])
+      chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- "pat"
+      switch=1
+    }
+    if((switch != 0)
+       &&
+       ((chr7S_pat[i+1,"P1_H1"] == chr7S_pat[i+2,"P1_H1"]) # this means that at least two consecutive markers support a recombination event
+        &&
+        (as.numeric(chr7S_pat[i,"coord"]) - as.numeric(chr7S_recomb[nrow(chr7S_recomb),"Positions"]) > buffer)
+       )) # this means that the previous recombination event was at least $buffer before this one
+    { 
+      chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(chr7S_pat[i,"coord"],chr7S_pat[i+1,"coord"])
+      chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- "pat" 
+    }  
+  }
+}
+
+
+
+
+ggplot(chr7S_recomb, aes(x = Positions)) +
+  geom_density(aes(color = Parent))+
+  geom_vline(xintercept=49000000)
+
+
+
+recombination <- function(r,matpat){
+  switch=0
+  # Figure out where recombination occurred during oogenesis
+  for(i in 1:(nrow(r)-1)) {       # for-loop over rows
+    if(r[i,"P1_H1"] != r[i+1,"P1_H1"]){ # recombination occurred here
+      # populate a vector with the locations of paternal recombination events
+      print(paste(r[i,"P1_H1"]," ",r[i+1,"P1_H1"]," ",mean(r[i,"coord"],r[i+1,"coord"]),sep=""))
+      # test whether this marker conflicts with the next marker and if so whether it it nearby
+      if(switch == 0){
+        chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(r[i,"coord"],r[i+1,"coord"])
+        chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- matpat
+        switch=1
+      }
+      if((switch != 0)
+         &&
+         ((r[i+1,"P1_H1"] == r[i+2,"P1_H1"]) # this means that at least two consecutive markers support a recombination event
+          &&
+          (as.numeric(r[i,"coord"]) - as.numeric(chr7S_recomb[nrow(chr7S_recomb),"Positions"]) > buffer)
+         )) # this means that the previous recombination event was at least $buffer before this one
+      { 
+        chr7S_recomb[(nrow(chr7S_recomb) + 1),"Positions"] <- mean(r[i,"coord"],r[i+1,"coord"])
+        chr7S_recomb[nrow(chr7S_recomb),"Parent"] <- matpat 
+      }  
+    }
+  }
+}
+recombination(chr7S_pat,"pat")
+```
+
