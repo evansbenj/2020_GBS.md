@@ -432,6 +432,6 @@ recombination(chr7S_pat,"pat")
 ```
 # Concatenate all files but save the header
 ```sh
-awk 'FNR==1 && NR!=1 { while (/^<header>/) getline; } 1 {print}' 2023*.txt >all.txt
+head -1 allo_1_chr1S_mat_progeny_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide.txt >> all_mat.txt
 ```
 
