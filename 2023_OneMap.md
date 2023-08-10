@@ -430,4 +430,8 @@ recombination <- function(r,matpat){
 }
 recombination(chr7S_pat,"pat")
 ```
+# Concatenate all files but save the header
+```sh
+awk 'FNR==1 && NR!=1 { while (/^<header>/) getline; } 1 {print}' 2023*.txt >all.txt
+```
 
