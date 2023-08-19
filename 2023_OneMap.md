@@ -92,7 +92,7 @@ tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
 # directions on passing variables to Rscript via unix
 # https://stackoverflow.com/questions/56777529/how-to-pass-bash-variable-into-r-script
 
-# Rscript "2023_OneMap.R" --args inputfile_C="allo_family_one_chr9_10S_filtered.vcf.gz" mom_C="allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam" dad_C="allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam" prefix_C="allo_1_"
+# Rscript "2023_OneMap.R" --args inputfile_C="allo_family_one_chr7L_filtered.vcf" mom_C="allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam" dad_C="allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam" prefix_C="allo_1_chr7L"
 
 library(onemap)
 library(ggplot2)
@@ -144,6 +144,13 @@ my_dat <- onemap_read_vcfR(vcf = inputfile_C,
                                     only_biallelic = TRUE,
                                     verbose = TRUE); my_dat
 
+#my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr9_10S_filtered.vcf.gz",
+#                           cross = c("outcross"),
+#                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
+#                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
+#                           only_biallelic = TRUE,
+#                           verbose = TRUE); my_dat
+
 # filter sites with lots of missing data
 data_filtered <- filter_missing(my_dat, threshold = 0.25);data_filtered
 
@@ -170,16 +177,11 @@ p <- marker_type(mark_no_dist)
 p %>% group_by(Type) %>% count()
 
 # get indexes of double hets or maternal specific hets:
-maternal_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10'), ]$Marker)
+maternal_SNPs <- as.integer(p[(p$Type == 'D1.10'), ]$Marker)
 # get indexes of double hets or paternal specific hets:
-paternal_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D2.15'), ]$Marker)
+paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
 # get indexes of mat and pat sites
 # matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D2.15'), ]$Marker)
-
-# test to have no informative SNPs for mother (only pat het sites):
-# maternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker) # still shows recombination
-# now try only maternal het sites
-# maternal_SNPs <- as.integer(p[(p$Type == 'D1.10'), ]$Marker)
 
 # Marker types are explained here:
 # https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html
@@ -205,8 +207,12 @@ maternal_parents_haplot <- parents_haplotypes(maternal_map)
 paternal_parents_haplot <- parents_haplotypes(paternal_map)
 # matpat_haplot <- parents_haplotypes(matpat_map)
 
-write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot.txt",sep="_"))
-write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot.txt",sep="_"))
+# Add column for matpat
+maternal_parents_haplot$matpat <- "mat"
+paternal_parents_haplot$matpat <- "pat"
+
+write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot.txt",sep="_"), row.names=F)
+write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot.txt",sep="_"), row.names=F)
 # write.table(maternal_haplot, "mat_haplot.txt")
 # write.table(paternal_haplot, "pat_haplot.txt")
 # write.table(matpat_haplot, "matpat_haplot.txt")
@@ -216,13 +222,13 @@ write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot.txt",sep
 # Export haplotypes
 mat_progeny_haplot <- progeny_haplotypes(maternal_map, 
                                      most_likely = TRUE, 
-                                     ind = c(1:40), 
-                                     group_names = "chr9_10S")
+                                     ind = c(1:data_filtered$n.ind), 
+                                     group_names = prefix_C)
 
 pat_progeny_haplot <- progeny_haplotypes(paternal_map, 
                                          most_likely = TRUE, 
-                                         ind = c(1:40), 
-                                         group_names = "chr9_10S")
+                                         ind = c(1:data_filtered$n.ind), 
+                                         group_names = prefix_C)
 
 #matpat_progeny_haplot <- progeny_haplotypes(matpat_map, 
 #                                         most_likely = TRUE, 
@@ -281,8 +287,6 @@ write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide.txt
 #                                                  most_likely = TRUE, 
 #                                                  ind = c(1:40), 
 #                                                  group_names = "chr9_10S"))
-
-
 
 ```
 
