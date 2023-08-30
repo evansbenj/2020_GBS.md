@@ -349,8 +349,14 @@ head -1 allo_1_chr1S_mat_progeny_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print
 
 # Processing script for OneMap output
 ```R
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap')
+# concatenate "wide" haplotypes from all individuals for maternal and paternal recombination events like this:
+#  head -1 one_of_the_files_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide.txt >> all_mat.txt
+#  head -1 one_of_the_files_pat_progeny_haplot_wide.txt > all_pat.txt; awk 'FNR>1{print}' *pat*wide.txt >> all_pat.txt
+# if there are rownames, you can add a bogus header for them to prevent a redundant rowname error like this:
+# perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
 
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_muelleri')
+library(tidyverse)
 # read in the OneMap data 
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
@@ -362,19 +368,65 @@ all_pat$matpat <- "pat"
 all<- rbind(all_mat,all_pat)
 
 # make a column with chrs and one with coordinates
+# this probably needs to be different for trop
 all[c('Chr', 'Coord')] <- str_split_fixed(all$marker, '_', 2)
-all[all$Chr == 'chr9',]$Coord <- as.numeric(str_split_i(all[all$Chr == 'chr9',]$marker,"_",3)) # need to use a 3 because Chr9_10L has an underscore
-all[all$Chr == 'chr9',]$Chr <- paste(str_split_i(all[all$Chr == 'chr9',]$marker, "_",1),str_split_i(all[all$Chr == 'chr9',]$marker, "_",2), sep = "_") # need to use a 3 because Chr9_10L has an underscore
+all[all$Chr == 'Chr9',]$Coord <- as.numeric(str_split_i(all[all$Chr == 'Chr9',]$marker,"_",3)) # need to use a 3 because Chr9_10L has an underscore
+all[all$Chr == 'Chr9',]$Chr <- paste(str_split_i(all[all$Chr == 'Chr9',]$marker, "_",1),str_split_i(all[all$Chr == 'Chr9',]$marker, "_",2), sep = "_") # need to use a 3 because Chr9_10L has an underscore
+unique(all$Chr)
 
 all$Coord <- as.numeric(all$Coord)
+
+# now make a column with chromosome proportions
+all$Proportions <- all$Coord/233740090 # this is the length of XL Chr1L
+# now update the ones that are not Chr1L
+all[all$Chr == 'Chr1S',]$Proportions <- all[all$Chr == 'Chr1S',]$Coord/202412970 # this is the length of XL Chr1S
+all[all$Chr == 'Chr2L',]$Proportions <- all[all$Chr == 'Chr2L',]$Coord/191000146 # this is the length of XL Chr2L
+all[all$Chr == 'Chr2S',]$Proportions <- all[all$Chr == 'Chr2S',]$Coord/169306100 # this is the length of XL Chr2S
+all[all$Chr == 'Chr3L',]$Proportions <- all[all$Chr == 'Chr3L',]$Coord/161426101 # this is the length of XL Chr3L
+all[all$Chr == 'Chr3S',]$Proportions <- all[all$Chr == 'Chr3S',]$Coord/131962816 # this is the length of XL Chr3S
+all[all$Chr == 'Chr4L',]$Proportions <- all[all$Chr == 'Chr4L',]$Coord/155250554 # this is the length of XL Chr4L
+all[all$Chr == 'Chr4S',]$Proportions <- all[all$Chr == 'Chr4S',]$Coord/132731174 # this is the length of XL Chr4S
+all[all$Chr == 'Chr5L',]$Proportions <- all[all$Chr == 'Chr5L',]$Coord/171415384 # this is the length of XL Chr5L
+all[all$Chr == 'Chr5S',]$Proportions <- all[all$Chr == 'Chr5S',]$Coord/143394103 # this is the length of XL Chr5S
+all[all$Chr == 'Chr6L',]$Proportions <- all[all$Chr == 'Chr6L',]$Coord/164223595 # this is the length of XL Chr6L
+all[all$Chr == 'Chr6S',]$Proportions <- all[all$Chr == 'Chr6S',]$Coord/137316286 # this is the length of XL Chr6S
+all[all$Chr == 'Chr7L',]$Proportions <- all[all$Chr == 'Chr7L',]$Coord/139837618 # this is the length of XL Chr7L
+all[all$Chr == 'Chr7S',]$Proportions <- all[all$Chr == 'Chr7S',]$Coord/113060389 # this is the length of XL Chr7S
+all[all$Chr == 'Chr8L',]$Proportions <- all[all$Chr == 'Chr8L',]$Coord/135449133 # this is the length of XL Chr8L
+all[all$Chr == 'Chr8S',]$Proportions <- all[all$Chr == 'Chr8S',]$Coord/103977862 # this is the length of XL Chr8S
+all[all$Chr == 'Chr9_10L',]$Proportions <- all[all$Chr == 'Chr9_10L',]$Coord/137811819 # this is the length of XL Chr9_10L
+all[all$Chr == 'Chr9_10S',]$Proportions <- all[all$Chr == 'Chr9_10S',]$Coord/117266291 # this is the length of XL Chr9_10S
+max(all$Proportions) # should < 1
+# Chr1L	233740090
+# Chr1S	202412970
+# Chr2L	191000146
+# Chr2S	169306100
+# Chr3L	161426101
+# Chr3S	131962816
+# Chr4L	155250554
+# Chr4S	132731174
+# Chr5L	171415384
+# Chr5S	143394103
+# Chr6L	164223595
+# Chr6S	137316286
+# Chr7L	139837618
+# Chr7S	113060389
+# Chr8L	135449133
+# Chr8S	103977862
+# Chr9_10L	137811819
+# Chr9_10S	117266291
+
+
     
 all_recomb <- data.frame(Chr=character(),
                          Positions=integer(),
+                         Proportions=integer(),
                          Parent=character(),
                          stringsAsFactors=F)
 buffer <- 5000000
 # Figure out where recombination occurred during oogenesis
-for(i in 1:(nrow(all)-1)) {       # for-loop over rows
+for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to the second to last to allow
+                                  # a check for at least two sites supporting recombination
   if(as.numeric(all[i,]$pos) == 0){
     switch=0
   }
@@ -384,6 +436,7 @@ for(i in 1:(nrow(all)-1)) {       # for-loop over rows
     # test whether this marker conflicts with the next marker and if so whether it it nearby
     if(switch == 0){
       all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
+      all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
       all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
       all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
       switch=1
@@ -396,6 +449,7 @@ for(i in 1:(nrow(all)-1)) {       # for-loop over rows
        )) # this means that the previous recombination event was at least $buffer before this one
       { 
       all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
+      all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
       all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
       all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
     }  
@@ -404,15 +458,42 @@ for(i in 1:(nrow(all)-1)) {       # for-loop over rows
 dim(all_recomb)
 head(all_recomb)
 
+# Number of maternal recombination events
+n_mat_recomb <- nrow(all_recomb[all_recomb$Parent == "mat",]);n_mat_recomb
+# Number of maternal recombination events
+n_pat_recomb <- nrow(all_recomb[all_recomb$Parent == "pat",]);n_pat_recomb
+
+# Length of maternal LG
+mat_bp_length <- 0
+pat_bp_length <- 0
+mat_cM_length <- 0
+pat_cM_length <- 0
+for(i in unique(all$Chr)) {
+  print(i)
+  # add the max cM for each Chr
+  mat_cM_length <- mat_cM_length + max(all[(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
+  pat_cM_length <- pat_cM_length + max(all[(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
+  # now add the difference in min/max bp coordinates for each char
+  mat_bp_length <- mat_bp_length + (max(all[(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$Chr == i)&(all$matpat == "mat"),]$Coord))
+  pat_bp_length <- pat_bp_length + (max(all[(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$Chr == i)&(all$matpat == "pat"),]$Coord))
+}
+
+print(paste("mat_cM_length",mat_cM_length,sep=" "))
+print(paste("pat_cM_length",pat_cM_length,sep=" "))
+print(paste("mat_bp_length",mat_bp_length,sep=" "))
+print(paste("pat_bp_length",pat_bp_length,sep=" "))
 
 
-ggplot(all_recomb, aes(x = Positions/1000000)) +
+
+ggplot(all_recomb, aes(x = Proportions)) +
   geom_density(aes(color = Parent))+
   #geom_vline(xintercept=49000000)+ 
   #facet_wrap( ~ Chr, ncol=2, scales = "free_x")+
-  xlab("Position (Mb)") + ylab("Density") +
-  xlim(0,250) +
+  xlab("Chromosome proportion") + ylab("Density") +
+  xlim(0,1) +
   theme_bw()
+
+
 
 ```
 
