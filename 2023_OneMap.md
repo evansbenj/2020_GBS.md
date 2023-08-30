@@ -209,6 +209,10 @@ pat_LGs <- group(paternal_SNPs_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
 mat_df <- as.data.frame(table(mat_LGs$groups))
 pat_df <- as.data.frame(table(pat_LGs$groups))
 
+# get rid of first row, which is the unlinked markers
+mat_df <- mat_df[-1, ]
+pat_df <- pat_df[-1, ]
+
 mat_biggest_LG_group <- as.vector(mat_df$Var1[mat_df$Freq == max(mat_df$Freq)]);mat_biggest_LG_group
 pat_biggest_LG_group <- as.vector(pat_df$Var1[pat_df$Freq == max(pat_df$Freq)]);pat_biggest_LG_group
 
