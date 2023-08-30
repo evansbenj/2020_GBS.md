@@ -144,7 +144,7 @@ my_dat <- onemap_read_vcfR(vcf = inputfile_C,
                                     only_biallelic = TRUE,
                                     verbose = TRUE); my_dat
 
-#my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr9_10S_filtered.vcf.gz",
+# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
 #                           cross = c("outcross"),
 #                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
 #                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
@@ -190,18 +190,37 @@ paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
 # 2 D1.10   483  ab×aa (first parent het; maternal)
 # 3 D2.15   384  aa×ab (second parent het; paternal)
 
+
 # make an object with only maternal SNPs
 maternal_SNPs_no_dist <- make_seq(twopts, maternal_SNPs)
-
 # make an object with only paternal SNPs
 paternal_SNPs_no_dist <- make_seq(twopts, paternal_SNPs)
 
-# make an object with only matpat SNPs
-# matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs)
 
-maternal_map <- onemap::map(maternal_SNPs_no_dist)
-paternal_map <- onemap::map(paternal_SNPs_no_dist)
-# matpat_map <- onemap::map(matpat_SNPs_no_dist)
+# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
+LOD_sug_mat <- suggest_lod(maternal_SNPs_no_dist)
+LOD_sug_pat <- suggest_lod(paternal_SNPs_no_dist)
+
+# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
+mat_LGs <- group(maternal_SNPs_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
+pat_LGs <- group(paternal_SNPs_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
+
+# figure out which linkage group has the most markers
+mat_df <- as.data.frame(table(mat_LGs$groups))
+pat_df <- as.data.frame(table(pat_LGs$groups))
+
+mat_biggest_LG_group <- as.vector(mat_df$Var1[mat_df$Freq == max(mat_df$Freq)]);mat_biggest_LG_group
+pat_biggest_LG_group <- as.vector(pat_df$Var1[pat_df$Freq == max(pat_df$Freq)]);pat_biggest_LG_group
+
+mat_biggest_LG <- make_seq(mat_LGs,as.integer(mat_biggest_LG_group))
+pat_biggest_LG <- make_seq(pat_LGs,as.integer(pat_biggest_LG_group))
+
+mat_LG_1_graph <- rf_graph_table(mat_biggest_LG)
+pat_LG_1_graph <- rf_graph_table(pat_biggest_LG)
+
+maternal_map <- onemap::map(mat_biggest_LG)
+paternal_map <- onemap::map(pat_biggest_LG)
+
 
 maternal_parents_haplot <- parents_haplotypes(maternal_map)
 paternal_parents_haplot <- parents_haplotypes(paternal_map)
@@ -211,8 +230,9 @@ paternal_parents_haplot <- parents_haplotypes(paternal_map)
 maternal_parents_haplot$matpat <- "mat"
 paternal_parents_haplot$matpat <- "pat"
 
-write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot.txt",sep="_"), row.names=F)
-write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot.txt",sep="_"), row.names=F)
+#prefix_C<-"temp"
+write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot_LG.txt",sep="_"), row.names=F)
+write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot_LG.txt",sep="_"), row.names=F)
 # write.table(maternal_haplot, "mat_haplot.txt")
 # write.table(paternal_haplot, "pat_haplot.txt")
 # write.table(matpat_haplot, "matpat_haplot.txt")
@@ -261,9 +281,11 @@ pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide
 #write.table(mat_progeny_haplot_wide, "mat_progeny_haplot_wide.txt")
 #write.table(pat_progeny_haplot_wide, "pat_progeny_haplot_wide.txt")
 
-write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide.txt",sep="_"))
-write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide.txt",sep="_"))
+write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
+write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 
+ggsave(file=paste(prefix_C,"_mat_graph_LG.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
+ggsave(file=paste(prefix_C,"_pat_graph_LG.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
 
 #mathap <- plot(mat_progeny_haplot, position = "stack")
 #mathap_split <- plot(mat_progeny_haplot, position = "split")
@@ -287,6 +309,9 @@ write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide.txt
 #                                                  most_likely = TRUE, 
 #                                                  ind = c(1:40), 
 #                                                  group_names = "chr9_10S"))
+
+
+
 
 ```
 
