@@ -144,12 +144,19 @@ my_dat <- onemap_read_vcfR(vcf = inputfile_C,
                                     only_biallelic = TRUE,
                                     verbose = TRUE); my_dat
 
-# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
-#                           cross = c("outcross"),
-#                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
-#                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
-#                           only_biallelic = TRUE,
-#                           verbose = TRUE); my_dat
+ my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
+                           cross = c("outcross"),
+                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
+                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
+                           only_biallelic = TRUE,
+                           verbose = TRUE); my_dat
+
+ my_dat <- onemap_read_vcfR(vcf = "DB__Chr5S_out.vcf_filtered.vcf.gz_selected.vcf",
+                           cross = c("outcross"),
+                           parent1 = c("./3897mom_trim_sorted"), 
+                           parent2 = c("./3896dad_trim_sorted"), 
+                           only_biallelic = TRUE,
+                           verbose = TRUE); my_dat
 
 # filter sites with lots of missing data
 data_filtered <- filter_missing(my_dat, threshold = 0.25);data_filtered
@@ -176,12 +183,8 @@ marker_type(mark_no_dist)
 p <- marker_type(mark_no_dist)
 p %>% group_by(Type) %>% count()
 
-# get indexes of double hets or maternal specific hets:
-maternal_SNPs <- as.integer(p[(p$Type == 'D1.10'), ]$Marker)
-# get indexes of double hets or paternal specific hets:
-paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
 # get indexes of mat and pat sites
-# matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D2.15'), ]$Marker)
+matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D2.15'), ]$Marker)
 
 # Marker types are explained here:
 # https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html
@@ -190,40 +193,127 @@ paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
 # 2 D1.10   483  ab×aa (first parent het; maternal)
 # 3 D2.15   384  aa×ab (second parent het; paternal)
 
+# make an object with only matpat SNPs
+matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs)
 
-# make an object with only maternal SNPs
-maternal_SNPs_no_dist <- make_seq(twopts, maternal_SNPs)
-# make an object with only paternal SNPs
-paternal_SNPs_no_dist <- make_seq(twopts, paternal_SNPs)
+# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
+LOD_sug_matpat <- suggest_lod(matpat_SNPs_no_dist)
+
+# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
+matpat_LGs <- group(matpat_SNPs_no_dist, LOD=LOD_sug_matpat, max.rf = 0.4)
+
+# figure out which linkage group has the most markers
+matpat_df <- as.data.frame(table(matpat_LGs$groups))
+
+# get rid of first row, which is the unlinked markers
+matpat_df <- matpat_df[-1, ]
+
+matpat_biggest_LG_group <- as.vector(matpat_df$Var1[matpat_df$Freq == max(matpat_df$Freq)]);matpat_biggest_LG_group
+
+matpat_biggest_LG <- make_seq(matpat_LGs,as.integer(matpat_biggest_LG_group))
+
+matpat_LG_1_graph <- rf_graph_table(matpat_biggest_LG)
+ggsave(file=paste(prefix_C,"_matpat_graph_LG.pdf",sep="_"), matpat_LG_1_graph, width=8, height=8)
+
+# make a combined map
+matpat_map <- onemap::map(matpat_biggest_LG)
+marker_type(matpat_map)
+
+q <- marker_type(matpat_map)
+q %>% group_by(Type) %>% count()
+  
+print(matpat_map, detailed = T)
+  
+matpat_biggest_LG_matonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D1.10'), ]$Marker
+matpat_biggest_LG_patonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D2.15'), ]$Marker
+
+
+matpat_biggest_LG_matonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_matonly))
+matpat_biggest_LG_patonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_patonly))
+
+# look at markers
+marker_type(matpat_biggest_LG_matonly_no_dist)
+s <- marker_type(matpat_biggest_LG_matonly_no_dist)
+s %>% group_by(Type) %>% count()
+
+# look at markers
+marker_type(matpat_biggest_LG_patonly_no_dist)
+r <- marker_type(matpat_biggest_LG_patonly_no_dist)
+r %>% group_by(Type) %>% count()
 
 
 # Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
-LOD_sug_mat <- suggest_lod(maternal_SNPs_no_dist)
-LOD_sug_pat <- suggest_lod(paternal_SNPs_no_dist)
+LOD_sug_mat <- suggest_lod(matpat_biggest_LG_matonly_no_dist)
+LOD_sug_pat <- suggest_lod(matpat_biggest_LG_patonly_no_dist)
 
 # And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
-mat_LGs <- group(maternal_SNPs_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
-pat_LGs <- group(paternal_SNPs_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
+# mat_LGs_ord <- group(matpat_biggest_LG_matonly_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
+# pat_LGs_ord <- group(matpat_biggest_LG_patonly_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
+
+mat_biggest_LGs_ordd <- order_seq(matpat_biggest_LG_matonly_no_dist, n.init = 7, THRES = LOD_sug_mat)
+pat_biggest_LGs_ordd <- order_seq(matpat_biggest_LG_patonly_no_dist, n.init = 7, THRES = LOD_sug_pat)
+
+mat_LGs_ord_force <- make_seq(mat_biggest_LGs_ordd, "force")
+pat_LGs_ord_force <- make_seq(pat_biggest_LGs_ordd, "force")
+
+mat_LG_1_graph <- rf_graph_table(mat_LGs_ord_force)
+mat_LG_1_graph_LOD <- rf_graph_table(mat_LGs_ord_force, graph.LOD = TRUE)
+ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
+ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force_LOD.pdf",sep="_"), mat_LG_1_graph_LOD, width=8, height=8)
+
+pat_LG_1_graph <- rf_graph_table(pat_LGs_ord_force)
+pat_LG_1_graph_LOD <- rf_graph_table(pat_LGs_ord_force, graph.LOD = TRUE)
+ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
+ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force_LOD.pdf",sep="_"), pat_LG_1_graph_LOD, width=8, height=8)
+
+
+maternal_map <- onemap::map(mat_LGs_ord_force)
+paternal_map <- onemap::map(pat_LGs_ord_force)
+
+
+
+
+
+
+# get indexes of double hets or maternal specific hets:
+#maternal_SNPs <- as.integer(p[(p$Type == 'D1.10'), ]$Marker)
+# get indexes of double hets or paternal specific hets:
+#paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
+
+
+# make an object with only maternal SNPs
+# maternal_SNPs_no_dist <- make_seq(twopts, maternal_SNPs)
+# make an object with only paternal SNPs
+# paternal_SNPs_no_dist <- make_seq(twopts, paternal_SNPs)
+
+
+# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
+# LOD_sug_mat <- suggest_lod(maternal_SNPs_no_dist)
+# LOD_sug_pat <- suggest_lod(paternal_SNPs_no_dist)
+
+# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
+# mat_LGs <- group(maternal_SNPs_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
+# pat_LGs <- group(paternal_SNPs_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
 
 # figure out which linkage group has the most markers
-mat_df <- as.data.frame(table(mat_LGs$groups))
-pat_df <- as.data.frame(table(pat_LGs$groups))
+# mat_df <- as.data.frame(table(mat_LGs$groups))
+# pat_df <- as.data.frame(table(pat_LGs$groups))
 
 # get rid of first row, which is the unlinked markers
-mat_df <- mat_df[-1, ]
-pat_df <- pat_df[-1, ]
+# mat_df <- mat_df[-1, ]
+# pat_df <- pat_df[-1, ]
 
-mat_biggest_LG_group <- as.vector(mat_df$Var1[mat_df$Freq == max(mat_df$Freq)]);mat_biggest_LG_group
-pat_biggest_LG_group <- as.vector(pat_df$Var1[pat_df$Freq == max(pat_df$Freq)]);pat_biggest_LG_group
+# mat_biggest_LG_group <- as.vector(mat_df$Var1[mat_df$Freq == max(mat_df$Freq)]);mat_biggest_LG_group
+# pat_biggest_LG_group <- as.vector(pat_df$Var1[pat_df$Freq == max(pat_df$Freq)]);pat_biggest_LG_group
 
-mat_biggest_LG <- make_seq(mat_LGs,as.integer(mat_biggest_LG_group))
-pat_biggest_LG <- make_seq(pat_LGs,as.integer(pat_biggest_LG_group))
+# mat_biggest_LG <- make_seq(mat_LGs,as.integer(mat_biggest_LG_group))
+# pat_biggest_LG <- make_seq(pat_LGs,as.integer(pat_biggest_LG_group))
 
-mat_LG_1_graph <- rf_graph_table(mat_biggest_LG)
-pat_LG_1_graph <- rf_graph_table(pat_biggest_LG)
+# mat_LG_1_graph <- rf_graph_table(mat_biggest_LG)
+# pat_LG_1_graph <- rf_graph_table(pat_biggest_LG)
 
-maternal_map <- onemap::map(mat_biggest_LG)
-paternal_map <- onemap::map(pat_biggest_LG)
+# maternal_map <- onemap::map(mat_biggest_LG)
+# paternal_map <- onemap::map(pat_biggest_LG)
 
 
 maternal_parents_haplot <- parents_haplotypes(maternal_map)
@@ -288,8 +378,8 @@ pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide
 write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 
-ggsave(file=paste(prefix_C,"_mat_graph_LG.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
-ggsave(file=paste(prefix_C,"_pat_graph_LG.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
+# ggsave(file=paste(prefix_C,"_mat_graph_LG.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
+# ggsave(file=paste(prefix_C,"_pat_graph_LG.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
 
 #mathap <- plot(mat_progeny_haplot, position = "stack")
 #mathap_split <- plot(mat_progeny_haplot, position = "split")
@@ -313,9 +403,6 @@ ggsave(file=paste(prefix_C,"_pat_graph_LG.pdf",sep="_"), pat_LG_1_graph, width=8
 #                                                  most_likely = TRUE, 
 #                                                  ind = c(1:40), 
 #                                                  group_names = "chr9_10S"))
-
-
-
 
 ```
 
