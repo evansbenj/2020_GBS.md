@@ -431,7 +431,7 @@ Rscript "2023_OneMap.R" --args inputfile_C=${1} mom_C=${2} dad_C=${3} prefix_C=$
 ```
 # Concatenate all files but save the header
 ```sh
-head -1 allo_1_chr1S_mat_progeny_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide.txt >> all_mat.txt
+head -1 allo_1_chr1S_mat_progeny_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide_LG.txt >> all_mat.txt
 ```
 
 # Processing script for OneMap output
