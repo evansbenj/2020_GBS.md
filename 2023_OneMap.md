@@ -144,19 +144,19 @@ my_dat <- onemap_read_vcfR(vcf = inputfile_C,
                                     only_biallelic = TRUE,
                                     verbose = TRUE); my_dat
 
- my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
-                           cross = c("outcross"),
-                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
-                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
-                           only_biallelic = TRUE,
-                           verbose = TRUE); my_dat
+# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
+#                           cross = c("outcross"),
+#                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
+#                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
+#                           only_biallelic = TRUE,
+#                           verbose = TRUE); my_dat
 
- my_dat <- onemap_read_vcfR(vcf = "DB__Chr5S_out.vcf_filtered.vcf.gz_selected.vcf",
-                           cross = c("outcross"),
-                           parent1 = c("./3897mom_trim_sorted"), 
-                           parent2 = c("./3896dad_trim_sorted"), 
-                           only_biallelic = TRUE,
-                           verbose = TRUE); my_dat
+# my_dat <- onemap_read_vcfR(vcf = "DB__Chr5S_out.vcf_filtered.vcf.gz_selected.vcf",
+#                           cross = c("outcross"),
+#                           parent1 = c("./3897mom_trim_sorted"), 
+#                           parent2 = c("./3896dad_trim_sorted"), 
+#                           only_biallelic = TRUE,
+#                           verbose = TRUE); my_dat
 
 # filter sites with lots of missing data
 data_filtered <- filter_missing(my_dat, threshold = 0.25);data_filtered
@@ -196,11 +196,13 @@ matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D
 # make an object with only matpat SNPs
 matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs)
 
-# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
-LOD_sug_matpat <- suggest_lod(matpat_SNPs_no_dist)
+# Don't use the function suggest_lod to calculate a suggested LOD score 
+# considering that multiple tests are being performed. If you do, you will get very
+# samll linkage groups that often don't contain maternal and paternal markers
+# LOD_sug_matpat <- suggest_lod(matpat_SNPs_no_dist)
 
 # And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
-matpat_LGs <- group(matpat_SNPs_no_dist, LOD=LOD_sug_matpat, max.rf = 0.4)
+matpat_LGs <- group(matpat_SNPs_no_dist, LOD=4, max.rf = 0.4)
 
 # figure out which linkage group has the most markers
 matpat_df <- as.data.frame(table(matpat_LGs$groups))
@@ -210,12 +212,13 @@ matpat_df <- matpat_df[-1, ]
 
 matpat_biggest_LG_group <- as.vector(matpat_df$Var1[matpat_df$Freq == max(matpat_df$Freq)]);matpat_biggest_LG_group
 
+# set_map_fun(type = "kosambi") # this is the default
+# extract the largest linkage group for mapping
 matpat_biggest_LG <- make_seq(matpat_LGs,as.integer(matpat_biggest_LG_group))
-
 matpat_LG_1_graph <- rf_graph_table(matpat_biggest_LG)
-ggsave(file=paste(prefix_C,"_matpat_graph_LG.pdf",sep="_"), matpat_LG_1_graph, width=8, height=8)
+ggsave(file=paste(prefix_C,"_matpat_graph_biggestLG.pdf",sep="_"), matpat_LG_1_graph, width=8, height=8)
 
-# make a combined map
+# make a combined map using positional information from the largest linkage group
 matpat_map <- onemap::map(matpat_biggest_LG)
 marker_type(matpat_map)
 
@@ -227,94 +230,33 @@ print(matpat_map, detailed = T)
 matpat_biggest_LG_matonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D1.10'), ]$Marker
 matpat_biggest_LG_patonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D2.15'), ]$Marker
 
-
+# get maternal and paternal markers
 matpat_biggest_LG_matonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_matonly))
 matpat_biggest_LG_patonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_patonly))
 
-# look at markers
+# quantify maternal markers
 marker_type(matpat_biggest_LG_matonly_no_dist)
 s <- marker_type(matpat_biggest_LG_matonly_no_dist)
 s %>% group_by(Type) %>% count()
 
-# look at markers
+# quantify paternal markers
 marker_type(matpat_biggest_LG_patonly_no_dist)
 r <- marker_type(matpat_biggest_LG_patonly_no_dist)
 r %>% group_by(Type) %>% count()
 
 
-# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
-LOD_sug_mat <- suggest_lod(matpat_biggest_LG_matonly_no_dist)
-LOD_sug_pat <- suggest_lod(matpat_biggest_LG_patonly_no_dist)
-
-# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
-# mat_LGs_ord <- group(matpat_biggest_LG_matonly_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
-# pat_LGs_ord <- group(matpat_biggest_LG_patonly_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
-
-mat_biggest_LGs_ordd <- order_seq(matpat_biggest_LG_matonly_no_dist, n.init = 7, THRES = LOD_sug_mat)
-pat_biggest_LGs_ordd <- order_seq(matpat_biggest_LG_patonly_no_dist, n.init = 7, THRES = LOD_sug_pat)
-
-mat_LGs_ord_force <- make_seq(mat_biggest_LGs_ordd, "force")
-pat_LGs_ord_force <- make_seq(pat_biggest_LGs_ordd, "force")
-
-mat_LG_1_graph <- rf_graph_table(mat_LGs_ord_force)
-mat_LG_1_graph_LOD <- rf_graph_table(mat_LGs_ord_force, graph.LOD = TRUE)
+mat_LG_1_graph <- rf_graph_table(matpat_biggest_LG_matonly_no_dist)
+mat_LG_1_graph_LOD <- rf_graph_table(matpat_biggest_LG_matonly_no_dist, graph.LOD = TRUE)
 ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
 ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force_LOD.pdf",sep="_"), mat_LG_1_graph_LOD, width=8, height=8)
 
-pat_LG_1_graph <- rf_graph_table(pat_LGs_ord_force)
-pat_LG_1_graph_LOD <- rf_graph_table(pat_LGs_ord_force, graph.LOD = TRUE)
+pat_LG_1_graph <- rf_graph_table(matpat_biggest_LG_patonly_no_dist)
+pat_LG_1_graph_LOD <- rf_graph_table(matpat_biggest_LG_patonly_no_dist, graph.LOD = TRUE)
 ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
 ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force_LOD.pdf",sep="_"), pat_LG_1_graph_LOD, width=8, height=8)
 
-
-maternal_map <- onemap::map(mat_LGs_ord_force)
-paternal_map <- onemap::map(pat_LGs_ord_force)
-
-
-
-
-
-
-# get indexes of double hets or maternal specific hets:
-#maternal_SNPs <- as.integer(p[(p$Type == 'D1.10'), ]$Marker)
-# get indexes of double hets or paternal specific hets:
-#paternal_SNPs <- as.integer(p[(p$Type == 'D2.15'), ]$Marker)
-
-
-# make an object with only maternal SNPs
-# maternal_SNPs_no_dist <- make_seq(twopts, maternal_SNPs)
-# make an object with only paternal SNPs
-# paternal_SNPs_no_dist <- make_seq(twopts, paternal_SNPs)
-
-
-# Use the function suggest_lod to calculate a suggested LOD score considering that multiple tests are being performed.
-# LOD_sug_mat <- suggest_lod(maternal_SNPs_no_dist)
-# LOD_sug_pat <- suggest_lod(paternal_SNPs_no_dist)
-
-# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
-# mat_LGs <- group(maternal_SNPs_no_dist, LOD=LOD_sug_mat, max.rf = 0.4)
-# pat_LGs <- group(paternal_SNPs_no_dist, LOD=LOD_sug_pat, max.rf = 0.4)
-
-# figure out which linkage group has the most markers
-# mat_df <- as.data.frame(table(mat_LGs$groups))
-# pat_df <- as.data.frame(table(pat_LGs$groups))
-
-# get rid of first row, which is the unlinked markers
-# mat_df <- mat_df[-1, ]
-# pat_df <- pat_df[-1, ]
-
-# mat_biggest_LG_group <- as.vector(mat_df$Var1[mat_df$Freq == max(mat_df$Freq)]);mat_biggest_LG_group
-# pat_biggest_LG_group <- as.vector(pat_df$Var1[pat_df$Freq == max(pat_df$Freq)]);pat_biggest_LG_group
-
-# mat_biggest_LG <- make_seq(mat_LGs,as.integer(mat_biggest_LG_group))
-# pat_biggest_LG <- make_seq(pat_LGs,as.integer(pat_biggest_LG_group))
-
-# mat_LG_1_graph <- rf_graph_table(mat_biggest_LG)
-# pat_LG_1_graph <- rf_graph_table(pat_biggest_LG)
-
-# maternal_map <- onemap::map(mat_biggest_LG)
-# paternal_map <- onemap::map(pat_biggest_LG)
-
+maternal_map <- onemap::map(matpat_biggest_LG_matonly_no_dist)
+paternal_map <- onemap::map(matpat_biggest_LG_patonly_no_dist)
 
 maternal_parents_haplot <- parents_haplotypes(maternal_map)
 paternal_parents_haplot <- parents_haplotypes(paternal_map)
@@ -327,9 +269,6 @@ paternal_parents_haplot$matpat <- "pat"
 #prefix_C<-"temp"
 write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot_LG.txt",sep="_"), row.names=F)
 write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot_LG.txt",sep="_"), row.names=F)
-# write.table(maternal_haplot, "mat_haplot.txt")
-# write.table(paternal_haplot, "pat_haplot.txt")
-# write.table(matpat_haplot, "matpat_haplot.txt")
 
 # draw_map(maternal_map)
 
@@ -372,37 +311,9 @@ pat_progeny_haplot_wide <- pat_progeny_haplot %>%
 
 pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide$ind, pat_progeny_haplot_wide$pos), ]
 
-#write.table(mat_progeny_haplot_wide, "mat_progeny_haplot_wide.txt")
-#write.table(pat_progeny_haplot_wide, "pat_progeny_haplot_wide.txt")
-
 write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 
-# ggsave(file=paste(prefix_C,"_mat_graph_LG.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
-# ggsave(file=paste(prefix_C,"_pat_graph_LG.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
-
-#mathap <- plot(mat_progeny_haplot, position = "stack")
-#mathap_split <- plot(mat_progeny_haplot, position = "split")
-#pathap <- plot(pat_progeny_haplot, position = "stack")
-#matpathap <- plot(matpat_progeny_haplot, position = "stack")
-
-#ggsave(file="mathap.pdf", mathap, width=10, height=30)
-#ggsave(file="mathap_split.pdf", mathap_split, width=10, height=40)
-#ggsave(file="pathap.pdf", pathap, width=10, height=30)
-#ggsave(file="matpathap.pdf", matpathap, width=10, height=30)
-
-
-
-
-
-
-# https://search.r-project.org/CRAN/refmans/onemap/html/progeny_haplotypes_counts.html
-# Generate graphic with the number of break points for each individual 
-# considering the most likely genotypes estimated by the HMM.
-# e <- progeny_haplotypes_counts(progeny_haplotypes(maternal_map, 
-#                                                  most_likely = TRUE, 
-#                                                  ind = c(1:40), 
-#                                                  group_names = "chr9_10S"))
 
 ```
 
@@ -436,14 +347,16 @@ head -1 allo_1_chr1S_mat_progeny_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print
 
 # Processing script for OneMap output
 ```R
+library(tidyverse)
+
 # concatenate "wide" haplotypes from all individuals for maternal and paternal recombination events like this:
-#  head -1 one_of_the_files_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide.txt >> all_mat.txt
-#  head -1 one_of_the_files_pat_progeny_haplot_wide.txt > all_pat.txt; awk 'FNR>1{print}' *pat*wide.txt >> all_pat.txt
+#  head -1 one_of_the_files_haplot_wide.txt > all_mat.txt; awk 'FNR>1{print}' *mat*wide*.txt >> all_mat.txt
+#  head -1 one_of_the_files_pat_progeny_haplot_wide.txt > all_pat.txt; awk 'FNR>1{print}' *pat*wide*.txt >> all_pat.txt
 # if there are rownames, you can add a bogus header for them to prevent a redundant rowname error like this:
 # perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
 
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_muelleri')
-library(tidyverse)
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis')
+
 # read in the OneMap data 
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
@@ -484,6 +397,7 @@ all[all$Chr == 'Chr8S',]$Proportions <- all[all$Chr == 'Chr8S',]$Coord/103977862
 all[all$Chr == 'Chr9_10L',]$Proportions <- all[all$Chr == 'Chr9_10L',]$Coord/137811819 # this is the length of XL Chr9_10L
 all[all$Chr == 'Chr9_10S',]$Proportions <- all[all$Chr == 'Chr9_10S',]$Coord/117266291 # this is the length of XL Chr9_10S
 max(all$Proportions) # should < 1
+min(all$Proportions) # should be > 0
 # Chr1L	233740090
 # Chr1S	202412970
 # Chr2L	191000146
@@ -504,51 +418,171 @@ max(all$Proportions) # should < 1
 # Chr9_10S	117266291
 
 
+
+# now make a column with chromosome Proportions_relative_to_centromeres
+# this just makes a column with a dummy value
+all$Proportions_relative_to_centromeres <- all$Coord/233740090 # this is the length of XL Chr1L
+# now update for each chr
+all[(all$Chr == 'Chr1L')&(all$Coord < 95000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1L')&(all$Coord < 95000000),]$Coord/95000000 # this is the first part of XL Chr1L
+all[(all$Chr == 'Chr1L')&(all$Coord >= 95000000),]$Proportions_relative_to_centromeres <- (233740090 - all[(all$Chr == 'Chr1L')&(all$Coord >= 95000000),]$Coord)/(233740090-95000000) # this is the first part of XL Chr1L
+all[(all$Chr == 'Chr1S')&(all$Coord < 78975000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1S')&(all$Coord < 78975000),]$Coord/78975000 # this is the first part of XL Chr1S
+all[(all$Chr == 'Chr1S')&(all$Coord >= 78975000),]$Proportions_relative_to_centromeres <- (202412970 - all[(all$Chr == 'Chr1S')&(all$Coord >= 78975000),]$Coord)/(202412970-78975000) # this is the first part of XL Chr1L
+
+all[(all$Chr == 'Chr2L')&(all$Coord < 71000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2L')&(all$Coord < 71000000),]$Coord/71000000 # this is the first part of XL Chr2L
+all[(all$Chr == 'Chr2L')&(all$Coord >= 71000000),]$Proportions_relative_to_centromeres <- (191000146 - all[(all$Chr == 'Chr2L')&(all$Coord >= 71000000),]$Coord)/(191000146-71000000) # this is the first part of XL Chr2L
+all[(all$Chr == 'Chr2S')&(all$Coord < 56000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2S')&(all$Coord < 56000000),]$Coord/56000000 # this is the first part of XL Chr2S
+all[(all$Chr == 'Chr2S')&(all$Coord >= 56000000),]$Proportions_relative_to_centromeres <- (169306100 - all[(all$Chr == 'Chr2S')&(all$Coord >= 56000000),]$Coord)/(169306100-56000000) # this is the first part of XL Chr2L
+
+all[(all$Chr == 'Chr3L')&(all$Coord < 19000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3L')&(all$Coord < 19000000),]$Coord/19000000 # this is the first part of XL Chr3L
+all[(all$Chr == 'Chr3L')&(all$Coord >= 19000000),]$Proportions_relative_to_centromeres <- (161426101 - all[(all$Chr == 'Chr3L')&(all$Coord >= 19000000),]$Coord)/(161426101-19000000) # this is the first part of XL Chr3L
+all[(all$Chr == 'Chr3S')&(all$Coord < 19000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3S')&(all$Coord < 19000000),]$Coord/19000000 # this is the first part of XL Chr3S
+all[(all$Chr == 'Chr3S')&(all$Coord >= 19000000),]$Proportions_relative_to_centromeres <- (131962816 - all[(all$Chr == 'Chr3S')&(all$Coord >= 19000000),]$Coord)/(131962816-19000000) # this is the first part of XL Chr3L
+
+all[(all$Chr == 'Chr4L')&(all$Coord < 36000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4L')&(all$Coord < 36000000),]$Coord/36000000 # this is the first part of XL Chr4L
+all[(all$Chr == 'Chr4L')&(all$Coord >= 36000000),]$Proportions_relative_to_centromeres <- (155250554 - all[(all$Chr == 'Chr4L')&(all$Coord >= 36000000),]$Coord)/(155250554-36000000) # this is the first part of XL Chr4L
+all[(all$Chr == 'Chr4S')&(all$Coord < 29375000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4S')&(all$Coord < 29375000),]$Coord/29375000 # this is the first part of XL Chr4S
+all[(all$Chr == 'Chr4S')&(all$Coord >= 29375000),]$Proportions_relative_to_centromeres <- (132731174 - all[(all$Chr == 'Chr4S')&(all$Coord >= 29375000),]$Coord)/(132731174-29375000) # this is the first part of XL Chr4L
+
+all[(all$Chr == 'Chr5L')&(all$Coord < 63000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5L')&(all$Coord < 63000000),]$Coord/63000000 # this is the first part of XL Chr5L
+all[(all$Chr == 'Chr5L')&(all$Coord >= 63000000),]$Proportions_relative_to_centromeres <- (171415384 - all[(all$Chr == 'Chr5L')&(all$Coord >= 63000000),]$Coord)/(171415384-63000000) # this is the first part of XL Chr5L
+all[(all$Chr == 'Chr5S')&(all$Coord < 54000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5S')&(all$Coord < 54000000),]$Coord/54000000 # this is the first part of XL Chr5S
+all[(all$Chr == 'Chr5S')&(all$Coord >= 54000000),]$Proportions_relative_to_centromeres <- (143394103 - all[(all$Chr == 'Chr5S')&(all$Coord >= 54000000),]$Coord)/(143394103-54000000) # this is the first part of XL Chr5L
+
+all[(all$Chr == 'Chr6L')&(all$Coord < 78500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6L')&(all$Coord < 78500000),]$Coord/78500000 # this is the first part of XL Chr6L
+all[(all$Chr == 'Chr6L')&(all$Coord >= 78500000),]$Proportions_relative_to_centromeres <- (164223595 - all[(all$Chr == 'Chr6L')&(all$Coord >= 78500000),]$Coord)/(164223595-78500000) # this is the first part of XL Chr6L
+all[(all$Chr == 'Chr6S')&(all$Coord < 55000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6S')&(all$Coord < 55000000),]$Coord/55000000 # this is the first part of XL Chr6S
+all[(all$Chr == 'Chr6S')&(all$Coord >= 55000000),]$Proportions_relative_to_centromeres <- (137316286 - all[(all$Chr == 'Chr6S')&(all$Coord >= 55000000),]$Coord)/(137316286-55000000) # this is the first part of XL Chr6L
+
+all[(all$Chr == 'Chr7L')&(all$Coord < 58000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7L')&(all$Coord < 58000000),]$Coord/58000000 # this is the first part of XL Chr7L
+all[(all$Chr == 'Chr7L')&(all$Coord >= 58000000),]$Proportions_relative_to_centromeres <- (139837618 - all[(all$Chr == 'Chr7L')&(all$Coord >= 58000000),]$Coord)/(139837618-58000000) # this is the first part of XL Chr7L
+all[(all$Chr == 'Chr7S')&(all$Coord < 48000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7S')&(all$Coord < 48000000),]$Coord/48000000 # this is the first part of XL Chr7S
+all[(all$Chr == 'Chr7S')&(all$Coord >= 48000000),]$Proportions_relative_to_centromeres <- (113060389 - all[(all$Chr == 'Chr7S')&(all$Coord >= 48000000),]$Coord)/(113060389-48000000) # this is the first part of XL Chr7L
+
+all[(all$Chr == 'Chr8L')&(all$Coord < 21500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8L')&(all$Coord < 21500000),]$Coord/21500000 # this is the first part of XL Chr8L
+all[(all$Chr == 'Chr8L')&(all$Coord >= 21500000),]$Proportions_relative_to_centromeres <- (135449133 - all[(all$Chr == 'Chr8L')&(all$Coord >= 21500000),]$Coord)/(135449133-21500000) # this is the first part of XL Chr8L
+all[(all$Chr == 'Chr8S')&(all$Coord < 49000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8S')&(all$Coord < 49000000),]$Coord/49000000 # this is the first part of XL Chr8S
+all[(all$Chr == 'Chr8S')&(all$Coord >= 49000000),]$Proportions_relative_to_centromeres <- (103977862 - all[(all$Chr == 'Chr8S')&(all$Coord >= 49000000),]$Coord)/(103977862-49000000) # this is the first part of XL Chr8L
+
+
+all[(all$Chr == 'Chr9_10L')&(all$Coord < 23500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10L')&(all$Coord < 23500000),]$Coord/23500000 # this is the first part of XL Chr9_10L
+all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23500000),]$Proportions_relative_to_centromeres <- (137811819 - all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23500000),]$Coord)/(137811819-23500000) # this is the first part of XL Chr9_10L
+all[(all$Chr == 'Chr9_10S')&(all$Coord < 25147500),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10S')&(all$Coord < 25147500),]$Coord/25147500 # this is the first part of XL Chr9_10S
+all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25147500),]$Proportions_relative_to_centromeres <- (117266291 - all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25147500),]$Coord)/(117266291-25147500) # this is the first part of XL Chr9_10L
+
+max(all$Proportions_relative_to_centromeres) # should < 1
+min(all$Proportions_relative_to_centromeres) # should > 0
+
+# rough position based on Smith et al. 2021 GenRes Fig S4
+# Chr1L	95
+# Chr2L	71
+# Chr3L	19
+# Chr4L	36
+# Chr5L	63
+# Chr6L	78.5
+# Chr7L	58
+# Chr8L	21.5
+# Chr9_10L	23.5
+# Chr1S	78.975
+# Chr2S	56
+# Chr3S	19
+# Chr4S	29.375
+# Chr5S	54
+# Chr6S	55
+# Chr7S	48
+# Chr8S	49
+# Chr9_10S	25.1475
+
     
 all_recomb <- data.frame(Chr=character(),
                          Positions=integer(),
                          Proportions=integer(),
+                         Proportions_relative_to_centromeres=integer(),
                          Parent=character(),
                          stringsAsFactors=F)
 buffer <- 5000000
+previous_chr <- "temp"
+previous_position <- 0
+previous_individual <- "temp"
 # Figure out where recombination occurred during oogenesis
 for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to the second to last to allow
                                   # a check for at least two sites supporting recombination
-  if(as.numeric(all[i,]$pos) == 0){
-    switch=0
+  if((all[i,]$grp != previous_chr)|(all[i,]$ind != previous_individual)){
+    previous_chr <- all[i,]$grp
+    previous_position <- 0
+    previous_individual <- all[i,]$ind
   }
-  if(all[i,"P1_H1"] != all[i+1,"P1_H1"]){ # recombination occurred here
-    # populate a vector with the locations of maternal recombination events
-    print(paste(all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",mean(all[i,"Coord"],all[i+1,"Coord"]),sep=""))
-    # test whether this marker conflicts with the next marker and if so whether it it nearby
-    if(switch == 0){
-      all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
-      all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
-      all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
-      all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
-      switch=1
-    }
-    if((switch != 0)
-       &&
-       ((all[i+1,"P1_H1"] == all[i+2,"P1_H1"]) # this means that at least two consecutive markers support a recombination event
-       &&
-       (as.numeric(all[i,"Coord"]) - as.numeric(all_recomb[nrow(all_recomb),"Positions"]) > buffer)
-       )) # this means that the previous recombination event was at least $buffer before this one
+  if((all[i,]$matpat == "mat")&
+     (all[i,]$grp == all[i+1,]$grp)&
+     (all[i,]$grp == all[i+2,]$grp)){ # this is for maternal SNPS on the same chr
+    if((all[i,"P1_H1"] != all[i+1,"P1_H1"])&
+       (as.numeric(all[i,]$pos) != 0)&
+       (all[i,]$ind == previous_individual)){ # recombination occurred here in the mother
+      # potentially populate a vector with the locations of maternal recombination events if two downstream sites support this
+      # print(paste(all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+1,"Coord"],sep=""))
+      # test whether this marker conflicts with the next two markers and if so whether it is nearby
+      if((all[i-1,"P1_H1"] == all[i,"P1_H1"]) & # these five conditions mean that at least two previous markers support a recombination event
+         (all[i+1,"P1_H1"] == all[i+2,"P1_H1"]) &
+         (all[i-1,"ind"] == all[i,"ind"]) & 
+         (all[i+1,"ind"] == all[i+2,"ind"]) &
+         (all[i,"ind"] == all[i+1,"ind"]) &
+          (((as.numeric(all[i,"Coord"])) - previous_position) > buffer)
+         ) # this means that the previous recombination event was at least $buffer before this one
       { 
-      all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
-      all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
-      all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
-      all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
-    }  
-  }
+        #print(paste(all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+2,"P1_H1"]," ",
+        #            all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"],sep=""))
+        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
+        all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
+        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"])
+        all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
+        all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
+        previous_chr <- all[i,]$grp
+        previous_position <- all[i,"Coord"]
+        previous_individual <- all[i,"ind"]
+      }  
+    }
+  } # end of check for peternal recomb
+  else if((all[i,]$matpat == "pat")&
+          (all[i,]$grp == all[i+1,]$grp)&
+          (all[i,]$grp == all[i+2,]$grp)){ # this is for paternal SNPS on the same chr
+    if((all[i,"P2_H1"] != all[i+1,"P2_H1"])&
+       (as.numeric(all[i,]$pos) != 0)&
+       (all[i,]$ind == previous_individual)){ # recombination occurred here in the father
+      # populate a vector with the locations of maternal recombination events
+      # print(paste(all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",mean(all[i,"Coord"],all[i+1,"Coord"]),sep=""))
+      # test whether this marker conflicts with the next marker and if so whether it it nearby
+      if((all[i-1,"P2_H1"] == all[i,"P2_H1"]) & # these five conditions mean that at least two previous markers support a recombination event
+         (all[i+1,"P2_H1"] == all[i+2,"P2_H1"]) &
+         (all[i-1,"ind"] == all[i,"ind"]) & 
+         (all[i+1,"ind"] == all[i+2,"ind"]) &
+         (all[i,"ind"] == all[i+1,"ind"]) &
+         (((as.numeric(all[i,"Coord"])) - previous_position) > buffer)
+         ) # this means that the previous recombination event was at least $buffer before this one
+        { 
+        print(paste(all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",all[i+2,"P2_H1"]," ",
+                    all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"],sep=""))
+        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
+        all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
+        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"])
+        all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
+        all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
+        previous_chr <- all[i,]$grp
+        previous_position <- all[i,"Coord"]
+        previous_individual <- all[i,"ind"]
+      }  
+    }
+  } # end of check for peternal recomb
 }
+
 dim(all_recomb)
 head(all_recomb)
 
 # Number of maternal recombination events
 n_mat_recomb <- nrow(all_recomb[all_recomb$Parent == "mat",]);n_mat_recomb
-# Number of maternal recombination events
+# Number of paternal recombination events
 n_pat_recomb <- nrow(all_recomb[all_recomb$Parent == "pat",]);n_pat_recomb
+
+print(paste("Number mat recombination events",n_mat_recomb,sep=" "))
+print(paste("Number pat recombination events",n_pat_recomb,sep=" "))
 
 # Length of maternal LG
 mat_bp_length <- 0
@@ -572,14 +606,60 @@ print(paste("pat_bp_length",pat_bp_length,sep=" "))
 
 
 
+# Plot proportion on chromosomes irrespective of centromere
 ggplot(all_recomb, aes(x = Proportions)) +
   geom_density(aes(color = Parent))+
   #geom_vline(xintercept=49000000)+ 
   #facet_wrap( ~ Chr, ncol=2, scales = "free_x")+
   xlab("Chromosome proportion") + ylab("Density") +
   xlim(0,1) +
-  theme_bw()
+  theme_classic()
 
+
+# Plot proportion on chromosomes relative of centromere (0 is a tip, 100 is a centromere)
+ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
+  geom_density(aes(color = Parent), adjust=0.5)+
+  #geom_vline(xintercept=49000000)+ 
+  #facet_wrap( ~ Chr, ncol=2, scales = "free_x")+
+  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+  xlim(0,1) +
+  theme_classic()
+
+
+# Plot proportion on chromosomes relative of centromere (0 is a tip, 100 is a centromere)
+# stacked density
+ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
+  geom_density(aes(color = Parent), position="stack")+
+  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+  xlim(0,1) +
+  theme_classic()
+
+# all together
+ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
+  geom_density()+
+  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+  xlim(0,1) +
+  theme_classic()
+
+
+
+ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, group=Parent, fill=Parent)) +
+  geom_density(adjust=1.5, position="fill") +
+  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+  theme_classic()
+
+
+# Histogram with density plot
+ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, color=Parent, fill=Parent)) + 
+  geom_histogram(aes(y=..density..), alpha=0.5, 
+                 position="identity")+
+  geom_density(alpha=.2, adjust=0.5) +
+  theme_classic()
+
+# Histogram 
+ggplot(all_recomb,aes(x=Positions)) + 
+  geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = 5000000) +
+  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = 5000000) 
 
 
 ```
