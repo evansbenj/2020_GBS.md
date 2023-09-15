@@ -354,9 +354,9 @@ library(tidyverse)
 #  head -1 one_of_the_files_pat_progeny_haplot_wide.txt > all_pat.txt; awk 'FNR>1{print}' *pat*wide*.txt >> all_pat.txt
 # if there are rownames, you can add a bogus header for them to prevent a redundant rowname error like this:
 # perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
-
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis')
-
+options(scipen=999)
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis/LOD3')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_muelleri')
 # read in the OneMap data 
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
@@ -423,75 +423,75 @@ min(all$Proportions) # should be > 0
 # this just makes a column with a dummy value
 all$Proportions_relative_to_centromeres <- all$Coord/233740090 # this is the length of XL Chr1L
 # now update for each chr
-all[(all$Chr == 'Chr1L')&(all$Coord < 95000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1L')&(all$Coord < 95000000),]$Coord/95000000 # this is the first part of XL Chr1L
-all[(all$Chr == 'Chr1L')&(all$Coord >= 95000000),]$Proportions_relative_to_centromeres <- (233740090 - all[(all$Chr == 'Chr1L')&(all$Coord >= 95000000),]$Coord)/(233740090-95000000) # this is the first part of XL Chr1L
-all[(all$Chr == 'Chr1S')&(all$Coord < 78975000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1S')&(all$Coord < 78975000),]$Coord/78975000 # this is the first part of XL Chr1S
-all[(all$Chr == 'Chr1S')&(all$Coord >= 78975000),]$Proportions_relative_to_centromeres <- (202412970 - all[(all$Chr == 'Chr1S')&(all$Coord >= 78975000),]$Coord)/(202412970-78975000) # this is the first part of XL Chr1L
+all[(all$Chr == 'Chr1L')&(all$Coord < 97110544),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1L')&(all$Coord < 97110544),]$Coord/97110544 # this is the first part of XL Chr1L
+all[(all$Chr == 'Chr1L')&(all$Coord >= 97110544),]$Proportions_relative_to_centromeres <- (233740090 - all[(all$Chr == 'Chr1L')&(all$Coord >= 97110544),]$Coord)/(233740090-97110544) # this is the first part of XL Chr1L
+all[(all$Chr == 'Chr1S')&(all$Coord < 78965477),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1S')&(all$Coord < 78965477),]$Coord/78965477 # this is the first part of XL Chr1S
+all[(all$Chr == 'Chr1S')&(all$Coord >= 78965477),]$Proportions_relative_to_centromeres <- (202412970 - all[(all$Chr == 'Chr1S')&(all$Coord >= 78965477),]$Coord)/(202412970-78965477) # this is the first part of XL Chr1L
 
-all[(all$Chr == 'Chr2L')&(all$Coord < 71000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2L')&(all$Coord < 71000000),]$Coord/71000000 # this is the first part of XL Chr2L
-all[(all$Chr == 'Chr2L')&(all$Coord >= 71000000),]$Proportions_relative_to_centromeres <- (191000146 - all[(all$Chr == 'Chr2L')&(all$Coord >= 71000000),]$Coord)/(191000146-71000000) # this is the first part of XL Chr2L
-all[(all$Chr == 'Chr2S')&(all$Coord < 56000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2S')&(all$Coord < 56000000),]$Coord/56000000 # this is the first part of XL Chr2S
-all[(all$Chr == 'Chr2S')&(all$Coord >= 56000000),]$Proportions_relative_to_centromeres <- (169306100 - all[(all$Chr == 'Chr2S')&(all$Coord >= 56000000),]$Coord)/(169306100-56000000) # this is the first part of XL Chr2L
+all[(all$Chr == 'Chr2L')&(all$Coord < 70167544),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2L')&(all$Coord < 70167544),]$Coord/70167544 # this is the first part of XL Chr2L
+all[(all$Chr == 'Chr2L')&(all$Coord >= 70167544),]$Proportions_relative_to_centromeres <- (191000146 - all[(all$Chr == 'Chr2L')&(all$Coord >= 70167544),]$Coord)/(191000146-70167544) # this is the first part of XL Chr2L
+all[(all$Chr == 'Chr2S')&(all$Coord < 54769165),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2S')&(all$Coord < 54769165),]$Coord/54769165 # this is the first part of XL Chr2S
+all[(all$Chr == 'Chr2S')&(all$Coord >= 54769165),]$Proportions_relative_to_centromeres <- (169306100 - all[(all$Chr == 'Chr2S')&(all$Coord >= 54769165),]$Coord)/(169306100-54769165) # this is the first part of XL Chr2L
 
-all[(all$Chr == 'Chr3L')&(all$Coord < 19000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3L')&(all$Coord < 19000000),]$Coord/19000000 # this is the first part of XL Chr3L
-all[(all$Chr == 'Chr3L')&(all$Coord >= 19000000),]$Proportions_relative_to_centromeres <- (161426101 - all[(all$Chr == 'Chr3L')&(all$Coord >= 19000000),]$Coord)/(161426101-19000000) # this is the first part of XL Chr3L
-all[(all$Chr == 'Chr3S')&(all$Coord < 19000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3S')&(all$Coord < 19000000),]$Coord/19000000 # this is the first part of XL Chr3S
-all[(all$Chr == 'Chr3S')&(all$Coord >= 19000000),]$Proportions_relative_to_centromeres <- (131962816 - all[(all$Chr == 'Chr3S')&(all$Coord >= 19000000),]$Coord)/(131962816-19000000) # this is the first part of XL Chr3L
+all[(all$Chr == 'Chr3L')&(all$Coord < 19199725),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3L')&(all$Coord < 19199725),]$Coord/19199725 # this is the first part of XL Chr3L
+all[(all$Chr == 'Chr3L')&(all$Coord >= 19199725),]$Proportions_relative_to_centromeres <- (161426101 - all[(all$Chr == 'Chr3L')&(all$Coord >= 19199725),]$Coord)/(161426101-19199725) # this is the first part of XL Chr3L
+all[(all$Chr == 'Chr3S')&(all$Coord < 19205290),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3S')&(all$Coord < 19205290),]$Coord/19205290 # this is the first part of XL Chr3S
+all[(all$Chr == 'Chr3S')&(all$Coord >= 19205290),]$Proportions_relative_to_centromeres <- (131962816 - all[(all$Chr == 'Chr3S')&(all$Coord >= 19205290),]$Coord)/(131962816-19205290) # this is the first part of XL Chr3L
 
-all[(all$Chr == 'Chr4L')&(all$Coord < 36000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4L')&(all$Coord < 36000000),]$Coord/36000000 # this is the first part of XL Chr4L
-all[(all$Chr == 'Chr4L')&(all$Coord >= 36000000),]$Proportions_relative_to_centromeres <- (155250554 - all[(all$Chr == 'Chr4L')&(all$Coord >= 36000000),]$Coord)/(155250554-36000000) # this is the first part of XL Chr4L
-all[(all$Chr == 'Chr4S')&(all$Coord < 29375000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4S')&(all$Coord < 29375000),]$Coord/29375000 # this is the first part of XL Chr4S
-all[(all$Chr == 'Chr4S')&(all$Coord >= 29375000),]$Proportions_relative_to_centromeres <- (132731174 - all[(all$Chr == 'Chr4S')&(all$Coord >= 29375000),]$Coord)/(132731174-29375000) # this is the first part of XL Chr4L
+all[(all$Chr == 'Chr4L')&(all$Coord < 36455216),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4L')&(all$Coord < 36455216),]$Coord/36455216 # this is the first part of XL Chr4L
+all[(all$Chr == 'Chr4L')&(all$Coord >= 36455216),]$Proportions_relative_to_centromeres <- (155250554 - all[(all$Chr == 'Chr4L')&(all$Coord >= 36455216),]$Coord)/(155250554-36455216) # this is the first part of XL Chr4L
+all[(all$Chr == 'Chr4S')&(all$Coord < 29375848),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4S')&(all$Coord < 29375848),]$Coord/29375848 # this is the first part of XL Chr4S
+all[(all$Chr == 'Chr4S')&(all$Coord >= 29375848),]$Proportions_relative_to_centromeres <- (132731174 - all[(all$Chr == 'Chr4S')&(all$Coord >= 29375848),]$Coord)/(132731174-29375848) # this is the first part of XL Chr4L
 
-all[(all$Chr == 'Chr5L')&(all$Coord < 63000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5L')&(all$Coord < 63000000),]$Coord/63000000 # this is the first part of XL Chr5L
-all[(all$Chr == 'Chr5L')&(all$Coord >= 63000000),]$Proportions_relative_to_centromeres <- (171415384 - all[(all$Chr == 'Chr5L')&(all$Coord >= 63000000),]$Coord)/(171415384-63000000) # this is the first part of XL Chr5L
-all[(all$Chr == 'Chr5S')&(all$Coord < 54000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5S')&(all$Coord < 54000000),]$Coord/54000000 # this is the first part of XL Chr5S
-all[(all$Chr == 'Chr5S')&(all$Coord >= 54000000),]$Proportions_relative_to_centromeres <- (143394103 - all[(all$Chr == 'Chr5S')&(all$Coord >= 54000000),]$Coord)/(143394103-54000000) # this is the first part of XL Chr5L
+all[(all$Chr == 'Chr5L')&(all$Coord < 63286813),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5L')&(all$Coord < 63286813),]$Coord/63286813 # this is the first part of XL Chr5L
+all[(all$Chr == 'Chr5L')&(all$Coord >= 63286813),]$Proportions_relative_to_centromeres <- (171415384 - all[(all$Chr == 'Chr5L')&(all$Coord >= 63286813),]$Coord)/(171415384-63286813) # this is the first part of XL Chr5L
+all[(all$Chr == 'Chr5S')&(all$Coord < 54131023),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5S')&(all$Coord < 54131023),]$Coord/54131023 # this is the first part of XL Chr5S
+all[(all$Chr == 'Chr5S')&(all$Coord >= 54131023),]$Proportions_relative_to_centromeres <- (143394103 - all[(all$Chr == 'Chr5S')&(all$Coord >= 54131023),]$Coord)/(143394103-54131023) # this is the first part of XL Chr5L
 
-all[(all$Chr == 'Chr6L')&(all$Coord < 78500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6L')&(all$Coord < 78500000),]$Coord/78500000 # this is the first part of XL Chr6L
-all[(all$Chr == 'Chr6L')&(all$Coord >= 78500000),]$Proportions_relative_to_centromeres <- (164223595 - all[(all$Chr == 'Chr6L')&(all$Coord >= 78500000),]$Coord)/(164223595-78500000) # this is the first part of XL Chr6L
-all[(all$Chr == 'Chr6S')&(all$Coord < 55000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6S')&(all$Coord < 55000000),]$Coord/55000000 # this is the first part of XL Chr6S
-all[(all$Chr == 'Chr6S')&(all$Coord >= 55000000),]$Proportions_relative_to_centromeres <- (137316286 - all[(all$Chr == 'Chr6S')&(all$Coord >= 55000000),]$Coord)/(137316286-55000000) # this is the first part of XL Chr6L
+all[(all$Chr == 'Chr6L')&(all$Coord < 78606137),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6L')&(all$Coord < 78606137),]$Coord/78606137 # this is the first part of XL Chr6L
+all[(all$Chr == 'Chr6L')&(all$Coord >= 78606137),]$Proportions_relative_to_centromeres <- (164223595 - all[(all$Chr == 'Chr6L')&(all$Coord >= 78606137),]$Coord)/(164223595-78606137) # this is the first part of XL Chr6L
+all[(all$Chr == 'Chr6S')&(all$Coord < 55279263),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6S')&(all$Coord < 55279263),]$Coord/55279263 # this is the first part of XL Chr6S
+all[(all$Chr == 'Chr6S')&(all$Coord >= 55279263),]$Proportions_relative_to_centromeres <- (137316286 - all[(all$Chr == 'Chr6S')&(all$Coord >= 55279263),]$Coord)/(137316286-55279263) # this is the first part of XL Chr6L
 
-all[(all$Chr == 'Chr7L')&(all$Coord < 58000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7L')&(all$Coord < 58000000),]$Coord/58000000 # this is the first part of XL Chr7L
-all[(all$Chr == 'Chr7L')&(all$Coord >= 58000000),]$Proportions_relative_to_centromeres <- (139837618 - all[(all$Chr == 'Chr7L')&(all$Coord >= 58000000),]$Coord)/(139837618-58000000) # this is the first part of XL Chr7L
-all[(all$Chr == 'Chr7S')&(all$Coord < 48000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7S')&(all$Coord < 48000000),]$Coord/48000000 # this is the first part of XL Chr7S
-all[(all$Chr == 'Chr7S')&(all$Coord >= 48000000),]$Proportions_relative_to_centromeres <- (113060389 - all[(all$Chr == 'Chr7S')&(all$Coord >= 48000000),]$Coord)/(113060389-48000000) # this is the first part of XL Chr7L
+all[(all$Chr == 'Chr7L')&(all$Coord < 58257035),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7L')&(all$Coord < 58257035),]$Coord/58257035 # this is the first part of XL Chr7L
+all[(all$Chr == 'Chr7L')&(all$Coord >= 58257035),]$Proportions_relative_to_centromeres <- (139837618 - all[(all$Chr == 'Chr7L')&(all$Coord >= 58257035),]$Coord)/(139837618-58257035) # this is the first part of XL Chr7L
+all[(all$Chr == 'Chr7S')&(all$Coord < 47593023),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7S')&(all$Coord < 47593023),]$Coord/47593023 # this is the first part of XL Chr7S
+all[(all$Chr == 'Chr7S')&(all$Coord >= 47593023),]$Proportions_relative_to_centromeres <- (113060389 - all[(all$Chr == 'Chr7S')&(all$Coord >= 47593023),]$Coord)/(113060389-47593023) # this is the first part of XL Chr7L
 
-all[(all$Chr == 'Chr8L')&(all$Coord < 21500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8L')&(all$Coord < 21500000),]$Coord/21500000 # this is the first part of XL Chr8L
-all[(all$Chr == 'Chr8L')&(all$Coord >= 21500000),]$Proportions_relative_to_centromeres <- (135449133 - all[(all$Chr == 'Chr8L')&(all$Coord >= 21500000),]$Coord)/(135449133-21500000) # this is the first part of XL Chr8L
-all[(all$Chr == 'Chr8S')&(all$Coord < 49000000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8S')&(all$Coord < 49000000),]$Coord/49000000 # this is the first part of XL Chr8S
-all[(all$Chr == 'Chr8S')&(all$Coord >= 49000000),]$Proportions_relative_to_centromeres <- (103977862 - all[(all$Chr == 'Chr8S')&(all$Coord >= 49000000),]$Coord)/(103977862-49000000) # this is the first part of XL Chr8L
+all[(all$Chr == 'Chr8L')&(all$Coord < 21985291),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8L')&(all$Coord < 21985291),]$Coord/21985291 # this is the first part of XL Chr8L
+all[(all$Chr == 'Chr8L')&(all$Coord >= 21985291),]$Proportions_relative_to_centromeres <- (135449133 - all[(all$Chr == 'Chr8L')&(all$Coord >= 21985291),]$Coord)/(135449133-21985291) # this is the first part of XL Chr8L
+all[(all$Chr == 'Chr8S')&(all$Coord < 49209017),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8S')&(all$Coord < 49209017),]$Coord/49209017 # this is the first part of XL Chr8S
+all[(all$Chr == 'Chr8S')&(all$Coord >= 49209017),]$Proportions_relative_to_centromeres <- (103977862 - all[(all$Chr == 'Chr8S')&(all$Coord >= 49209017),]$Coord)/(103977862-49209017) # this is the first part of XL Chr8L
 
 
-all[(all$Chr == 'Chr9_10L')&(all$Coord < 23500000),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10L')&(all$Coord < 23500000),]$Coord/23500000 # this is the first part of XL Chr9_10L
-all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23500000),]$Proportions_relative_to_centromeres <- (137811819 - all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23500000),]$Coord)/(137811819-23500000) # this is the first part of XL Chr9_10L
-all[(all$Chr == 'Chr9_10S')&(all$Coord < 25147500),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10S')&(all$Coord < 25147500),]$Coord/25147500 # this is the first part of XL Chr9_10S
-all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25147500),]$Proportions_relative_to_centromeres <- (117266291 - all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25147500),]$Coord)/(117266291-25147500) # this is the first part of XL Chr9_10L
+all[(all$Chr == 'Chr9_10L')&(all$Coord < 23877437),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10L')&(all$Coord < 23877437),]$Coord/23877437 # this is the first part of XL Chr9_10L
+all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23877437),]$Proportions_relative_to_centromeres <- (137811819 - all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23877437),]$Coord)/(137811819-23877437) # this is the first part of XL Chr9_10L
+all[(all$Chr == 'Chr9_10S')&(all$Coord < 25122470),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10S')&(all$Coord < 25122470),]$Coord/25122470 # this is the first part of XL Chr9_10S
+all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25122470),]$Proportions_relative_to_centromeres <- (117266291 - all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25122470),]$Coord)/(117266291-25122470) # this is the first part of XL Chr9_10L
 
 max(all$Proportions_relative_to_centromeres) # should < 1
 min(all$Proportions_relative_to_centromeres) # should > 0
 
-# rough position based on Smith et al. 2021 GenRes Fig S4
-# Chr1L	95
-# Chr2L	71
-# Chr3L	19
-# Chr4L	36
-# Chr5L	63
-# Chr6L	78.5
-# Chr7L	58
-# Chr8L	21.5
-# Chr9_10L	23.5
-# Chr1S	78.975
-# Chr2S	56
-# Chr3S	19
-# Chr4S	29.375
-# Chr5S	54
-# Chr6S	55
-# Chr7S	48
-# Chr8S	49
-# Chr9_10S	25.1475
-
+# From the Smith et al paper	GSE153058_xla_v10.2_cen 1.bed	https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153058	
+# Chr   Start     Stop      Average_of_centromere_coordinates	Chr_Length
+# Chr1L	96582536	97638551	97110544	233740090
+# Chr1S	78922130	79008823	78965477	202412970
+# Chr2L	70076389	70258699	70167544	191000146
+# Chr2S	54347978	55190352	54769165	169306100
+# Chr3L	19140049	19259400	19199725	161426101
+# Chr3S	18944075	19466505	19205290	131962816
+# Chr4L	36375516	36534915	36455216	155250554
+# Chr4S	29328671	29423025	29375848	132731174
+# Chr5L	63210646	63362980	63286813	171415384
+# Chr5S	54099924	54162122	54131023	143394103
+# Chr6L	78555074	78657199	78606137	164223595
+# Chr6S	55253614	55304911	55279263	137316286
+# Chr7L	58158940	58355130	58257035	139837618
+# Chr7S	47582934	47603112	47593023	113060389
+# Chr8L	21900593	22069988	21985291	135449133
+# Chr8S	49180152	49237882	49209017	103977862
+# Chr9_10L	23812947	23941927	23877437	137811819
+# Chr9_10S	25065099	25179840	25122470	117266291
     
 all_recomb <- data.frame(Chr=character(),
                          Positions=integer(),
@@ -589,21 +589,113 @@ mat_bp_length <- 0
 pat_bp_length <- 0
 mat_cM_length <- 0
 pat_cM_length <- 0
-for(i in unique(all$Chr)) {
-  print(i)
-  # add the max cM for each Chr
-  mat_cM_length <- mat_cM_length + max(all[(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
-  pat_cM_length <- pat_cM_length + max(all[(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
-  # now add the difference in min/max bp coordinates for each char
-  mat_bp_length <- mat_bp_length + (max(all[(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$Chr == i)&(all$matpat == "mat"),]$Coord))
-  pat_bp_length <- pat_bp_length + (max(all[(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$Chr == i)&(all$matpat == "pat"),]$Coord))
-}
+mat_bp_length_per_individual <- 0
+pat_bp_length_per_individual <- 0
+mat_cM_length_per_individual <- 0
+pat_cM_length_per_individual <- 0
+# make a df that has the max and min coordinates of each LG for each chromosome
+# do this only for individual 1 because the others should be the same
+LG_min_max <- data.frame(CHR = unique(all$Chr), 
+                         min = rep(NA,length(unique(all$Chr))), 
+                         max = rep(NA,length(unique(all$Chr))),
+                         min_prop = rep(NA,length(unique(all$Chr))), 
+                         max_prop = rep(NA,length(unique(all$Chr))),
+                         chr_length = rep(NA,length(unique(all$Chr))))
+for(j in unique(all$ind)) {
+  print(j)
+  for(i in unique(all$Chr)) {
+    print(i)
+    # add the max cM for each Chr for each individual
+    mat_cM_length <- mat_cM_length + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
+    pat_cM_length <- pat_cM_length + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
+    # now add the difference in min/max bp coordinates for each Chr  for each individual
+    mat_bp_length <- mat_bp_length + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord))
+    pat_bp_length <- pat_bp_length + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord))
+    if(j == unique(all$ind)[1]){ # get values for one individual
+      mat_bp_length_per_individual <- mat_bp_length_per_individual + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord))
+      pat_bp_length_per_individual <- pat_bp_length_per_individual + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord))
+      mat_cM_length_per_individual <- mat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
+      pat_cM_length_per_individual <- pat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
+      LG_min_max[(LG_min_max$CHR == i),"min"] <- min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
+      LG_min_max[(LG_min_max$CHR == i),"max"] <- max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
+    }
+  }
+}  
 
 print(paste("mat_cM_length",mat_cM_length,sep=" "))
 print(paste("pat_cM_length",pat_cM_length,sep=" "))
 print(paste("mat_bp_length",mat_bp_length,sep=" "))
 print(paste("pat_bp_length",pat_bp_length,sep=" "))
 
+print(paste("mat_cM_length_per_individual",mat_cM_length_per_individual,sep=" "))
+print(paste("pat_cM_length_per_individual",pat_cM_length_per_individual,sep=" "))
+print(paste("mat_bp_length_per_individual",mat_bp_length_per_individual,sep=" "))
+print(paste("pat_bp_length_per_individual",pat_bp_length_per_individual,sep=" "))
+
+# now calculate proportion boundaries of each LG
+for(i in LG_min_max$CHR) {
+  if(i == "Chr1L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 233740090
+  } 
+  else if(i == "Chr1S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 202412970
+  } 
+  else if(i == "Chr2L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 191000146
+  } 
+  else if(i == "Chr2S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 169306100
+  } 
+  else if(i == "Chr3L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 161426101
+  } 
+  else if(i == "Chr3S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 131962816
+  } 
+  else if(i == "Chr4L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 155250554
+  } 
+  else if(i == "Chr4S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 132731174
+  } 
+  else if(i == "Chr5L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 171415384
+  } 
+  else if(i == "Chr5S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 143394103
+  } 
+  else if(i == "Chr6L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 164223595
+  } 
+  else if(i == "Chr6S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 137316286
+  } 
+  else if(i == "Chr7L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 139837618
+  } 
+  else if(i == "Chr7S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 113060389
+  } 
+  else if(i == "Chr8L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 135449133
+  } 
+  else if(i == "Chr8S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 103977862
+  } 
+  else if(i == "Chr9_10L"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 137811819
+  } 
+  else if(i == "Chr9_10S"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 117266291
+  } 
+}
+
+
+
+LG_min_max$min_prop <- LG_min_max$min/LG_min_max$chr_length
+LG_min_max$max_prop <- LG_min_max$max/LG_min_max$chr_length
+
+LG_min_max$total_prop <- LG_min_max$max_prop - LG_min_max$min_prop;LG_min_max
 
 
 # Plot proportion on chromosomes irrespective of centromere
@@ -657,10 +749,13 @@ ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, color=Parent, fill
   theme_classic()
 
 # Histogram 
-ggplot(all_recomb,aes(x=Positions)) + 
+overlay_hist <- ggplot(all_recomb,aes(x=Positions)) + 
   geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = 5000000) +
-  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = 5000000) 
+  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = 5000000) +
+  theme_classic()
 
+
+ggsave(file="Xbor_recombination_events.pdf", w=10, h=6, overlay_hist)
 
 ```
 
