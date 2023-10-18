@@ -246,3 +246,7 @@ module load perl
 perl Parse_tab.pl ${1} ${2} ${1}_${3}_out.txt ${3}
 	
 ```
+# Concatenate files but save the header
+```
+head -1 cliv_Chr3S_0.5_out.txt > all_cliv_0.5.txt; awk 'FNR>1{print}' *cliv*txt >> all_cliv_0.5.txt
+```
