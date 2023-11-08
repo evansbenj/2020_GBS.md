@@ -509,6 +509,18 @@ buffer <- 5000000
 previous_chr <- "temp"
 previous_position <- 0
 previous_individual <- "temp"
+
+# make a df to track the number of mat and pat recombinations per individual per chromosome
+# this will hopefully be useful to sanity check results
+# first make a matrix with the correct dimensions
+new_matrix <- matrix(rep(0,length(unique(all$ind))*length(unique(all$Chr))), ncol = length(unique(all$ind)));new_matrix
+mat_recomb_per_chr <- as.data.frame(new_matrix) 
+pat_recomb_per_chr <- as.data.frame(new_matrix) 
+colnames(mat_recomb_per_chr) <- unique(all$ind)
+row.names(mat_recomb_per_chr) <- unique(all$Chr);mat_recomb_per_chr
+colnames(pat_recomb_per_chr) <- unique(all$ind)
+row.names(pat_recomb_per_chr) <- unique(all$Chr);pat_recomb_per_chr
+
 # Figure out where recombination occurred during oogenesis
 for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to the second to last to allow
                                   # a check for at least two sites supporting recombination
@@ -544,9 +556,10 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
         previous_chr <- all[i,]$grp
         previous_position <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
         previous_individual <- all[i,"ind"]
+        mat_recomb_per_chr[all[i,]$Chr,all[i,"ind"]] <-  mat_recomb_per_chr[all[i,]$Chr,all[i,"ind"]]+1
       }  
     }
-  } # end of check for peternal recomb
+  } # end of check for maternal recomb
   else if((all[i,]$matpat == "pat")&
           (all[i,]$grp == all[i+1,]$grp)&
           (all[i,]$grp == all[i+2,]$grp)){ # this is for paternal SNPS on the same chr
@@ -574,10 +587,17 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
         previous_chr <- all[i,]$grp
         previous_position <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
         previous_individual <- all[i,"ind"]
+        pat_recomb_per_chr[all[i,]$Chr,all[i,"ind"]] <-  pat_recomb_per_chr[all[i,]$Chr,all[i,"ind"]]+1
       }  
     }
-  } # end of check for peternal recomb
+  } # end of check for paternal recomb
 }
+
+
+# This is the number of maternal recombination events per chr:
+View(mat_recomb_per_chr)
+# This is the number of paternal recombination events per chr:
+View(pat_recomb_per_chr)
 
 dim(all_recomb)
 head(all_recomb)
@@ -763,10 +783,6 @@ overlay_hist <- ggplot(all_recomb,aes(x=Proportions_relative_to_centromeres)) +
 
 
 ggsave(file="Xlaevis_recombination_events.pdf", w=10, h=6, overlay_hist)
-
-
-
-ggsave(file="Xbor_recombination_events.pdf", w=10, h=6, overlay_hist)
 
 ```
 
