@@ -357,6 +357,12 @@ library(tidyverse)
 options(scipen=999)
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis/LOD3')
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_muelleri')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2022_pygmaeus')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_fischbergi')
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2022_allofraseri/family2")
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis/bigMF')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/allall')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2017_laevis_LOD3_10missingness')
 # read in the OneMap data 
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
@@ -520,23 +526,23 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
       # potentially populate a vector with the locations of maternal recombination events if two downstream sites support this
       # print(paste(all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+1,"Coord"],sep=""))
       # test whether this marker conflicts with the next two markers and if so whether it is nearby
-      if((all[i-1,"P1_H1"] == all[i,"P1_H1"]) & # these five conditions mean that at least two previous markers support a recombination event
+      if((all[i-1,"P1_H1"] == all[i,"P1_H1"]) & # these five conditions mean that at least two previous and two consecutive markers support a recombination event
          (all[i+1,"P1_H1"] == all[i+2,"P1_H1"]) &
          (all[i-1,"ind"] == all[i,"ind"]) & 
          (all[i+1,"ind"] == all[i+2,"ind"]) &
          (all[i,"ind"] == all[i+1,"ind"]) &
-          (((as.numeric(all[i,"Coord"])) - previous_position) > buffer)
+          (((as.numeric(all[i,"Coord"])) - as.numeric(previous_position)) > buffer)
          ) # this means that the previous recombination event was at least $buffer before this one
       { 
-        #print(paste(all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+2,"P1_H1"]," ",
-        #            all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"],sep=""))
-        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
-        all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
-        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"])
+        print(paste(all[i,"ind"]," ",all[i,"grp"]," ",all[i-1,"P1_H1"]," ",all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+2,"P1_H1"]," ",
+                    all[i-1,"Coord"]," ",all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"]," ",mean(c(all[i,"Coord"],all[i+1,"Coord"]))," ",previous_position,sep=""))
+        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
+        all_recomb[nrow(all_recomb),"Proportions"] <- mean(c(all[i,"Proportions"],all[i+1,"Proportions"]))
+        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(c(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"]))
         all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
         all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
         previous_chr <- all[i,]$grp
-        previous_position <- all[i,"Coord"]
+        previous_position <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
         previous_individual <- all[i,"ind"]
       }  
     }
@@ -548,25 +554,25 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
        (as.numeric(all[i,]$pos) != 0)&
        (all[i,]$ind == previous_individual)){ # recombination occurred here in the father
       # populate a vector with the locations of maternal recombination events
-      # print(paste(all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",mean(all[i,"Coord"],all[i+1,"Coord"]),sep=""))
+      # print(paste(all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",mean(c(all[i,"Coord"],all[i+1,"Coord"])),sep=""))
       # test whether this marker conflicts with the next marker and if so whether it it nearby
-      if((all[i-1,"P2_H1"] == all[i,"P2_H1"]) & # these five conditions mean that at least two previous markers support a recombination event
+      if((all[i-1,"P2_H1"] == all[i,"P2_H1"]) & # these five conditions mean that at least two previous and two consecutive markers support a recombination event
          (all[i+1,"P2_H1"] == all[i+2,"P2_H1"]) &
          (all[i-1,"ind"] == all[i,"ind"]) & 
          (all[i+1,"ind"] == all[i+2,"ind"]) &
          (all[i,"ind"] == all[i+1,"ind"]) &
-         (((as.numeric(all[i,"Coord"])) - previous_position) > buffer)
+         (((as.numeric(all[i,"Coord"])) - as.numeric(previous_position)) > buffer)
          ) # this means that the previous recombination event was at least $buffer before this one
         { 
-        print(paste(all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",all[i+2,"P2_H1"]," ",
-                    all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"],sep=""))
-        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(all[i,"Coord"],all[i+1,"Coord"])
-        all_recomb[nrow(all_recomb),"Proportions"] <- mean(all[i,"Proportions"],all[i+1,"Proportions"])
-        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"])
+        #print(paste(all[i,"ind"]," ",all[i,"grp"]," ",all[i-1,"P2_H1"]," ",all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",all[i+2,"P2_H1"]," ",
+        #            all[i-1,"Coord"]," ",all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"]," ",previous_position,sep=""))
+        all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
+        all_recomb[nrow(all_recomb),"Proportions"] <- mean(c(all[i,"Proportions"],all[i+1,"Proportions"]))
+        all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(c(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"]))
         all_recomb[nrow(all_recomb),"Parent"] <- all[i,"matpat"] 
         all_recomb[nrow(all_recomb),"Chr"] <- all[i,"Chr"] 
         previous_chr <- all[i,]$grp
-        previous_position <- all[i,"Coord"]
+        previous_position <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
         previous_individual <- all[i,"ind"]
       }  
     }
@@ -601,21 +607,22 @@ LG_min_max <- data.frame(CHR = unique(all$Chr),
                          min_prop = rep(NA,length(unique(all$Chr))), 
                          max_prop = rep(NA,length(unique(all$Chr))),
                          chr_length = rep(NA,length(unique(all$Chr))))
-for(j in unique(all$ind)) {
+for(j in unique(all$ind)) { # cycle through individuals
   print(j)
-  for(i in unique(all$Chr)) {
+  for(i in unique(all$Chr)) { # cycle through chromosomes
     print(i)
-    # add the max cM for each Chr for each individual
+    # add the max cM for each Chr for each individual; pos is in cM; Coord is bp positions on chr
     mat_cM_length <- mat_cM_length + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
     pat_cM_length <- pat_cM_length + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
-    # now add the difference in min/max bp coordinates for each Chr  for each individual
+    # now add the difference in min/max bp coordinates for each Chr for each individual
     mat_bp_length <- mat_bp_length + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord))
     pat_bp_length <- pat_bp_length + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord))
-    if(j == unique(all$ind)[1]){ # get values for one individual
+    if(j == unique(all$ind)[1]){ # get values for the first individual
       mat_bp_length_per_individual <- mat_bp_length_per_individual + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord))
       pat_bp_length_per_individual <- pat_bp_length_per_individual + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord))
       mat_cM_length_per_individual <- mat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
       pat_cM_length_per_individual <- pat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
+      # getting coordinates range for mat recombination here
       LG_min_max[(LG_min_max$CHR == i),"min"] <- min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
       LG_min_max[(LG_min_max$CHR == i),"max"] <- max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
     }
@@ -749,10 +756,14 @@ ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, color=Parent, fill
   theme_classic()
 
 # Histogram 
-overlay_hist <- ggplot(all_recomb,aes(x=Positions)) + 
-  geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = 5000000) +
-  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = 5000000) +
-  theme_classic()
+overlay_hist <- ggplot(all_recomb,aes(x=Proportions_relative_to_centromeres)) + 
+  geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = .025) +
+  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = .025) +
+  theme_classic();overlay_hist
+
+
+ggsave(file="Xlaevis_recombination_events.pdf", w=10, h=6, overlay_hist)
+
 
 
 ggsave(file="Xbor_recombination_events.pdf", w=10, h=6, overlay_hist)
