@@ -594,21 +594,36 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
 }
 
 
-# This is the number of maternal recombination events per chr:
+# This is the number of maternal recombination events per chr for each indiv:
 View(mat_recomb_per_chr)
-# This is the number of paternal recombination events per chr:
+# this is a vector of the number of recombination events per individual across the whole genome
+colSums(as.data.frame(mat_recomb_per_chr))
+# This is the number of paternal recombination events per chr for each indiv:
 View(pat_recomb_per_chr)
+colSums(as.data.frame(pat_recomb_per_chr))
+
+# number of recombinations per chr ----
+library(reshape2)
+mat_recomb_per_chr$Chrs <- rownames(mat_recomb_per_chr)
+mat_recomb_per_chr_long <- gather(mat_recomb_per_chr, individual, count, unique(all$ind))
+
+pat_recomb_per_chr$Chrs <- rownames(pat_recomb_per_chr)
+pat_recomb_per_chr_long <- gather(pat_recomb_per_chr, individual, count, unique(all$ind))
+
+
 
 dim(all_recomb)
 head(all_recomb)
 
-# Number of maternal recombination events
+# Number of maternal recombination events across all individuals and all chrs
 n_mat_recomb <- nrow(all_recomb[all_recomb$Parent == "mat",]);n_mat_recomb
-# Number of paternal recombination events
+# Number of paternal recombination events across all individuals and all chrs
 n_pat_recomb <- nrow(all_recomb[all_recomb$Parent == "pat",]);n_pat_recomb
 
-print(paste("Number mat recombination events",n_mat_recomb,sep=" "))
-print(paste("Number pat recombination events",n_pat_recomb,sep=" "))
+
+# number of maternal and paternal recombination event s ----
+print(paste("Number mat recombination events across all individuals and all chrs ",n_mat_recomb,sep=" "))
+print(paste("Number pat recombination events across all individuals and all chrs ",n_pat_recomb,sep=" "))
 
 # Length of maternal LG
 mat_bp_length <- 0
@@ -642,6 +657,7 @@ for(j in unique(all$ind)) { # cycle through individuals
       pat_bp_length_per_individual <- pat_bp_length_per_individual + (max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord)-min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$Coord))
       mat_cM_length_per_individual <- mat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$pos);mat_cM_length
       pat_cM_length_per_individual <- pat_cM_length_per_individual + max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "pat"),]$pos);pat_cM_length
+      #print(paste(i,j,mat_cM_length_per_individual,sep=" "))
       # getting coordinates range for mat recombination here
       LG_min_max[(LG_min_max$CHR == i),"min"] <- min(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
       LG_min_max[(LG_min_max$CHR == i),"max"] <- max(all[(all$ind == j)&(all$Chr == i)&(all$matpat == "mat"),]$Coord)
@@ -649,15 +665,15 @@ for(j in unique(all$ind)) { # cycle through individuals
   }
 }  
 
-print(paste("mat_cM_length",mat_cM_length,sep=" "))
-print(paste("pat_cM_length",pat_cM_length,sep=" "))
-print(paste("mat_bp_length",mat_bp_length,sep=" "))
-print(paste("pat_bp_length",pat_bp_length,sep=" "))
+print(paste("mat_cM_length summed over all individuals",mat_cM_length,sep=" "))
+print(paste("pat_cM_length summed over all individuals",pat_cM_length,sep=" "))
+print(paste("mat_bp_length summed over all individuals",mat_bp_length,sep=" "))
+print(paste("pat_bp_length summed over all individuals",pat_bp_length,sep=" "))
 
-print(paste("mat_cM_length_per_individual",mat_cM_length_per_individual,sep=" "))
-print(paste("pat_cM_length_per_individual",pat_cM_length_per_individual,sep=" "))
-print(paste("mat_bp_length_per_individual",mat_bp_length_per_individual,sep=" "))
-print(paste("pat_bp_length_per_individual",pat_bp_length_per_individual,sep=" "))
+print(paste("mat_cM_length_for_one_individual in cM ",mat_cM_length_per_individual,sep=" "))
+print(paste("pat_cM_length_for_one_individual in cM ",pat_cM_length_per_individual,sep=" "))
+print(paste("mat_bp_length_for_one_individual in bp ",mat_bp_length_per_individual,sep=" "))
+print(paste("pat_bp_length_for_one_individual in bp ",pat_bp_length_per_individual,sep=" "))
 
 # now calculate proportion boundaries of each LG
 for(i in LG_min_max$CHR) {
@@ -718,7 +734,7 @@ for(i in LG_min_max$CHR) {
 }
 
 
-
+# proportion of each chromosome covered by the matpat LG ----
 LG_min_max$min_prop <- LG_min_max$min/LG_min_max$chr_length
 LG_min_max$max_prop <- LG_min_max$max/LG_min_max$chr_length
 
@@ -783,6 +799,31 @@ overlay_hist <- ggplot(all_recomb,aes(x=Proportions_relative_to_centromeres)) +
 
 
 ggsave(file="Xlaevis_recombination_events.pdf", w=10, h=6, overlay_hist)
+
+
+
+# Histogram of recombination events per chr for mat ----
+mat_recomb_per_chr_plot <- ggplot(mat_recomb_per_chr_long) +
+  geom_histogram(aes(x=count), position="dodge", binwidth = 1) +
+  scale_x_continuous(breaks=seq(0, 20, 2)) +
+  scale_y_continuous(breaks=seq(0, 20, 5)) +
+  facet_wrap(~Chrs, nrow=9,ncol=2) +
+  labs(x = "Recombinations per chromosome") +
+  theme_classic();mat_recomb_per_chr_plot
+
+ggsave(file="Xlaevis_mat_recombination_perchr.pdf", w=4, h=6, mat_recomb_per_chr_plot)
+
+# Histogram of recombination events per chr for mat ----
+pat_recomb_per_chr_plot <- ggplot(pat_recomb_per_chr_long) +
+  geom_histogram(aes(x=count), position="dodge", binwidth = 1) +
+  scale_x_continuous(breaks=seq(0, 20, 2)) +
+  scale_y_continuous(breaks=seq(0, 20, 5)) +
+  facet_wrap(~Chrs, nrow=9,ncol=2) +
+  labs(x = "Recombinations per chromosome") +
+  theme_classic()
+
+ggsave(file="Xlaevis_pat_recombination_perchr.pdf", w=4, h=6, pat_recomb_per_chr_plot)
+
 
 ```
 
