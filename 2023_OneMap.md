@@ -99,8 +99,7 @@ library(ggplot2)
 library(tidyverse)
 
 rm(list=ls()) # removes all variables
-#setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap")
-
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
 
 # Process the variables that were passed in from unix
 arguments <- commandArgs(trailingOnly = TRUE) 
@@ -133,23 +132,17 @@ for (e in args) {
   cat("Assigned", argname, "=", argval, "\n")
 }
 
-# import data from a vcf file
+# import data from a vcf file ----
 # my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr9_10S_filtered.vcf.gz",
-my_dat <- onemap_read_vcfR(vcf = inputfile_C,
-                                    cross = c("outcross"),
-                                    #parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
-                                    parent1 = mom_C,
-                                    #parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
-                                    parent2 = dad_C,
-                                    only_biallelic = TRUE,
-                                    verbose = TRUE); my_dat
+# my_dat <- onemap_read_vcfR(vcf = inputfile_C,
+#                                    cross = c("outcross"),
+#                                    #parent1 = c("./3897mom_trim_sorted"), 
+#                                    parent1 = mom_C,
+#                                    #parent2 = c("./3896dad_trim_sorted"), 
+#                                    parent2 = dad_C,
+#                                    only_biallelic = TRUE,
+#                                    verbose = TRUE); my_dat
 
-# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr7L_filtered.vcf",
-#                           cross = c("outcross"),
-#                           parent1 = c("allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam"), 
-#                           parent2 = c("allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam"), 
-#                           only_biallelic = TRUE,
-#                           verbose = TRUE); my_dat
 
 # my_dat <- onemap_read_vcfR(vcf = "DB__Chr5S_out.vcf_filtered.vcf.gz_selected.vcf",
 #                           cross = c("outcross"),
@@ -158,33 +151,74 @@ my_dat <- onemap_read_vcfR(vcf = inputfile_C,
 #                           only_biallelic = TRUE,
 #                           verbose = TRUE); my_dat
 
-# filter sites with lots of missing data
-data_filtered <- filter_missing(my_dat, threshold = 0.25);data_filtered
+my_dat <- onemap_read_vcfR(vcf = "GE_Chr5_removed.vcf",
+                           cross = c("outcross"),
+                           parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
+                           parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
+                           only_biallelic = TRUE,
+                           verbose = TRUE); my_dat
+prefix_C <- "Chr5"
 
-# identify markers with or without segregation distortion
-segreg_test <- test_segregation(data_filtered)
+# filter sites with lots of missing data
+data_filtered <- filter_missing(my_dat, threshold = 0.5);data_filtered
+
+
+# find redundant markers ----
+# exact = FALSE means missing data will not be considered
+# as recommended here: https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html#find-redundant-markers
+bins <- find_bins(data_filtered, exact = FALSE)
+bins
+
+# Create a new onemap object without redundant markers ----
+new_onemap_object_no_redundant <- create_data_bins(my_dat, bins)
+new_onemap_object_no_redundant # This is an object of class 'onemap'
+
+# plot the data
+plot(new_onemap_object_no_redundant)
+
+# If you want to create a new input file with the dataset you are working on 
+# after using these functions, you can use the function write_onemap_raw.
+# write_onemap_raw(new_onemap_object_no_redundant, file.name = "Chr1_noredundant_onemapobj.raw")
+
+
+# identify markers with or without segregation distortion ----
+segreg_test <- test_segregation(new_onemap_object_no_redundant)
 dist <- select_segreg(segreg_test, distorted = TRUE, numbers = TRUE) #to show the markers numbers with segregation distortion
 dist
 no_dist <- select_segreg(segreg_test, distorted = FALSE, numbers = TRUE) #to show the markers numbers without segregation distortion
 no_dist
 
-# Estimate the recombination fraction between all pairs of markers, 
-# using two-point tests.
+# Estimate the recombination fraction between all pairs of markers using two-point tests ----
 # rm_mks = T gets rid of ones with weird segregation
 # due to excess of missing data or segregation deviation
 # but this doesn't seem to really work, so I did it again in the next step
-twopts <- rf_2pts(data_filtered, rm_mks = T); twopts # an object of class rf_2pts
+twopts <- rf_2pts(new_onemap_object_no_redundant, rm_mks = T); twopts # an object of class rf_2pts
 
-# make a variable with the markers that do not have segregation distortion
-mark_no_dist <- make_seq(twopts, c(no_dist))
+# make a variable with the markers that do not have segregation distortion ----
+mark_no_dist <- make_seq(twopts, c(no_dist)) # this is an object of class 'sequence'
 
 # look at markers
 marker_type(mark_no_dist)
 p <- marker_type(mark_no_dist)
-p %>% group_by(Type) %>% count()
+# add position info # it is worse now
+#p$POS <- mark_no_dist$twopt$POS
+# sort by position  # it is worse now
+#p_sorted <- p[order(p$POS),]
+#p_sorted %>% count(p_sorted$Type)
 
-# get indexes of mat and pat sites
+# get indexes of mat and pat sites ----
+# the positions should be sorted now
+#matpat_SNPs <- as.integer(p_sorted[(p_sorted$Type == 'B3.7')|(p_sorted$Type == 'D1.10')|(p_sorted$Type == 'D2.15'), ]$Marker)
 matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D2.15'), ]$Marker)
+# it seems that if the B3.7 type is not included, that no LG can be formed from 
+# only 'D1.10' or only 'D2.15'
+# but when I include B3.7 sites, the largest mat and pat LGs appears 
+# to only have B3.7 type markers...!
+#mat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10'), ]$Marker)
+#pat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D2.15'), ]$Marker)
+
+# I'm not including the informative doublehet sites because of the large LGs had only this
+# type of site in them and prevented maternal and paternal LGs from then being inferred
 
 # Marker types are explained here:
 # https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html
@@ -193,73 +227,109 @@ matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D
 # 2 D1.10   483  ab×aa (first parent het; maternal)
 # 3 D2.15   384  aa×ab (second parent het; paternal)
 
-# make an object with only matpat SNPs
-matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs)
+# make an object with only matpat SNPs ----
+matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs) # these are objects of class 'sequence'
+#mat_SNPs_no_dist <- make_seq(twopts, mat_SNPs) # these are objects of class 'sequence'
+#pat_SNPs_no_dist <- make_seq(twopts, pat_SNPs) # these are objects of class 'sequence'
+
 
 # Don't use the function suggest_lod to calculate a suggested LOD score 
 # considering that multiple tests are being performed. If you do, you will get very
 # samll linkage groups that often don't contain maternal and paternal markers
 # LOD_sug_matpat <- suggest_lod(matpat_SNPs_no_dist)
 
-# And apply this suggested value to the two-point tests and set the maximum recombination fraction to 0.40:
-matpat_LGs <- group(matpat_SNPs_no_dist, LOD=4, max.rf = 0.4)
+# Group the two-point tests and set the maximum recombination fraction to 0.40:
+matpat_LGs <- group(matpat_SNPs_no_dist, LOD=3, max.rf = 0.4)
+#mat_LGs <- group(mat_SNPs_no_dist, LOD=4, max.rf = 0.4)
+#pat_LGs <- group(pat_SNPs_no_dist, LOD=4, max.rf = 0.4)
 
 # figure out which linkage group has the most markers
 matpat_df <- as.data.frame(table(matpat_LGs$groups))
 
 # get rid of first row, which is the unlinked markers
 matpat_df <- matpat_df[-1, ]
-
 matpat_biggest_LG_group <- as.vector(matpat_df$Var1[matpat_df$Freq == max(matpat_df$Freq)]);matpat_biggest_LG_group
+print(paste("The biggest matpat LG is",matpat_biggest_LG_group,sep=" "))
+
 
 # set_map_fun(type = "kosambi") # this is the default
-# extract the largest linkage group for mapping
+# extract the largest linkage group for mapping ----
 matpat_biggest_LG <- make_seq(matpat_LGs,as.integer(matpat_biggest_LG_group))
-matpat_LG_1_graph <- rf_graph_table(matpat_biggest_LG)
-ggsave(file=paste(prefix_C,"_matpat_graph_biggestLG.pdf",sep="_"), matpat_LG_1_graph, width=8, height=8)
+rf_graph_table(matpat_biggest_LG)
+matpat_LG_1_graph <- rf_graph_table(matpat_biggest_LG);matpat_LG_1_graph
+markers_to_keep <- matpat_biggest_LG$seq.num
 
-# make a combined map using positional information from the largest linkage group
-matpat_map <- onemap::map(matpat_biggest_LG)
-marker_type(matpat_map)
+# now reload the data and save only the markers in the largest LG group we have identified
+# then we can hopefully force coordinates without trying to estimate the LG
+my_dat <- onemap_read_vcfR(vcf = "GE_Chr5_removed.vcf",
+                           cross = c("outcross"),
+                           parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
+                           parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
+                           only_biallelic = TRUE,
+                           verbose = TRUE); my_dat # class 'onemap'
+# Estimate the recombination fraction between all pairs of markers using two-point tests ----
+# rm_mks = T gets rid of ones with weird segregation
+# this generates some warnings but these can be ignored
+twopts <- rf_2pts(my_dat, rm_mks = T); twopts # an object of class rf_2pts
 
-q <- marker_type(matpat_map)
-q %>% group_by(Type) %>% count()
-  
-print(matpat_map, detailed = T)
-  
-matpat_biggest_LG_matonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D1.10'), ]$Marker
-matpat_biggest_LG_patonly <- marker_type(matpat_biggest_LG)[(marker_type(matpat_biggest_LG)$Type == 'D2.15'), ]$Marker
+# make a sequence of markers from the chromosome of interest
+# this has all markers in it, including the ones that don't form a LG
+new_biggest_LG <- make_seq(twopts, "Chr5") # new_biggest_LG is class 'sequence'
 
-# get maternal and paternal markers
-matpat_biggest_LG_matonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_matonly))
-matpat_biggest_LG_patonly_no_dist <- make_seq(twopts, c(matpat_biggest_LG_patonly))
+# Make a vector with a list of markers to remove
+markers_to_remove <- setdiff(new_biggest_LG$seq.num, markers_to_keep)
 
-# quantify maternal markers
-marker_type(matpat_biggest_LG_matonly_no_dist)
-s <- marker_type(matpat_biggest_LG_matonly_no_dist)
-s %>% group_by(Type) %>% count()
+# Now drop all markers except markers_to_keep, which are the ones that form a LG
+matpat_biggest_LG_coord <- drop_marker(matpat_biggest_LG, markers_to_remove)
 
-# quantify paternal markers
-marker_type(matpat_biggest_LG_patonly_no_dist)
-r <- marker_type(matpat_biggest_LG_patonly_no_dist)
-r %>% group_by(Type) %>% count()
+# Check that everything looks good
+rf_graph_table(matpat_biggest_LG_coord) 
+
+# print the recombination map
+ggsave(file=paste(prefix_C,"_matpat_graph.pdf",sep="_"), matpat_LG_1_graph, width=38, height=8)
 
 
-mat_LG_1_graph <- rf_graph_table(matpat_biggest_LG_matonly_no_dist)
-mat_LG_1_graph_LOD <- rf_graph_table(matpat_biggest_LG_matonly_no_dist, graph.LOD = TRUE)
-ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
-ggsave(file=paste(prefix_C,"_mat_graph_LG_longest_force_LOD.pdf",sep="_"), mat_LG_1_graph_LOD, width=8, height=8)
+# At this point no parameters have been estimated ----
+# Make two vectors that have the markers we want to remove for the mat and pat maps
+not_mat_D1.10 <- marker_type(matpat_biggest_LG_coord)[marker_type(matpat_biggest_LG_coord)$Type != "D1.10", ]$Marker
+not_pat_D2.15 <- marker_type(matpat_biggest_LG_coord)[marker_type(matpat_biggest_LG_coord)$Type != "D2.15", ]$Marker
 
-pat_LG_1_graph <- rf_graph_table(matpat_biggest_LG_patonly_no_dist)
-pat_LG_1_graph_LOD <- rf_graph_table(matpat_biggest_LG_patonly_no_dist, graph.LOD = TRUE)
-ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
-ggsave(file=paste(prefix_C,"_pat_graph_LG_longest_force_LOD.pdf",sep="_"), pat_LG_1_graph_LOD, width=8, height=8)
+# drop non-mat or non-pat markers and estimate parameters
+matonly_biggest_LG <- drop_marker(matpat_biggest_LG_coord, not_mat_D1.10)
+patonly_biggest_LG <- drop_marker(matpat_biggest_LG_coord, not_pat_D2.15)
 
-maternal_map <- onemap::map(matpat_biggest_LG_matonly_no_dist)
-paternal_map <- onemap::map(matpat_biggest_LG_patonly_no_dist)
+# how many markers are there in the mat and pat LGs?
+length(matonly_biggest_LG$seq.num)
+length(patonly_biggest_LG$seq.num)
 
-maternal_parents_haplot <- parents_haplotypes(maternal_map)
-paternal_parents_haplot <- parents_haplotypes(paternal_map)
+# Check that everything looks good
+rf_graph_table(matonly_biggest_LG) 
+rf_graph_table(patonly_biggest_LG) 
+
+
+# this step now estimates the multipoint log-likelihood, 
+# linkage phases and recombination frequencies for 
+# a sequence of markers in a given order.
+print("Making the mat map ")
+mat_map <- onemap::map(matonly_biggest_LG)
+print("Making the pat map ")
+pat_map <- onemap::map(patonly_biggest_LG)
+
+
+
+#mat_LG_graph <- rf_graph_table(mat_map)
+#mat_LG_graph_LOD <- rf_graph_table(mat_map, graph.LOD = TRUE)
+#ggsave(file=paste(prefix_C,"_mat_graph.pdf",sep="_"), mat_LG_1_graph, width=8, height=8)
+#ggsave(file=paste(prefix_C,"_mat_graph_LOD.pdf",sep="_"), mat_LG_1_graph_LOD, width=8, height=8)
+
+#pat_LG_graph <- rf_graph_table(pat_map)
+#pat_LG_graph_LOD <- rf_graph_table(pat_map, graph.LOD = TRUE)
+#ggsave(file=paste(prefix_C,"_pat_graph.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
+#ggsave(file=paste(prefix_C,"_pat_graph_LOD.pdf",sep="_"), pat_LG_1_graph_LOD, width=8, height=8)
+
+
+maternal_parents_haplot <- parents_haplotypes(mat_map)
+paternal_parents_haplot <- parents_haplotypes(pat_map)
 # matpat_haplot <- parents_haplotypes(matpat_map)
 
 # Add column for matpat
@@ -273,24 +343,15 @@ write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot_LG.txt",
 # draw_map(maternal_map)
 
 # Export haplotypes
-mat_progeny_haplot <- progeny_haplotypes(maternal_map, 
+mat_progeny_haplot <- progeny_haplotypes(mat_map, 
                                      most_likely = TRUE, 
                                      ind = c(1:data_filtered$n.ind), 
                                      group_names = prefix_C)
 
-pat_progeny_haplot <- progeny_haplotypes(paternal_map, 
+pat_progeny_haplot <- progeny_haplotypes(pat_map, 
                                          most_likely = TRUE, 
                                          ind = c(1:data_filtered$n.ind), 
                                          group_names = prefix_C)
-
-#matpat_progeny_haplot <- progeny_haplotypes(matpat_map, 
-#                                         most_likely = TRUE, 
-#                                         ind = c(1:40), 
-#                                         group_names = "chr9_10S")
-
-# write.table(mat_progeny_haplot, "mat_progeny_haplot.txt")
-# write.table(pat_progeny_haplot, "pat_progeny_haplot.txt")
-# write.table(matpat_progeny_haplot, "matpat_progeny_haplot.txt")
 
 
 mat_progeny_haplot_wide <- mat_progeny_haplot %>%
@@ -313,7 +374,6 @@ pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide
 
 write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
-
 
 ```
 
