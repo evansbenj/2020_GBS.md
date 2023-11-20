@@ -89,11 +89,6 @@ tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
 #   BiocManager::install("GenomicRanges")
 
 
-# directions on passing variables to Rscript via unix
-# https://stackoverflow.com/questions/56777529/how-to-pass-bash-variable-into-r-script
-
-# Rscript "2023_OneMap.R" --args inputfile_C="allo_family_one_chr7L_filtered.vcf" mom_C="allo_Cam_female_4_F_AGGAT_TAATA_cuttrim_sorted.bam" dad_C="allo_Cam_male_1_M_GGTGT_GTCAA_cuttrim_sorted.bam" prefix_C="allo_1_chr7L"
-
 library(onemap)
 library(ggplot2)
 library(tidyverse)
@@ -101,88 +96,39 @@ library(tidyverse)
 rm(list=ls()) # removes all variables
 setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
 
-# Process the variables that were passed in from unix
-arguments <- commandArgs(trailingOnly = TRUE) 
-args <- strsplit(arguments, "=", fixed = TRUE)
-
-for (e in args) {
-  argname <- e[1]
-  if (! is.na(e[2])) {
-    argval <- e[2]
-    ## regular expression to delete initial \" and trailing \"
-    argval <- gsub("(^\\\"|\\\"$)", "", argval)
-  }
-  else {
-    # If arg specified without value, assume it is bool type and TRUE
-    argval <- TRUE
-  }
-  
-  # Infer type from last character of argname, cast val
-  type <- substring(argname, nchar(argname), nchar(argname))
-  if (type == "I") {
-    argval <- as.integer(argval)
-  }
-  if (type == "N") {
-    argval <- as.numeric(argval)
-  }
-  if (type == "L") {
-    argval <- as.logical(argval)
-  }
-  assign(argname, argval)
-  cat("Assigned", argname, "=", argval, "\n")
-}
-
-# import data from a vcf file ----
-# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr9_10S_filtered.vcf.gz",
-# my_dat <- onemap_read_vcfR(vcf = inputfile_C,
-#                                    cross = c("outcross"),
-#                                    #parent1 = c("./3897mom_trim_sorted"), 
-#                                    parent1 = mom_C,
-#                                    #parent2 = c("./3896dad_trim_sorted"), 
-#                                    parent2 = dad_C,
-#                                    only_biallelic = TRUE,
-#                                    verbose = TRUE); my_dat
-
-
-# my_dat <- onemap_read_vcfR(vcf = "DB__Chr5S_out.vcf_filtered.vcf.gz_selected.vcf",
-#                           cross = c("outcross"),
-#                           parent1 = c("./3897mom_trim_sorted"), 
-#                           parent2 = c("./3896dad_trim_sorted"), 
-#                           only_biallelic = TRUE,
-#                           verbose = TRUE); my_dat
-
-my_dat <- onemap_read_vcfR(vcf = "GE_Chr5_removed.vcf",
+# load the data ----
+my_dat <- onemap_read_vcfR(vcf = "GE_Chr2_removed.vcf",
                            cross = c("outcross"),
                            parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
                            parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
                            only_biallelic = TRUE,
                            verbose = TRUE); my_dat
-prefix_C <- "Chr5"
+prefix_C <- "Chr2"
 
-# filter sites with lots of missing data
-data_filtered <- filter_missing(my_dat, threshold = 0.5);data_filtered
+# filter sites with lots of missing data ----
+# higher threshold means more data is kept
+data_filtered <- filter_missing(my_dat, threshold = 0.8);data_filtered
 
 
-# find redundant markers ----
+# do not try to find redundant markers; this changes the order of markers ----
 # exact = FALSE means missing data will not be considered
 # as recommended here: https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html#find-redundant-markers
-bins <- find_bins(data_filtered, exact = FALSE)
-bins
+#bins <- find_bins(data_filtered, exact = FALSE);bins
 
 # Create a new onemap object without redundant markers ----
-new_onemap_object_no_redundant <- create_data_bins(my_dat, bins)
-new_onemap_object_no_redundant # This is an object of class 'onemap'
+# this object does not have markers in order of coordinates
+#new_onemap_object_no_redundant <- create_data_bins(my_dat, bins); new_onemap_object_no_redundant # This is an object of class 'onemap'
 
 # plot the data
-plot(new_onemap_object_no_redundant)
+#plot(new_onemap_object_no_redundant)
 
 # If you want to create a new input file with the dataset you are working on 
 # after using these functions, you can use the function write_onemap_raw.
-# write_onemap_raw(new_onemap_object_no_redundant, file.name = "Chr1_noredundant_onemapobj.raw")
+# write_onemap_raw(new_onemap_object_no_redundant, file.name = "Chr2_noredundant_onemapobj.raw")
 
 
 # identify markers with or without segregation distortion ----
-segreg_test <- test_segregation(new_onemap_object_no_redundant)
+segreg_test <- test_segregation(data_filtered)
 dist <- select_segreg(segreg_test, distorted = TRUE, numbers = TRUE) #to show the markers numbers with segregation distortion
 dist
 no_dist <- select_segreg(segreg_test, distorted = FALSE, numbers = TRUE) #to show the markers numbers without segregation distortion
@@ -192,24 +138,23 @@ no_dist
 # rm_mks = T gets rid of ones with weird segregation
 # due to excess of missing data or segregation deviation
 # but this doesn't seem to really work, so I did it again in the next step
-twopts <- rf_2pts(new_onemap_object_no_redundant, rm_mks = T); twopts # an object of class rf_2pts
+twopts <- rf_2pts(data_filtered, rm_mks = T); twopts # an object of class rf_2pts
 
 # make a variable with the markers that do not have segregation distortion ----
 mark_no_dist <- make_seq(twopts, c(no_dist)) # this is an object of class 'sequence'
 
+
 # look at markers
-marker_type(mark_no_dist)
+#marker_type(mark_no_dist)
 p <- marker_type(mark_no_dist)
-# add position info # it is worse now
-#p$POS <- mark_no_dist$twopt$POS
-# sort by position  # it is worse now
-#p_sorted <- p[order(p$POS),]
-#p_sorted %>% count(p_sorted$Type)
+#p %>% count(p$Type)
 
 # get indexes of mat and pat sites ----
 # the positions should be sorted now
 #matpat_SNPs <- as.integer(p_sorted[(p_sorted$Type == 'B3.7')|(p_sorted$Type == 'D1.10')|(p_sorted$Type == 'D2.15'), ]$Marker)
 matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D2.15'), ]$Marker)
+
+
 # it seems that if the B3.7 type is not included, that no LG can be formed from 
 # only 'D1.10' or only 'D2.15'
 # but when I include B3.7 sites, the largest mat and pat LGs appears 
@@ -228,9 +173,14 @@ matpat_SNPs <- as.integer(p[(p$Type == 'B3.7')|(p$Type == 'D1.10')|(p$Type == 'D
 # 3 D2.15   384  aa×ab (second parent het; paternal)
 
 # make an object with only matpat SNPs ----
-matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs) # these are objects of class 'sequence'
+matpat_SNPs_no_dist <- make_seq(twopts, unique(matpat_SNPs)) # these are objects of class 'sequence'
 #mat_SNPs_no_dist <- make_seq(twopts, mat_SNPs) # these are objects of class 'sequence'
 #pat_SNPs_no_dist <- make_seq(twopts, pat_SNPs) # these are objects of class 'sequence'
+
+# look at markers
+#marker_type(matpat_SNPs_no_dist)
+p <- marker_type(matpat_SNPs_no_dist)
+p %>% count(p$Type)
 
 
 # Don't use the function suggest_lod to calculate a suggested LOD score 
@@ -239,9 +189,8 @@ matpat_SNPs_no_dist <- make_seq(twopts, matpat_SNPs) # these are objects of clas
 # LOD_sug_matpat <- suggest_lod(matpat_SNPs_no_dist)
 
 # Group the two-point tests and set the maximum recombination fraction to 0.40:
+# Furman et al. 2020 used LOD=5; here I use LOD=3 to be more inclusive with markers
 matpat_LGs <- group(matpat_SNPs_no_dist, LOD=3, max.rf = 0.4)
-#mat_LGs <- group(mat_SNPs_no_dist, LOD=4, max.rf = 0.4)
-#pat_LGs <- group(pat_SNPs_no_dist, LOD=4, max.rf = 0.4)
 
 # figure out which linkage group has the most markers
 matpat_df <- as.data.frame(table(matpat_LGs$groups))
@@ -252,29 +201,52 @@ matpat_biggest_LG_group <- as.vector(matpat_df$Var1[matpat_df$Freq == max(matpat
 print(paste("The biggest matpat LG is",matpat_biggest_LG_group,sep=" "))
 
 
+
 # set_map_fun(type = "kosambi") # this is the default
 # extract the largest linkage group for mapping ----
+# the order of the markers in this object does not match the coordinates
 matpat_biggest_LG <- make_seq(matpat_LGs,as.integer(matpat_biggest_LG_group))
 rf_graph_table(matpat_biggest_LG)
 matpat_LG_1_graph <- rf_graph_table(matpat_biggest_LG);matpat_LG_1_graph
 markers_to_keep <- matpat_biggest_LG$seq.num
 
+# marker_type(matpat_biggest_LG)
+p <- marker_type(matpat_biggest_LG)
+p %>% count(p$Type)
+
+# reload the data ----
 # now reload the data and save only the markers in the largest LG group we have identified
 # then we can hopefully force coordinates without trying to estimate the LG
-my_dat <- onemap_read_vcfR(vcf = "GE_Chr5_removed.vcf",
+my_dat2 <- onemap_read_vcfR(vcf = "GE_Chr2_removed.vcf",
                            cross = c("outcross"),
                            parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
                            parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
                            only_biallelic = TRUE,
                            verbose = TRUE); my_dat # class 'onemap'
+
+# filter sites with lots of missing data ----
+data_filtered2 <- filter_missing(my_dat2, threshold = 0.8);data_filtered2
+
+# no not find redundant markers ----
+# exact = FALSE means missing data will not be considered
+# as recommended here: https://statgen-esalq.github.io/tutorials/onemap/Outcrossing_Populations.html#find-redundant-markers
+#bins2 <- find_bins(data_filtered2, exact = FALSE)
+#bins2
+
+# Create a new onemap object without redundant markers ----
+# this step messes with the marker order
+#new_onemap_object_no_redundant2 <- create_data_bins(my_dat2, bins2)
+#new_onemap_object_no_redundant2 # This is an object of class 'onemap'
+
 # Estimate the recombination fraction between all pairs of markers using two-point tests ----
 # rm_mks = T gets rid of ones with weird segregation
-# this generates some warnings but these can be ignored
-twopts <- rf_2pts(my_dat, rm_mks = T); twopts # an object of class rf_2pts
+twopts2 <- rf_2pts(data_filtered2, rm_mks = T); twopts2 # an object of class rf_2pts
 
 # make a sequence of markers from the chromosome of interest
 # this has all markers in it, including the ones that don't form a LG
-new_biggest_LG <- make_seq(twopts, "Chr5") # new_biggest_LG is class 'sequence'
+
+
+new_biggest_LG <- make_seq(twopts2, "Chr2") # new_biggest_LG is class 'sequence'
 
 # Make a vector with a list of markers to remove
 markers_to_remove <- setdiff(new_biggest_LG$seq.num, markers_to_keep)
@@ -284,6 +256,10 @@ matpat_biggest_LG_coord <- drop_marker(matpat_biggest_LG, markers_to_remove)
 
 # Check that everything looks good
 rf_graph_table(matpat_biggest_LG_coord) 
+
+#marker_type(matpat_biggest_LG_coord)
+p <- marker_type(matpat_biggest_LG_coord)
+p %>% count(p$Type)
 
 # print the recombination map
 ggsave(file=paste(prefix_C,"_matpat_graph.pdf",sep="_"), matpat_LG_1_graph, width=38, height=8)
@@ -326,7 +302,6 @@ pat_map <- onemap::map(patonly_biggest_LG)
 #pat_LG_graph_LOD <- rf_graph_table(pat_map, graph.LOD = TRUE)
 #ggsave(file=paste(prefix_C,"_pat_graph.pdf",sep="_"), pat_LG_1_graph, width=8, height=8)
 #ggsave(file=paste(prefix_C,"_pat_graph_LOD.pdf",sep="_"), pat_LG_1_graph_LOD, width=8, height=8)
-
 
 maternal_parents_haplot <- parents_haplotypes(mat_map)
 paternal_parents_haplot <- parents_haplotypes(pat_map)
@@ -374,6 +349,11 @@ pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide
 
 write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
+
+# how many markers are there in the mat and pat LGs?
+length(matonly_biggest_LG$seq.num)
+length(patonly_biggest_LG$seq.num)
+
 
 ```
 
