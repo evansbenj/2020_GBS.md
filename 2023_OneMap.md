@@ -94,16 +94,51 @@ library(ggplot2)
 library(tidyverse)
 
 rm(list=ls()) # removes all variables
-setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
+# setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
 
 # load the data ----
-my_dat <- onemap_read_vcfR(vcf = "GE_Chr2_removed.vcf",
+# Process the variables that were passed in from unix
+arguments <- commandArgs(trailingOnly = TRUE) 
+args <- strsplit(arguments, "=", fixed = TRUE)
+
+for (e in args) {
+  argname <- e[1]
+  if (! is.na(e[2])) {
+    argval <- e[2]
+    ## regular expression to delete initial \" and trailing \"
+    argval <- gsub("(^\\\"|\\\"$)", "", argval)
+  }
+  else {
+    # If arg specified without value, assume it is bool type and TRUE
+    argval <- TRUE
+  }
+  
+  # Infer type from last character of argname, cast val
+  type <- substring(argname, nchar(argname), nchar(argname))
+  if (type == "I") {
+    argval <- as.integer(argval)
+  }
+  if (type == "N") {
+    argval <- as.numeric(argval)
+  }
+  if (type == "L") {
+    argval <- as.logical(argval)
+  }
+  assign(argname, argval)
+  cat("Assigned", argname, "=", argval, "\n")
+}
+
+# import data from a vcf file
+# my_dat <- onemap_read_vcfR(vcf = "allo_family_one_chr9_10S_filtered.vcf.gz",
+my_dat <- onemap_read_vcfR(vcf = inputfile_C,
                            cross = c("outcross"),
-                           parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
-                           parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
+                           #parent1 = c("./3897mom_trim_sorted"), 
+                           parent1 = mom_C,
+                           #parent2 = c("./3896dad_trim_sorted"), 
+                           parent2 = dad_C,
                            only_biallelic = TRUE,
                            verbose = TRUE); my_dat
-prefix_C <- "Chr2"
+
 
 # filter sites with lots of missing data ----
 # higher threshold means more data is kept
@@ -217,15 +252,10 @@ p %>% count(p$Type)
 # reload the data ----
 # now reload the data and save only the markers in the largest LG group we have identified
 # then we can hopefully force coordinates without trying to estimate the LG
-my_dat2 <- onemap_read_vcfR(vcf = "GE_Chr2_removed.vcf",
-                           cross = c("outcross"),
-                           parent1 = c("fem_Xt_mom_BJE4361_GhE_sorted"), 
-                           parent2 = c("male_Xt_BJE4362_Dad_GhE_sorted"), 
-                           only_biallelic = TRUE,
-                           verbose = TRUE); my_dat # class 'onemap'
+
 
 # filter sites with lots of missing data ----
-data_filtered2 <- filter_missing(my_dat2, threshold = 0.8);data_filtered2
+data_filtered2 <- filter_missing(my_dat, threshold = 0.8);data_filtered2
 
 # no not find redundant markers ----
 # exact = FALSE means missing data will not be considered
@@ -312,8 +342,8 @@ maternal_parents_haplot$matpat <- "mat"
 paternal_parents_haplot$matpat <- "pat"
 
 #prefix_C<-"temp"
-write.table(maternal_parents_haplot, paste(prefix_C,"mat_parents_haplot_LG.txt",sep="_"), row.names=F)
-write.table(paternal_parents_haplot, paste(prefix_C,"pat_parents_haplot_LG.txt",sep="_"), row.names=F)
+write.table(maternal_parents_haplot, paste(prefix_C,"_mat_parents_haplot_LG.txt",sep="_"), row.names=F)
+write.table(paternal_parents_haplot, paste(prefix_C,"_pat_parents_haplot_LG.txt",sep="_"), row.names=F)
 
 # draw_map(maternal_map)
 
@@ -347,13 +377,12 @@ pat_progeny_haplot_wide <- pat_progeny_haplot %>%
 
 pat_progeny_haplot_wide <- pat_progeny_haplot_wide[order(pat_progeny_haplot_wide$ind, pat_progeny_haplot_wide$pos), ]
 
-write.table(mat_progeny_haplot_wide, paste(prefix_C,"mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
-write.table(pat_progeny_haplot_wide, paste(prefix_C,"pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
+write.table(mat_progeny_haplot_wide, paste(prefix_C,"_mat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
+write.table(pat_progeny_haplot_wide, paste(prefix_C,"_pat_progeny_haplot_wide_LG.txt",sep="_"),row.names = F)
 
 # how many markers are there in the mat and pat LGs?
 length(matonly_biggest_LG$seq.num)
 length(patonly_biggest_LG$seq.num)
-
 
 ```
 
