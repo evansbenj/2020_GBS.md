@@ -276,7 +276,7 @@ twopts2 <- rf_2pts(data_filtered2, rm_mks = T); twopts2 # an object of class rf_
 # this has all markers in it, including the ones that don't form a LG
 
 
-new_biggest_LG <- make_seq(twopts2, "Chr2") # new_biggest_LG is class 'sequence'
+new_biggest_LG <- make_seq(twopts2, prefix_C) # new_biggest_LG is class 'sequence'
 
 # Make a vector with a list of markers to remove
 markers_to_remove <- setdiff(new_biggest_LG$seq.num, markers_to_keep)
@@ -309,8 +309,8 @@ length(matonly_biggest_LG$seq.num)
 length(patonly_biggest_LG$seq.num)
 
 # Check that everything looks good
-rf_graph_table(matonly_biggest_LG) 
-rf_graph_table(patonly_biggest_LG) 
+#rf_graph_table(matonly_biggest_LG) 
+#rf_graph_table(patonly_biggest_LG) 
 
 
 # this step now estimates the multipoint log-likelihood, 
@@ -383,6 +383,7 @@ write.table(pat_progeny_haplot_wide, paste(prefix_C,"_pat_progeny_haplot_wide_LG
 # how many markers are there in the mat and pat LGs?
 length(matonly_biggest_LG$seq.num)
 length(patonly_biggest_LG$seq.num)
+
 
 ```
 
