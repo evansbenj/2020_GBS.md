@@ -425,15 +425,8 @@ library(tidyverse)
 # if there are rownames, you can add a bogus header for them to prevent a redundant rowname error like this:
 # perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
 options(scipen=999)
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis/LOD3')
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_muelleri')
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2022_pygmaeus')
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_fischbergi')
-setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2022_allofraseri/family2")
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis/bigMF')
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/allall')
-setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2017_laevis_LOD3_10missingness')
-# read in the OneMap data 
+#setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis_GOOD")# read in the OneMap data 
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
 
@@ -444,15 +437,18 @@ all_pat$matpat <- "pat"
 all<- rbind(all_mat,all_pat)
 
 # make a column with chrs and one with coordinates
-# this probably needs to be different for trop
 all[c('Chr', 'Coord')] <- str_split_fixed(all$marker, '_', 2)
+
+# the two lines below are only for XL
 all[all$Chr == 'Chr9',]$Coord <- as.numeric(str_split_i(all[all$Chr == 'Chr9',]$marker,"_",3)) # need to use a 3 because Chr9_10L has an underscore
 all[all$Chr == 'Chr9',]$Chr <- paste(str_split_i(all[all$Chr == 'Chr9',]$marker, "_",1),str_split_i(all[all$Chr == 'Chr9',]$marker, "_",2), sep = "_") # need to use a 3 because Chr9_10L has an underscore
+
+# check the chrs
 unique(all$Chr)
 
 all$Coord <- as.numeric(all$Coord)
 
-# now make a column with chromosome proportions
+# now make a column with chromosome proportions for XL
 all$Proportions <- all$Coord/233740090 # this is the length of XL Chr1L
 # now update the ones that are not Chr1L
 all[all$Chr == 'Chr1S',]$Proportions <- all[all$Chr == 'Chr1S',]$Coord/202412970 # this is the length of XL Chr1S
@@ -472,8 +468,27 @@ all[all$Chr == 'Chr8L',]$Proportions <- all[all$Chr == 'Chr8L',]$Coord/135449133
 all[all$Chr == 'Chr8S',]$Proportions <- all[all$Chr == 'Chr8S',]$Coord/103977862 # this is the length of XL Chr8S
 all[all$Chr == 'Chr9_10L',]$Proportions <- all[all$Chr == 'Chr9_10L',]$Coord/137811819 # this is the length of XL Chr9_10L
 all[all$Chr == 'Chr9_10S',]$Proportions <- all[all$Chr == 'Chr9_10S',]$Coord/117266291 # this is the length of XL Chr9_10S
+
+# or for XT
+all$Proportions <- all$Coord/217471165 # this is the length of XL Chr1L
+# now update the ones that are not Chr1L
+all[all$Chr == 'Chr2',]$Proportions <- all[all$Chr == 'Chr2',]$Coord/181034960 # this is the length of XT Chr2
+all[all$Chr == 'Chr3',]$Proportions <- all[all$Chr == 'Chr3',]$Coord/153873356 # this is the length of XT Chr3
+all[all$Chr == 'Chr4',]$Proportions <- all[all$Chr == 'Chr4',]$Coord/153961318 # this is the length of XT Chr4
+all[all$Chr == 'Chr5',]$Proportions <- all[all$Chr == 'Chr5',]$Coord/164033574 # this is the length of XT Chr5
+all[all$Chr == 'Chr6',]$Proportions <- all[all$Chr == 'Chr6',]$Coord/154486311 # this is the length of XT Chr6
+all[all$Chr == 'Chr7',]$Proportions <- all[all$Chr == 'Chr7',]$Coord/133565929 # this is the length of XT Chr7
+all[all$Chr == 'Chr8',]$Proportions <- all[all$Chr == 'Chr8',]$Coord/147241509 # this is the length of XT Chr8
+all[all$Chr == 'Chr9',]$Proportions <- all[all$Chr == 'Chr9',]$Coord/91218943 # this is the length of XT Chr9
+all[all$Chr == 'Chr10',]$Proportions <- all[all$Chr == 'Chr10',]$Coord/52432565 # this is the length of XT Chr10
+
+
+
+
+
 max(all$Proportions) # should < 1
 min(all$Proportions) # should be > 0
+# for Xl
 # Chr1L	233740090
 # Chr1S	202412970
 # Chr2L	191000146
@@ -495,10 +510,10 @@ min(all$Proportions) # should be > 0
 
 
 
-# now make a column with chromosome Proportions_relative_to_centromeres
+# now make a column with chromosome Proportions_relative_to_centromeres for XL
 # this just makes a column with a dummy value
 all$Proportions_relative_to_centromeres <- all$Coord/233740090 # this is the length of XL Chr1L
-# now update for each chr
+# now update for each chr for XL
 all[(all$Chr == 'Chr1L')&(all$Coord < 97110544),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1L')&(all$Coord < 97110544),]$Coord/97110544 # this is the first part of XL Chr1L
 all[(all$Chr == 'Chr1L')&(all$Coord >= 97110544),]$Proportions_relative_to_centromeres <- (233740090 - all[(all$Chr == 'Chr1L')&(all$Coord >= 97110544),]$Coord)/(233740090-97110544) # this is the first part of XL Chr1L
 all[(all$Chr == 'Chr1S')&(all$Coord < 78965477),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1S')&(all$Coord < 78965477),]$Coord/78965477 # this is the first part of XL Chr1S
@@ -544,6 +559,43 @@ all[(all$Chr == 'Chr9_10L')&(all$Coord < 23877437),]$Proportions_relative_to_cen
 all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23877437),]$Proportions_relative_to_centromeres <- (137811819 - all[(all$Chr == 'Chr9_10L')&(all$Coord >= 23877437),]$Coord)/(137811819-23877437) # this is the first part of XL Chr9_10L
 all[(all$Chr == 'Chr9_10S')&(all$Coord < 25122470),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9_10S')&(all$Coord < 25122470),]$Coord/25122470 # this is the first part of XL Chr9_10S
 all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25122470),]$Proportions_relative_to_centromeres <- (117266291 - all[(all$Chr == 'Chr9_10S')&(all$Coord >= 25122470),]$Coord)/(117266291-25122470) # this is the first part of XL Chr9_10L
+
+# now make a column with chromosome Proportions_relative_to_centromeres for XT
+# for now I have just used the midpoint - so this is not correct and should not be used for XT
+
+# this just makes a column with a dummy value
+all$Proportions_relative_to_centromeres <- all$Coord/217471165 # this is the length of XT Chr1
+# now update for each chr for XT
+all[(all$Chr == 'Chr1')&(all$Coord < 108735582.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr1')&(all$Coord < 108735582.5),]$Coord/108735582.5 # this is the first part of XT Chr1
+all[(all$Chr == 'Chr1')&(all$Coord >= 108735582.5),]$Proportions_relative_to_centromeres <- (217471165 - all[(all$Chr == 'Chr1')&(all$Coord >= 108735582.5),]$Coord)/(217471165-108735582.5) # this is the first part of XT Chr1
+
+all[(all$Chr == 'Chr2')&(all$Coord < 90517480),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr2')&(all$Coord < 90517480),]$Coord/90517480 # this is the first part of XT Chr2
+all[(all$Chr == 'Chr2')&(all$Coord >= 90517480),]$Proportions_relative_to_centromeres <- (181034960 - all[(all$Chr == 'Chr2')&(all$Coord >= 90517480),]$Coord)/(181034960-90517480) # this is the first part of XT Chr2
+
+all[(all$Chr == 'Chr3')&(all$Coord < 76936678),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr3')&(all$Coord < 76936678),]$Coord/76936678 # this is the first part of XT Chr3
+all[(all$Chr == 'Chr3')&(all$Coord >= 76936678),]$Proportions_relative_to_centromeres <- (153873356 - all[(all$Chr == 'Chr3')&(all$Coord >= 76936678),]$Coord)/(153873356-76936678) # this is the first part of XT Chr3
+
+all[(all$Chr == 'Chr4')&(all$Coord < 76980659),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr4')&(all$Coord < 76980659),]$Coord/76980659 # this is the first part of XT Chr4
+all[(all$Chr == 'Chr4')&(all$Coord >= 76980659),]$Proportions_relative_to_centromeres <- (153961318 - all[(all$Chr == 'Chr4')&(all$Coord >= 76980659),]$Coord)/(153961318-76980659) # this is the first part of XT Chr4
+
+all[(all$Chr == 'Chr5')&(all$Coord < 82016787),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr5')&(all$Coord < 82016787),]$Coord/82016787 # this is the first part of XT Chr5
+all[(all$Chr == 'Chr5')&(all$Coord >= 82016787),]$Proportions_relative_to_centromeres <- (164033574 - all[(all$Chr == 'Chr5')&(all$Coord >= 82016787),]$Coord)/(164033574-82016787) # this is the first part of XT Chr5
+
+all[(all$Chr == 'Chr6')&(all$Coord < 77243155.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr6')&(all$Coord < 77243155.5),]$Coord/77243155.5 # this is the first part of XT Chr6
+all[(all$Chr == 'Chr6')&(all$Coord >= 77243155.5),]$Proportions_relative_to_centromeres <- (154486311 - all[(all$Chr == 'Chr6')&(all$Coord >= 77243155.5),]$Coord)/(154486311-77243155.5) # this is the first part of XT Chr6
+
+all[(all$Chr == 'Chr7')&(all$Coord < 66782964.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr7')&(all$Coord < 66782964.5),]$Coord/66782964.5 # this is the first part of XT Chr7
+all[(all$Chr == 'Chr7')&(all$Coord >= 66782964.5),]$Proportions_relative_to_centromeres <- (133565929 - all[(all$Chr == 'Chr7')&(all$Coord >= 66782964.5),]$Coord)/(133565929-66782964.5) # this is the first part of XT Chr7
+
+all[(all$Chr == 'Chr8')&(all$Coord < 73620754.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr8')&(all$Coord < 73620754.5),]$Coord/73620754.5 # this is the first part of XT Chr8
+all[(all$Chr == 'Chr8')&(all$Coord >= 73620754.5),]$Proportions_relative_to_centromeres <- (147241509 - all[(all$Chr == 'Chr8')&(all$Coord >= 73620754.5),]$Coord)/(147241509-73620754.5) # this is the first part of XT Chr8
+
+all[(all$Chr == 'Chr9')&(all$Coord < 45609471.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr9')&(all$Coord < 45609471.5),]$Coord/45609471.5 # this is the first part of XT Chr9
+all[(all$Chr == 'Chr9')&(all$Coord >= 45609471.5),]$Proportions_relative_to_centromeres <- (91218943 - all[(all$Chr == 'Chr9')&(all$Coord >= 45609471.5),]$Coord)/(91218943-45609471.5) # this is the first part of XT Chr9
+
+all[(all$Chr == 'Chr10')&(all$Coord < 26216282.5),]$Proportions_relative_to_centromeres <- all[(all$Chr == 'Chr10')&(all$Coord < 26216282.5),]$Coord/26216282.5 # this is the first part of XT Chr10
+all[(all$Chr == 'Chr10')&(all$Coord >= 26216282.5),]$Proportions_relative_to_centromeres <- (52432565 - all[(all$Chr == 'Chr10')&(all$Coord >= 26216282.5),]$Coord)/(52432565-26216282.5) # this is the first part of XT Chr10
+
 
 max(all$Proportions_relative_to_centromeres) # should < 1
 min(all$Proportions_relative_to_centromeres) # should > 0
@@ -745,7 +797,7 @@ print(paste("pat_cM_length_for_one_individual in cM ",pat_cM_length_per_individu
 print(paste("mat_bp_length_for_one_individual in bp ",mat_bp_length_per_individual,sep=" "))
 print(paste("pat_bp_length_for_one_individual in bp ",pat_bp_length_per_individual,sep=" "))
 
-# now calculate proportion boundaries of each LG
+# now calculate proportion boundaries of each LG for XL
 for(i in LG_min_max$CHR) {
   if(i == "Chr1L"){
     LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 233740090
@@ -804,6 +856,41 @@ for(i in LG_min_max$CHR) {
 }
 
 
+# now calculate proportion boundaries of each LG for XT
+for(i in LG_min_max$CHR) {
+  if(i == "Chr1"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 217471165
+  } 
+  else if(i == "Chr2"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 181034960
+  } 
+  else if(i == "Chr3"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 153873356
+  } 
+  else if(i == "Chr4"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 153961318
+  } 
+  else if(i == "Chr5"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 164033574
+  } 
+  else if(i == "Chr6"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 154486311
+  } 
+  else if(i == "Chr7"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 133565929
+  } 
+  else if(i == "Chr8"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 147241509
+  } 
+  else if(i == "Chr9"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 91218943
+  } 
+  else if(i == "Chr10"){
+    LG_min_max[which(LG_min_max$CHR == i),]$chr_length <- 52432565
+  } 
+}
+
+
 # proportion of each chromosome covered by the matpat LG ----
 LG_min_max$min_prop <- LG_min_max$min/LG_min_max$chr_length
 LG_min_max$max_prop <- LG_min_max$max/LG_min_max$chr_length
@@ -811,14 +898,27 @@ LG_min_max$max_prop <- LG_min_max$max/LG_min_max$chr_length
 LG_min_max$total_prop <- LG_min_max$max_prop - LG_min_max$min_prop;LG_min_max
 
 
+# Plot the proportions of each chr that are covered by the LG
+proportions <- ggplot(LG_min_max, aes(x=CHR))+
+  geom_linerange(aes(ymin=min_prop,ymax=max_prop),linetype=2,color="blue")+
+  geom_point(aes(y=min_prop),size=3,color="red")+
+  geom_point(aes(y=max_prop),size=3,color="red")+
+  xlab("Chromosome") + ylab("Proportions covered by largest linkage group") +
+  theme_bw();proportions
+
+ggsave(file="LG_proportion_of_CHRs.pdf", w=10, h=6, proportions)
+
+
 # Plot proportion on chromosomes irrespective of centromere
-ggplot(all_recomb, aes(x = Proportions)) +
+densities <- ggplot(all_recomb, aes(x = Proportions)) +
   geom_density(aes(color = Parent))+
   #geom_vline(xintercept=49000000)+ 
   #facet_wrap( ~ Chr, ncol=2, scales = "free_x")+
-  xlab("Chromosome proportion") + ylab("Density") +
+  xlab("Relative chromosome position") + ylab("Density") +
   xlim(0,1) +
-  theme_classic()
+  theme_classic(); densities
+
+ggsave(file="Recombination_density_relative_to_chr_tips.pdf", w=10, h=6, densities)
 
 
 # Plot proportion on chromosomes relative of centromere (0 is a tip, 100 is a centromere)
@@ -865,11 +965,21 @@ ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, color=Parent, fill
 overlay_hist <- ggplot(all_recomb,aes(x=Proportions_relative_to_centromeres)) + 
   geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = .025) +
   geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = .025) +
+  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Count") +
   theme_classic();overlay_hist
 
 
-ggsave(file="Xlaevis_recombination_events.pdf", w=10, h=6, overlay_hist)
+ggsave(file="Recombination_events_relative_to_centromere.pdf", w=10, h=6, overlay_hist)
 
+# Histogram 
+overlay_hist <- ggplot(all_recomb,aes(x=Proportions)) + 
+  geom_histogram(data=subset(all_recomb,Parent == 'mat'),fill = "red", alpha = 0.2, binwidth = .025) +
+  geom_histogram(data=subset(all_recomb,Parent == 'pat'),fill = "blue", alpha = 0.2, binwidth = .025) +
+  xlab("Proportions (Tip = 0, Other tip = 1)") + ylab("Count") +
+  theme_classic();overlay_hist
+
+
+ggsave(file="Recombination_events_on_scaled_chrs.pdf", w=10, h=6, overlay_hist)
 
 
 # Histogram of recombination events per chr for mat ----
@@ -881,7 +991,7 @@ mat_recomb_per_chr_plot <- ggplot(mat_recomb_per_chr_long) +
   labs(x = "Recombinations per chromosome") +
   theme_classic();mat_recomb_per_chr_plot
 
-ggsave(file="Xlaevis_mat_recombination_perchr.pdf", w=4, h=6, mat_recomb_per_chr_plot)
+ggsave(file="Mat_recombination_perchr.pdf", w=4, h=6, mat_recomb_per_chr_plot)
 
 # Histogram of recombination events per chr for mat ----
 pat_recomb_per_chr_plot <- ggplot(pat_recomb_per_chr_long) +
@@ -892,7 +1002,7 @@ pat_recomb_per_chr_plot <- ggplot(pat_recomb_per_chr_long) +
   labs(x = "Recombinations per chromosome") +
   theme_classic()
 
-ggsave(file="Xlaevis_pat_recombination_perchr.pdf", w=4, h=6, pat_recomb_per_chr_plot)
+ggsave(file="Pat_recombination_perchr.pdf", w=4, h=6, pat_recomb_per_chr_plot)
 
 
 ```
