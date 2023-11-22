@@ -73,7 +73,10 @@ module load tabix
 bgzip -c allo_family_one_chr9_10S_filtered.vcf > allo_family_one_chr9_10S_filtered.vcf.gz
 tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
 ```
-
+If the OneMap analysis failed I slightly thinned the vcf file and tried again like this:
+```
+vcftools --vcf GE_Chr1_removed.vcf --max-missing 0.5 --thin 100 --recode --out GE_Chr1_removed_thinned
+```
 
 # OneMap
 
