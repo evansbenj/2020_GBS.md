@@ -75,7 +75,7 @@ tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
 ```
 If the OneMap analysis failed I (very) lightly thinned the vcf file and tried again like this:
 ```
-vcftools --vcf GE_Chr1_removed.vcf --max-missing 0.5 --thin 10 --recode --out GE_Chr1_removed_thinned
+vcftools --vcf GE_Chr1_removed.vcf --thin 20 --recode --out GE_Chr1_removed_thinned
 ```
 
 # OneMap
