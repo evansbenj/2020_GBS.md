@@ -73,11 +73,7 @@ module load tabix
 bgzip -c allo_family_one_chr9_10S_filtered.vcf > allo_family_one_chr9_10S_filtered.vcf.gz
 tabix -p vcf allo_family_one_chr9_10S_filtered.vcf.gz
 ```
-I also then used vcftools to thin sites; this essentially ensures that only one variable position per RADtag is considered.
-```
-module load StdEnv/2020 vcftools/0.1.16
-vcftools --vcf GE_Chr1_removed.vcf --thin 300 --recode --out GE_Chr1_removed_thinned
-```
+
 
 # OneMap
 
