@@ -237,33 +237,27 @@ done
 Now CombineGVCFs
 ```
 #!/bin/sh
-#SBATCH --job-name=combineGVCFs
+#SBATCH --job-name=CombineGVCFs
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=164:00:00
-#SBATCH --mem=12gb
-#SBATCH --output=combineGVCFs.%J.out
-#SBATCH --error=combineGVCFs.%J.err
+#SBATCH --time=48:00:00
+#SBATCH --mem=24gb
+#SBATCH --output=CombineGVCFs.%J.out
+#SBATCH --error=CombineGVCFs.%J.err
 #SBATCH --account=def-ben
-
-
 # This script will read in the *.g.vcf file names in a directory, and 
 # make and execute the GATK command "GenotypeGVCFs" on these files. 
-
 # execute like this:
-# sbatch 2021_combineGVCFs.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgen
-ome/XENLA_9.2_genome.fa /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_c
-liv_laev/raw_data/cutaddapted_by_species_across_three_plates/clivii/
-
+# sbatch 2021_CombineGVCFs.sh /home/ben/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_genome.fa ./ Chr1L
 module load nixpkgs/16.09 gatk/4.1.0.0
 
 commandline="gatk --java-options -Xmx10G CombineGVCFs -R ${1}"
-for file in ${2}*g.vcf
+for file in ${2}*${3}*g.vcf
 do
     commandline+=" -V ${file}"
 done
-
-commandline+=" -O ${2}allsites_all.g.vcf.gz"
+commandline+=" -L ${3} -O ${2}allsites_${3}.g.vcf.gz"
+${commandline}
 ```
 
 OR, if this does not work (which it didn't for everyone except fischbergi, probably because of many scaffolds in the reference genome) use GenomicsDBImport to combine
