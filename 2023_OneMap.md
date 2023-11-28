@@ -430,7 +430,8 @@ library(tidyverse)
 # perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
 options(scipen=999)
 #setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
-setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2015_borealis_GOOD")# read in the OneMap data 
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GW_family')
+setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_laevis_good')
 all_mat <- read.table("./all_mat.txt", header = T)
 all_pat <- read.table("./all_pat.txt", header = T)
 
@@ -474,8 +475,8 @@ all[all$Chr == 'Chr9_10L',]$Proportions <- all[all$Chr == 'Chr9_10L',]$Coord/137
 all[all$Chr == 'Chr9_10S',]$Proportions <- all[all$Chr == 'Chr9_10S',]$Coord/117266291 # this is the length of XL Chr9_10S
 
 # or for XT
-all$Proportions <- all$Coord/217471165 # this is the length of XL Chr1L
-# now update the ones that are not Chr1L
+all$Proportions <- all$Coord/217471165 # this is the length of XT Chr1
+# now update the ones that are not Chr1
 all[all$Chr == 'Chr2',]$Proportions <- all[all$Chr == 'Chr2',]$Coord/181034960 # this is the length of XT Chr2
 all[all$Chr == 'Chr3',]$Proportions <- all[all$Chr == 'Chr3',]$Coord/153873356 # this is the length of XT Chr3
 all[all$Chr == 'Chr4',]$Proportions <- all[all$Chr == 'Chr4',]$Coord/153961318 # this is the length of XT Chr4
@@ -631,7 +632,7 @@ all_recomb <- data.frame(Chr=character(),
                          Proportions_relative_to_centromeres=integer(),
                          Parent=character(),
                          stringsAsFactors=F)
-buffer <- 5000000
+buffer <- 10000000
 previous_chr <- "temp"
 previous_position <- 0
 previous_individual <- "temp"
@@ -656,6 +657,8 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
     previous_individual <- all[i,]$ind
   }
   if((all[i,]$matpat == "mat")&
+   #  (is.na(all[i,"P1_H1"]) == F)& #commented because NA should only be present in bad files
+   #   (is.na(all[i+1,"P1_H1"]) == F)& # so I want this to fail if an NA is encountered
      (all[i,]$grp == all[i+1,]$grp)&
      (all[i,]$grp == all[i+2,]$grp)){ # this is for maternal SNPS on the same chr
     if((all[i,"P1_H1"] != all[i+1,"P1_H1"])&
@@ -672,8 +675,8 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
           (((as.numeric(all[i,"Coord"])) - as.numeric(previous_position)) > buffer)
          ) # this means that the previous recombination event was at least $buffer before this one
       { 
-        print(paste(all[i,"ind"]," ",all[i,"grp"]," ",all[i-1,"P1_H1"]," ",all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+2,"P1_H1"]," ",
-                    all[i-1,"Coord"]," ",all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"]," ",mean(c(all[i,"Coord"],all[i+1,"Coord"]))," ",previous_position,sep=""))
+       # print(paste(all[i,"ind"]," ",all[i,"grp"]," ",all[i-1,"P1_H1"]," ",all[i,"P1_H1"]," ",all[i+1,"P1_H1"]," ",all[i+2,"P1_H1"]," ",
+       #             all[i-1,"Coord"]," ",all[i,"Coord"]," ",all[i+1,"Coord"]," ",all[i+2,"Coord"]," ",mean(c(all[i,"Coord"],all[i+1,"Coord"]))," ",previous_position,sep=""))
         all_recomb[(nrow(all_recomb) + 1),"Positions"] <- mean(c(all[i,"Coord"],all[i+1,"Coord"]))
         all_recomb[nrow(all_recomb),"Proportions"] <- mean(c(all[i,"Proportions"],all[i+1,"Proportions"]))
         all_recomb[nrow(all_recomb),"Proportions_relative_to_centromeres"] <- mean(c(all[i,"Proportions_relative_to_centromeres"],all[i+1,"Proportions_relative_to_centromeres"]))
@@ -687,8 +690,13 @@ for(i in 1:(nrow(all)-2)) {       # for-loop over rows; need to only go up to th
     }
   } # end of check for maternal recomb
   else if((all[i,]$matpat == "pat")&
+        #  (is.na(all[i,"P2_H1"]) == F)& #commented because NA should only be present in bad files
+        #  (is.na(all[i+1,"P2_H1"]) == F)& # so I want this to fail if an NA is encountered
           (all[i,]$grp == all[i+1,]$grp)&
           (all[i,]$grp == all[i+2,]$grp)){ # this is for paternal SNPS on the same chr
+    print(paste(i," ",all[i+3,"ind"]," ",all[i+3,"grp"]," ",all[i+3,]$pos," ",all[i-1,"P2_H1"]," ",all[i,"P2_H1"]," ",all[i+1,"P2_H1"]," ",
+                all[i+2,"P2_H1"]," ", all[i-1,"Coord"]," ",all[i,"Coord"]," ",all[i+1,"Coord"]," ",
+                all[i+2,"Coord"]," ", mean(c(all[i,"Coord"],all[i+1,"Coord"]))," ",previous_position,sep=""))
     if((all[i,"P2_H1"] != all[i+1,"P2_H1"])&
        (as.numeric(all[i,]$pos) != 0)&
        (all[i,]$ind == previous_individual)){ # recombination occurred here in the father
@@ -751,6 +759,10 @@ n_pat_recomb <- nrow(all_recomb[all_recomb$Parent == "pat",]);n_pat_recomb
 print(paste("Number mat recombination events across all individuals and all chrs ",n_mat_recomb,sep=" "))
 print(paste("Number pat recombination events across all individuals and all chrs ",n_pat_recomb,sep=" "))
 
+print(paste("Average number mat recombination events per individual across all chrs ",n_mat_recomb/length(unique(all$ind)),sep=" "))
+print(paste("Average number pat recombination events per individual across all chrs ",n_pat_recomb/length(unique(all$ind)),sep=" "))
+
+
 # Length of maternal LG
 mat_bp_length <- 0
 pat_bp_length <- 0
@@ -791,15 +803,42 @@ for(j in unique(all$ind)) { # cycle through individuals
   }
 }  
 
-print(paste("mat_cM_length summed over all individuals",mat_cM_length,sep=" "))
-print(paste("pat_cM_length summed over all individuals",pat_cM_length,sep=" "))
-print(paste("mat_bp_length summed over all individuals",mat_bp_length,sep=" "))
-print(paste("pat_bp_length summed over all individuals",pat_bp_length,sep=" "))
+#print(paste("Inaccurate mat_cM_length summed over all individuals",mat_cM_length,sep=" "))
+#print(paste("Inaccurate pat_cM_length summed over all individuals",pat_cM_length,sep=" "))
+#print(paste("mat_bp_length summed over all individuals",mat_bp_length,sep=" "))
+#print(paste("pat_bp_length summed over all individuals",pat_bp_length,sep=" "))
 
-print(paste("mat_cM_length_for_one_individual in cM ",mat_cM_length_per_individual,sep=" "))
-print(paste("pat_cM_length_for_one_individual in cM ",pat_cM_length_per_individual,sep=" "))
-print(paste("mat_bp_length_for_one_individual in bp ",mat_bp_length_per_individual,sep=" "))
-print(paste("pat_bp_length_for_one_individual in bp ",pat_bp_length_per_individual,sep=" "))
+# the first two metrics are inaccurate because they include recombination events
+# that were not well supported by the buffer and strings of consistent genotype criteria
+#print(paste("Inaccurate mat_cM_length_for_one_individual in cM ",mat_cM_length_per_individual,sep=" "))
+#print(paste("Inaccurate pat_cM_length_for_one_individual in cM ",pat_cM_length_per_individual,sep=" "))
+print(paste("mat_bp_length_for_one_individual in bp ",mat_bp_length_per_individual/1000000000,' Gb',sep=" "))
+print(paste("pat_bp_length_for_one_individual in bp ",pat_bp_length_per_individual/1000000000,' Gb',sep=" "))
+# a centimorgand is length of chromosome in which an average of 0.01 crossover occurs per generation.
+
+# according to wikipedia: https://en.wikipedia.org/wiki/Centimorgan
+# the distance in cM is equal to 50*ln(1 / (1-2P) ); where p is the probability of recombination
+# but this doesn't work for long distances where P>0.5 because the denominator is negative
+
+# according to ChatGPT (sketchy!), cM = (# recombination events / total gametes) * 100
+
+P_mat <- ((n_mat_recomb/length(unique(all$ind))))*100;P_mat
+P_pat <- ((n_pat_recomb/length(unique(all$ind))))*100;P_pat
+
+# It can be calculated as the length in bp/(# crossover events/100)
+print(paste("Accurate mat_cM_length_for_one_individual in cM ",
+            P_mat,
+            sep=" "))
+print(paste("Accurate pat_cM_length_for_one_individual in cM ",
+            P_pat,
+            sep=" "))
+# human genome is ~3300 centimorgans, so these numbers for xennies are either way off or much bigger.
+# maybe more recombination is needed to maintain disomy in a polyploid
+# ******** check calculations *********
+# for XL the "accurate" pat cM is lower than the "inaccurate" pat cM. It should be higher!
+# ******** ******** ******** ******** ******** ******** ******** ******** ******** ********
+
+
 
 # now calculate proportion boundaries of each LG for XL
 for(i in LG_min_max$CHR) {
@@ -901,6 +940,14 @@ LG_min_max$max_prop <- LG_min_max$max/LG_min_max$chr_length
 
 LG_min_max$total_prop <- LG_min_max$max_prop - LG_min_max$min_prop;LG_min_max
 
+LG_min_max$CHR <- factor(LG_min_max$CHR, 
+                                       levels = c('Chr1L','Chr2L','Chr3L','Chr4L','Chr5L',
+                                                  'Chr6L','Chr7L','Chr8L','Chr9_10L',
+                                                  'Chr1S','Chr2S','Chr3S','Chr4S','Chr5S',
+                                                  'Chr6S','Chr7S','Chr8S','Chr9_10S',
+                                                  'Chr1','Chr2','Chr3','Chr4','Chr5',
+                                                  'Chr6','Chr7','Chr8','Chr9','Chr10'),
+                                       ordered = T)
 
 # Plot the proportions of each chr that are covered by the LG
 proportions <- ggplot(LG_min_max, aes(x=CHR))+
@@ -913,6 +960,7 @@ proportions <- ggplot(LG_min_max, aes(x=CHR))+
 ggsave(file="LG_proportion_of_CHRs.pdf", w=10, h=6, proportions)
 
 
+
 # Plot proportion on chromosomes irrespective of centromere
 densities <- ggplot(all_recomb, aes(x = Proportions)) +
   geom_density(aes(color = Parent))+
@@ -923,6 +971,7 @@ densities <- ggplot(all_recomb, aes(x = Proportions)) +
   theme_classic(); densities
 
 ggsave(file="Recombination_density_relative_to_chr_tips.pdf", w=10, h=6, densities)
+
 
 
 # Plot proportion on chromosomes relative of centromere (0 is a tip, 100 is a centromere)
@@ -944,18 +993,18 @@ ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
   theme_classic()
 
 # all together
-ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
-  geom_density()+
-  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
-  xlim(0,1) +
-  theme_classic()
+#ggplot(all_recomb, aes(x = Proportions_relative_to_centromeres)) +
+#  geom_density()+
+#  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+#  xlim(0,1) +
+#  theme_classic()
 
 
 
-ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, group=Parent, fill=Parent)) +
-  geom_density(adjust=1.5, position="fill") +
-  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
-  theme_classic()
+#ggplot(all_recomb, aes(x=Proportions_relative_to_centromeres, group=Parent, fill=Parent)) +
+#  geom_density(adjust=1.5, position="fill") +
+#  xlab("Proportion to Centromere (Tip = 0, Centromere = 1)") + ylab("Density") +
+#  theme_classic()
 
 
 # Histogram with density plot
@@ -985,26 +1034,99 @@ overlay_hist <- ggplot(all_recomb,aes(x=Proportions)) +
 
 ggsave(file="Recombination_events_on_scaled_chrs.pdf", w=10, h=6, overlay_hist)
 
+# Now make a plot that shows how recombination events accumulate
+# over the length of a chromosome
+# first subset the sex chromosome
+mysex_chr <- "Chr2L"
+sex_chr_mat_recomb <- all_recomb[((all_recomb$Parent == "mat")&(all_recomb$Chr == mysex_chr)),];sex_chr_mat_recomb
+sex_chr_pat_recomb <- all_recomb[((all_recomb$Parent == "pat")&(all_recomb$Chr == mysex_chr)),];sex_chr_pat_recomb
+not_sex_chr_mat_recomb <- all_recomb[((all_recomb$Parent == "mat")&(all_recomb$Chr != mysex_chr)),];sex_chr_mat_recomb
+not_sex_chr_pat_recomb <- all_recomb[((all_recomb$Parent == "pat")&(all_recomb$Chr != mysex_chr)),];sex_chr_pat_recomb
+
+# now sort by chr and position
+sex_chr_mat_recomb_sorted <- sex_chr_mat_recomb[order(sex_chr_mat_recomb$Chr, 
+                                                      sex_chr_mat_recomb$Positions),];sex_chr_mat_recomb_sorted
+sex_chr_pat_recomb_sorted <- sex_chr_pat_recomb[order(sex_chr_pat_recomb$Chr, 
+                                                      sex_chr_pat_recomb$Positions),];sex_chr_pat_recomb_sorted
+not_sex_chr_mat_recomb_sorted <- not_sex_chr_mat_recomb[order(not_sex_chr_mat_recomb$Positions),];not_sex_chr_mat_recomb_sorted
+not_sex_chr_pat_recomb_sorted <- not_sex_chr_pat_recomb[order(not_sex_chr_pat_recomb$Positions),];not_sex_chr_pat_recomb_sorted
+
+# add a column for the y-axis
+sex_chr_mat_recomb_sorted$n_recombination <- 1:nrow(sex_chr_mat_recomb_sorted)
+sex_chr_pat_recomb_sorted$n_recombination <- 1:nrow(sex_chr_pat_recomb_sorted)
+not_sex_chr_mat_recomb_sorted$n_recombination <- 1:nrow(not_sex_chr_mat_recomb_sorted)
+not_sex_chr_pat_recomb_sorted$n_recombination <- 1:nrow(not_sex_chr_pat_recomb_sorted)
+# make column for color
+sex_chr_mat_recomb_sorted$sexchr_or_not <- "red"
+sex_chr_pat_recomb_sorted$sexchr_or_not <- "red"
+not_sex_chr_mat_recomb_sorted$sexchr_or_not <- "black"
+not_sex_chr_pat_recomb_sorted$sexchr_or_not <- "black"
+# make column for matpat
+sex_chr_mat_recomb_sorted$matpat <- "mat"
+sex_chr_pat_recomb_sorted$matpat <- "pat"
+not_sex_chr_mat_recomb_sorted$matpat <- "mat"
+not_sex_chr_pat_recomb_sorted$matpat <- "pat"
+
+# bind it all together
+recomb_df <- rbind(sex_chr_mat_recomb_sorted,not_sex_chr_mat_recomb_sorted,
+                   sex_chr_pat_recomb_sorted,not_sex_chr_pat_recomb_sorted)
+
+# make the chr into a factor
+recomb_df$Chr <- factor(recomb_df$Chr, 
+                         levels = c('Chr1L','Chr2L','Chr3L','Chr4L','Chr5L',
+                                    'Chr6L','Chr7L','Chr8L','Chr9_10L',
+                                    'Chr1S','Chr2S','Chr3S','Chr4S','Chr5S',
+                                    'Chr6S','Chr7S','Chr8S','Chr9_10S',
+                                    'Chr1','Chr2','Chr3','Chr4','Chr5',
+                                    'Chr6','Chr7','Chr8','Chr9','Chr10'),
+                         ordered = T)
+
+# plot
+MatPat_recombination_accumulation_perchr<-ggplot(recomb_df, aes(x=Proportions, y=n_recombination, color=sexchr_or_not)) + 
+  #geom_line() +
+  geom_point(size=1, alpha = 0.7) +
+  # get rid of gray background
+  theme_bw() + theme(panel.grid.minor=element_blank(),panel.grid.major=element_blank()) +
+  labs(x = "Position", y= "Number of recombination events") +
+  #scale_colour_hue(l=50) + # Use a slightly darker palette than normal
+  theme(axis.text=element_text(size=5), axis.title=element_text(size=10)) +
+  facet_grid(matpat ~ Chr) +
+  # get rid of legend title
+  # theme(legend.title = element_blank()) +
+  # remove  the legend
+  theme(legend.position="none") +
+  # increase font size
+  #theme(legend.text=element_text(size=14)) +
+  # fix x-axis labels
+  scale_x_continuous(breaks=seq(0,1,by=0.5)) +
+  # color the stuff the way I want
+  scale_color_manual(breaks = c("black", "red"),values=c("black", "red"),labels=c("Autosomes", "Sex Chr")) +
+  theme(panel.background=element_rect(fill="transparent",colour="transparent"),
+        plot.background=element_rect(fill="transparent",colour="transparent"),
+        legend.key = element_rect(fill = "transparent", colour = "transparent"));MatPat_recombination_accumulation_perchr
+
+ggsave(file="MatPat_recombination_accumulation_perchr.pdf", w=10, h=4, MatPat_recombination_accumulation_perchr)
+
 
 # Histogram of recombination events per chr for mat ----
 mat_recomb_per_chr_plot <- ggplot(mat_recomb_per_chr_long) +
-  geom_histogram(aes(x=count), position="dodge", binwidth = 1) +
-  scale_x_continuous(breaks=seq(0, 20, 2)) +
-  scale_y_continuous(breaks=seq(0, 20, 5)) +
-  facet_wrap(~Chrs, nrow=9,ncol=2) +
-  labs(x = "Recombinations per chromosome") +
-  theme_classic();mat_recomb_per_chr_plot
+    geom_histogram(aes(x=count), position="dodge", binwidth = 1) +
+    scale_x_continuous(breaks=seq(0, 20, 2)) +
+    scale_y_continuous(breaks=seq(0, 20, 5)) +
+    facet_wrap(~Chrs, nrow=9,ncol=2) +
+    labs(x = "Recombinations per chromosome") +
+    theme_classic(); mat_recomb_per_chr_plot  
+  
+ggsave(file="Mat_recombination_perchr.pdf", w=4, h=10, mat_recomb_per_chr_plot)
 
-ggsave(file="Mat_recombination_perchr.pdf", w=4, h=6, mat_recomb_per_chr_plot)
-
-# Histogram of recombination events per chr for mat ----
+# Histogram of recombination events per chr for pat ----
 pat_recomb_per_chr_plot <- ggplot(pat_recomb_per_chr_long) +
   geom_histogram(aes(x=count), position="dodge", binwidth = 1) +
   scale_x_continuous(breaks=seq(0, 20, 2)) +
   scale_y_continuous(breaks=seq(0, 20, 5)) +
   facet_wrap(~Chrs, nrow=9,ncol=2) +
   labs(x = "Recombinations per chromosome") +
-  theme_classic()
+  theme_classic(); pat_recomb_per_chr_plot
 
 ggsave(file="Pat_recombination_perchr.pdf", w=4, h=6, pat_recomb_per_chr_plot)
 
