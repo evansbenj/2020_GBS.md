@@ -429,7 +429,7 @@ library(tidyverse)
 # if there are rownames, you can add a bogus header for them to prevent a redundant rowname error like this:
 # perl -pi -e 's/^/"bogus" / if $.==1' all_mat.txt
 options(scipen=999)
-#setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GE_family")
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_trop_GOOD/GW_family')
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_OneMap/2023_laevis_good')
 all_mat <- read.table("./all_mat.txt", header = T)
@@ -1037,7 +1037,8 @@ ggsave(file="Recombination_events_on_scaled_chrs.pdf", w=10, h=6, overlay_hist)
 # Now make a plot that shows how recombination events accumulate
 # over the length of a chromosome
 # first subset the sex chromosome
-mysex_chr <- "Chr2L"
+mysex_chr <- "Chr7"
+
 sex_chr_mat_recomb <- all_recomb[((all_recomb$Parent == "mat")&(all_recomb$Chr == mysex_chr)),];sex_chr_mat_recomb
 sex_chr_pat_recomb <- all_recomb[((all_recomb$Parent == "pat")&(all_recomb$Chr == mysex_chr)),];sex_chr_pat_recomb
 not_sex_chr_mat_recomb <- all_recomb[((all_recomb$Parent == "mat")&(all_recomb$Chr != mysex_chr)),];sex_chr_mat_recomb
@@ -1048,28 +1049,28 @@ sex_chr_mat_recomb_sorted <- sex_chr_mat_recomb[order(sex_chr_mat_recomb$Chr,
                                                       sex_chr_mat_recomb$Positions),];sex_chr_mat_recomb_sorted
 sex_chr_pat_recomb_sorted <- sex_chr_pat_recomb[order(sex_chr_pat_recomb$Chr, 
                                                       sex_chr_pat_recomb$Positions),];sex_chr_pat_recomb_sorted
-not_sex_chr_mat_recomb_sorted <- not_sex_chr_mat_recomb[order(not_sex_chr_mat_recomb$Positions),];not_sex_chr_mat_recomb_sorted
-not_sex_chr_pat_recomb_sorted <- not_sex_chr_pat_recomb[order(not_sex_chr_pat_recomb$Positions),];not_sex_chr_pat_recomb_sorted
+not_sex_chr_mat_recomb_sorted <- not_sex_chr_mat_recomb[order(not_sex_chr_mat_recomb$Chr,
+                                                              not_sex_chr_mat_recomb$Positions),];not_sex_chr_mat_recomb_sorted
+not_sex_chr_pat_recomb_sorted <- not_sex_chr_pat_recomb[order(not_sex_chr_pat_recomb$Chr,
+                                                              not_sex_chr_pat_recomb$Positions),];not_sex_chr_pat_recomb_sorted
 
-# add a column for the y-axis
-sex_chr_mat_recomb_sorted$n_recombination <- 1:nrow(sex_chr_mat_recomb_sorted)
-sex_chr_pat_recomb_sorted$n_recombination <- 1:nrow(sex_chr_pat_recomb_sorted)
-not_sex_chr_mat_recomb_sorted$n_recombination <- 1:nrow(not_sex_chr_mat_recomb_sorted)
-not_sex_chr_pat_recomb_sorted$n_recombination <- 1:nrow(not_sex_chr_pat_recomb_sorted)
 # make column for color
 sex_chr_mat_recomb_sorted$sexchr_or_not <- "red"
 sex_chr_pat_recomb_sorted$sexchr_or_not <- "red"
 not_sex_chr_mat_recomb_sorted$sexchr_or_not <- "black"
 not_sex_chr_pat_recomb_sorted$sexchr_or_not <- "black"
 # make column for matpat
-sex_chr_mat_recomb_sorted$matpat <- "mat"
-sex_chr_pat_recomb_sorted$matpat <- "pat"
-not_sex_chr_mat_recomb_sorted$matpat <- "mat"
-not_sex_chr_pat_recomb_sorted$matpat <- "pat"
+sex_chr_mat_recomb_sorted$matpat <- "pink"
+sex_chr_pat_recomb_sorted$matpat <- "blue"
+not_sex_chr_mat_recomb_sorted$matpat <- "pink"
+not_sex_chr_pat_recomb_sorted$matpat <- "blue"
 
 # bind it all together
 recomb_df <- rbind(sex_chr_mat_recomb_sorted,not_sex_chr_mat_recomb_sorted,
                    sex_chr_pat_recomb_sorted,not_sex_chr_pat_recomb_sorted)
+
+# add a column for the y-axis
+recomb_df <- recomb_df %>% group_by(Chr,matpat) %>% mutate(n_recombination = 1:n())
 
 # make the chr into a factor
 recomb_df$Chr <- factor(recomb_df$Chr, 
@@ -1082,7 +1083,7 @@ recomb_df$Chr <- factor(recomb_df$Chr,
                          ordered = T)
 
 # plot
-MatPat_recombination_accumulation_perchr<-ggplot(recomb_df, aes(x=Proportions, y=n_recombination, color=sexchr_or_not)) + 
+MatPat_recombination_accumulation_perchr<-ggplot(recomb_df, aes(x=Proportions, y=n_recombination, color=matpat)) + 
   #geom_line() +
   geom_point(size=1, alpha = 0.7) +
   # get rid of gray background
@@ -1090,7 +1091,7 @@ MatPat_recombination_accumulation_perchr<-ggplot(recomb_df, aes(x=Proportions, y
   labs(x = "Position", y= "Number of recombination events") +
   #scale_colour_hue(l=50) + # Use a slightly darker palette than normal
   theme(axis.text=element_text(size=5), axis.title=element_text(size=10)) +
-  facet_grid(matpat ~ Chr) +
+  facet_grid(~Chr) +
   # get rid of legend title
   # theme(legend.title = element_blank()) +
   # remove  the legend
@@ -1100,7 +1101,7 @@ MatPat_recombination_accumulation_perchr<-ggplot(recomb_df, aes(x=Proportions, y
   # fix x-axis labels
   scale_x_continuous(breaks=seq(0,1,by=0.5)) +
   # color the stuff the way I want
-  scale_color_manual(breaks = c("black", "red"),values=c("black", "red"),labels=c("Autosomes", "Sex Chr")) +
+  scale_color_manual(breaks = c("pink", "blue"),values=c("pink", "blue"),labels=c("Mat", "Pat")) +
   theme(panel.background=element_rect(fill="transparent",colour="transparent"),
         plot.background=element_rect(fill="transparent",colour="transparent"),
         legend.key = element_rect(fill = "transparent", colour = "transparent"));MatPat_recombination_accumulation_perchr
