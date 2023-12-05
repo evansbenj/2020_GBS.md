@@ -1,0 +1,91 @@
+# Perl script to identify sites that are heterozygous in only one parent
+``` perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+# This program reads in a vcf file with genotypic information from
+# a family  and identifies positions that
+# are heterozygous in only the mother or only the father.
+
+# execute like this:
+# ./Gets_matpat_positions_from_vcf_file.pl mat pat matout patout
+
+# where mat is the sample position of the mother 
+# where pat is the sample position of the father
+# and matout and patout are the output files (with chromsoome name in them) 
+
+my $vcf = $ARGV[0];
+my $mat = $ARGV[1];
+my $pat = $ARGV[2];
+my $outputfile = $ARGV[3];
+my $outputfile2 = $ARGV[4];
+my @columns;
+my @mat;
+my @pat;
+my @mat1;
+my @pat1;
+
+
+unless (open(OUTFILE, ">$outputfile"))  {
+	print "I can\'t write to $outputfile   $!\n\n";
+	exit;
+}
+print "Creating output file: $outputfile\n";
+
+unless (open(OUTFILE2, ">$outputfile2"))  {
+	print "I can\'t write to $outputfile2  $!\n\n";
+	exit;
+}
+print "Creating output file: $outputfile2\n";
+
+
+
+#### Prepare the input file  with values for svl
+
+#unless (open DATAINPUT, $vcf) {
+#	print "Can not find the vcf file, jackass.\n";
+#	exit;
+#}
+
+
+if ($vcf =~ /.gz$/) {
+	open DATAINPUT, '<:gzip', $vcf or die "Could not read from $vcf: $!";
+	#open(DATAINPUT, “gunzip -c $vcf |”) || die “can’t open pipe to $vcf”;
+}
+else {
+	open DATAINPUT, $vcf or die "Could not read from $vcf: $!";
+}
+
+
+while ( my $line = <DATAINPUT>) {
+	@columns=split("	",$line);
+		#print $line,"\n";
+		if($columns[0] =~ m/^#/){
+			if($columns[0] eq '#CHROM'){
+				print $columns[$mat+8],"\t",$columns[$pat+8],"\n";
+			}	
+		}
+		else{
+			@mat = split(":",$columns[$mat+8]);
+			@pat = split(":",$columns[$pat+8]);
+			# select positions that are not missing in either parent
+			print $mat[0]," ",$pat[0],"\n";
+			if(($mat[0] ne './.')&&($pat[0] ne './.')){
+				@mat1 = split(/[\|\/]/,$mat[0]);
+				@pat1 = split(/[\|\/]/,$pat[0]);
+				if(($mat1[0] ne $mat1[1])&&($pat1[0] eq $pat1[1])){ # this is a mat site
+					print OUTFILE $columns[0],"\t",$columns[1],"\n";
+					print "mat\t",$columns[0],"\t",$columns[1],"\t",$mat1[0],"\t",$mat1[1],"\t",$pat1[0],"\t",$pat1[1],"\n";
+				}
+				elsif(($mat1[0] eq $mat1[1])&&($pat1[0] ne $pat1[1])){ # this is a pat site
+					print OUTFILE2 $columns[0],"\t",$columns[1],"\n";
+					print "pat\t", $columns[0],"\t",$columns[1],"\t",$mat1[0],"\t",$mat1[1],"\t",$pat1[0],"\t",$pat1[1],"\n";
+				}
+			}
+		} # end else
+} # end while
+close DATAINPUT;
+close OUTFILE;
+close OUTFILE2;
+```
