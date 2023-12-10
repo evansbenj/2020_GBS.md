@@ -18,5 +18,5 @@ Using vcftools I am going to filter a bit more to (1) ensure that >80% of the sa
 
 ```
 module load StdEnv/2020 vcftools/0.1.16
-
+vcftools --vcf XX_Chr1_removed.vcf --max-missing 0.8 --min-meanDP 10 --recode --out XX_Chr1_removed_JoinMap
 ```
