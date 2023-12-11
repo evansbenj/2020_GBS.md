@@ -51,7 +51,8 @@ The loc file can now be opened with JoinMap. After selecting the node in the lef
 * Now click on the population node again and select the "Grounpings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
 * Right click on a node in the tree that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Also right click on other nodes with the same level of stringency
-* In the Population Menu, select "Creat Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grounping 1"
+* In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
+* The if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 
   
 
