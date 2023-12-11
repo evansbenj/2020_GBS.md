@@ -47,5 +47,5 @@ The loc file can now be opened with JoinMap. After selecting the node in the lef
 * Now click on the "Create Population Node" option in the Dataset Menu
 * With the newly created node selected, click on the calculator icon in the toolbar below the part of the menu with words
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"
-* 
+  
 
