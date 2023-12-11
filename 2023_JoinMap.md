@@ -20,3 +20,17 @@ Using vcftools I am going to filter a bit more to (1) ensure that >80% of the sa
 module load StdEnv/2020 vcftools/0.1.16
 vcftools --vcf XX_Chr1_removed.vcf --max-missing 0.8 --min-meanDP 10 --recode --out XX_Chr1_removed_JoinMap
 ```
+
+I also need to change the length of the sample names so that they are less than 20 characters each (the '-e' is needed to make this work on OSX):
+```
+sed -i -e 's/__sorted.bam//g' Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
+```
+
+
+# Remove GQ field
+Now I want to use a python script to convert the vcf file to a JoinMap input file (loc). But there was an error because the GQ field has non-numeric values ('.') sometimes. I'm using bcftools to remove this field in hopes this will fix the problem:
+```
+module load bcftools/1.11   StdEnv/2020 intel/2020.1.217
+bcftools annotate -x FORMAT/GQ Mitros_C659_Chr10_removed_JoinMap.recode.vcf -Ov -o Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
+```
+
