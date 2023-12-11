@@ -38,3 +38,9 @@ now the python script works well:
 ```
 ./vcf2loc.py -t CP -a SRR8704355 -b SRR8704354 -o Mitros_C659_Chr10_removed_JoinMap.recode.loc Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
 ```
+
+# JoinMap
+
+The loc file can now be opened with JoinMap. After selecting the node in the left most pane, in the "Dataset" Menu you need to select "Creat New Dataset from Dada Tabsheet"
+
+Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
