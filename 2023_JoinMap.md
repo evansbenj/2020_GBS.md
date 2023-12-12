@@ -53,7 +53,7 @@ The loc file can now be opened with JoinMap.
 * *** I need to figure out how to delete the loci with segregation distortion
 * Now click on the population node again and select the "Grounpings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
-* Right click on a node in the tree that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Also right click on other nodes with the same level of stringency
+* Right click on a node in the Grouping tree that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Also right click on other nodes with the same level of stringency
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * The if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 * Once there are maps for multiple groups (e.g. the mat and pat sites) you can right click on each group (a square yellow icon with 9 dots in it) and then go to the "Join" menue and select "Combine Groups for Map Integration". I think this makes a joint matpat map.
