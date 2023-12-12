@@ -41,8 +41,11 @@ now the python script works well:
 
 # JoinMap
 
-The loc file can now be opened with JoinMap. After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Dada Tabsheet"
+The loc file can now be opened with JoinMap. 
 
+* Go to the file menu and save a now project
+* Load the loc file from the File menu "Load Data"
+* After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Data Tabsheet"
 * Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
 * Now click on the "Create Population Node" option in the Dataset Menu
 * With the newly created node selected (right clicked), click on the calculator icon in the toolbar below the part of the menu with words
