@@ -130,10 +130,11 @@ foreach my $key (keys %SL_Hash) {
 			{
 				# it fits, so calculate the test statistics
 				# first calculate the (distance to the center of the chr / chr length)^2
-				print $key,"\t",$SL_center,"\t",($XL_Hash{$SL_Hash{$key}[1]}[0]/2),"\t",$XL_Hash{$SL_Hash{$key}[1]}[0],"\t",(($SL_center-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2,"\n";
+				
 				$standardized_squared_distance_to_center_teststat += (($SL_center-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere_teststat += (($SL_center-(($XL_Hash{$SL_Hash{$key}[1]}[2]-$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere_teststat += (($SL_center-(($XL_Hash{$SL_Hash{$key}[1]}[2]+$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
+				print $key,"\t",$SL_center,"\t",$XL_Hash{$SL_Hash{$key}[1]}[2],"\t",$XL_Hash{$SL_Hash{$key}[1]}[1],"\t",$XL_Hash{$SL_Hash{$key}[1]}[0],"\t",(($SL_center-(($XL_Hash{$SL_Hash{$key}[1]}[2]+$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2,"\n";
 			}
 			else{ # the SL region doesn't fit
 			print "Something is wrong with how the SL regions are defined\n";
@@ -150,7 +151,7 @@ foreach my $key (keys %SL_Hash) {
 				# first calculate the (distance to the center of the chr / chr length)^2
 				$standardized_squared_distance_to_center_teststat += (($SL_center-($XT_Hash{$SL_Hash{$key}[1]}[0]/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere_teststat += (($SL_center-(($XT_Hash{$SL_Hash{$key}[1]}[2]-$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere_teststat += (($SL_center-(($XT_Hash{$SL_Hash{$key}[1]}[2]+$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 			}
 			else{ # the SL region doesn't fit
 			print "Something is wrong with how the SL regions are defined\n";
@@ -184,7 +185,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 			# $XL_Hash{$SL_Hash{$key}[1]}[1] # cent begin
 			# $XL_Hash{$SL_Hash{$key}[1]}[2] # cent end
 			$random_number = int(rand($XL_Hash{$SL_Hash{$key}[1]}[0]));
-			print $key,"\t",$SL_Hash{$key}[1] ,"\t",$random_number,"\n";
+			# print $key,"\t",$SL_Hash{$key}[1] ,"\t",$random_number,"\n";
 			# check if it fits within the chr
 			if(($random_number + 0.5*($SL_Hash{$key}[4]-$SL_Hash{$key}[3]) <= $XL_Hash{$SL_Hash{$key}[1]}[0])&&
 			($random_number - 0.5*($SL_Hash{$key}[4]-$SL_Hash{$key}[3]) >= 0))
@@ -193,9 +194,9 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 				# first calculate the (distance to the center of the chr / chr length)^2
 				$standardized_squared_distance_to_center[$counter]+=(($random_number-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XL_Hash{$SL_Hash{$key}[1]}[2]-$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XL_Hash{$SL_Hash{$key}[1]}[2]+$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
 				
-				print "hello ",$key,"\t",$random_number,"\t",($XL_Hash{$SL_Hash{$key}[1]}[0]/2),"\t",$XL_Hash{$SL_Hash{$key}[1]}[0],"\t",(($random_number-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2,"\n";
+				# print "hello ",$key,"\t",$random_number,"\t",($XL_Hash{$SL_Hash{$key}[1]}[0]/2),"\t",$XL_Hash{$SL_Hash{$key}[1]}[0],"\t",(($random_number-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2,"\n";
 				
 				}
 			else{ # the SL region doesn't fit
@@ -212,7 +213,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 				# first calculate the (distance to the center of the chr / chr length)^2
 				$standardized_squared_distance_to_center[$counter]+=(($random_number-($XL_Hash{$SL_Hash{$key}[1]}[0]/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XL_Hash{$SL_Hash{$key}[1]}[2]-$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XL_Hash{$SL_Hash{$key}[1]}[2]+$XL_Hash{$SL_Hash{$key}[1]}[1])/2))/$XL_Hash{$SL_Hash{$key}[1]}[0])**2;
 			}
 		}
 		elsif($SL_Hash{$key}[0] eq "Silurana"){
@@ -223,7 +224,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 			# $XT_Hash{$SL_Hash{$key}[1]}[1] # cent begin
 			# $XT_Hash{$SL_Hash{$key}[1]}[2] # cent end
 			$random_number = int(rand($XT_Hash{$SL_Hash{$key}[1]}[0]));
-			print $key,"\t",$SL_Hash{$key}[1] ,"\t",$random_number,"\n";
+			# print $key,"\t",$SL_Hash{$key}[1] ,"\t",$random_number,"\n";
 			# check if it fits within the chr
 			if(($random_number + 0.5*($SL_Hash{$key}[4]-$SL_Hash{$key}[3]) <= $XT_Hash{$SL_Hash{$key}[1]}[0])&&
 			($random_number - 0.5*($SL_Hash{$key}[4]-$SL_Hash{$key}[3]) >= 0))
@@ -232,7 +233,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 				# first calculate the (distance to the center of the chr / chr length)^2
 				$standardized_squared_distance_to_center[$counter]+=(($random_number-($XT_Hash{$SL_Hash{$key}[1]}[0]/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XT_Hash{$SL_Hash{$key}[1]}[2]-$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XT_Hash{$SL_Hash{$key}[1]}[2]+$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 				}
 			else{ # the SL region doesn't fit
 				# put the region at the beginning or end of the chr, depending on which one it overlaps with
@@ -248,7 +249,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 				# first calculate the (distance to the center of the chr / chr length)^2
 				$standardized_squared_distance_to_center[$counter]+=(($random_number-($XT_Hash{$SL_Hash{$key}[1]}[0]/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 				# now calculate the (distance to the centromere of the chr / chr length)^2
-				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XT_Hash{$SL_Hash{$key}[1]}[2]-$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
+				$standardized_squared_distance_to_centromere[$counter]+=(($random_number-(($XT_Hash{$SL_Hash{$key}[1]}[2]+$XT_Hash{$SL_Hash{$key}[1]}[1])/2))/$XT_Hash{$SL_Hash{$key}[1]}[0])**2;
 			}
 		}
 		else{
@@ -257,7 +258,7 @@ for ($y = 0 ; $y < $perms; $y++ ) {
 	}
 	$counter+=1;
 }	
-print "@standardized_squared_distance_to_centromere\n";
+#print "@standardized_squared_distance_to_centromere\n";
 
 
 # We have a one-sided expectation that the test statistic will be larger than the random expectation established 
@@ -266,8 +267,8 @@ print "@standardized_squared_distance_to_centromere\n";
 
 my @standardized_squared_distance_to_center = sort { $a <=> $b } @standardized_squared_distance_to_center;
 my @standardized_squared_distance_to_centromere = sort { $a <=> $b } @standardized_squared_distance_to_centromere;
-print "@standardized_squared_distance_to_center\n";
-print "@standardized_squared_distance_to_centromere\n";
+#print "@standardized_squared_distance_to_center\n";
+#print "@standardized_squared_distance_to_centromere\n";
 
 my $pval=0;
 for ($y = 0 ; $y <= $#standardized_squared_distance_to_center; $y++ ) {
@@ -286,6 +287,7 @@ for ($y = 0 ; $y <= $#standardized_squared_distance_to_centromere; $y++ ) {
 	}
 }	
 
-print "Center distance test stat:",$standardized_squared_distance_to_centromere_teststat,"\n";
-print "Center P value = ",1-$pval/$perms,"\n";
+print "Centromere distance test stat:",$standardized_squared_distance_to_centromere_teststat,"\n";
+print "Centromere P value = ",1-$pval/$perms,"\n";
+
 ```
