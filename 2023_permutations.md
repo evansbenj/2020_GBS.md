@@ -2,9 +2,9 @@
 
 This is a script to do permutations that evaluate whether the locations of sex-linked regions is atypically far from the centers of chromosomes or from telomeres.
 
-The permutations randomly place the same-sized sex-linked regions for each species on the same chromosome. If the sex-linked region overlaps the beginning or the end of the chr, it is placed on the beginning or end of the chromosome.
+The permutations randomly place the same-sized sex-linked regions for each species on the same chromosome. A random number is drawns between an interval that starts from (SL_length/2) and ends chr_length - (SL_length/2). This way the sex-linked region can not overlap with the beginning or the end of the chr.
 
-The test stat is (SL_center - chr_center/chr_length)^2 summed over each species
+The test stat is ((SL_center - chr_center)/chr_length)^2 summed over each species or for telomeres: ((SL_center - telomere_center)/chr_length)^2
 
 This way each chromosome is scaled to be the same length so each species counts the same.
 
