@@ -47,13 +47,13 @@ The loc file can now be opened with JoinMap.
 * Load the loc file from the File menu "Load Data"
 * After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Data Tabsheet"
 * Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
-* Now click on the "Create Maternal and Paternal Population Node" option in the Dataset Menu
+* Now click on the "Create Population Node" option in the Dataset Menu. Do not select "Create Maternal and Paternal Population Node"
 * With the newly created node selected (right clicked), select the "Locus Genot. Freq." tab and then click on the calculator icon in the toolbar below the part of the menu with words
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"
-* *** I need to figure out how to delete the loci with segregation distortion
-* Now click on the population node again and select the "Grounpings (tree)" pane in the right pane
+* Click on the "Data" tab and exclude the ones that had segregation distortion
+* Now click on the yellow population node again and select the "Grounpings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
-* Right click on a node in the Grouping tree that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Also right click on other nodes with the same level of stringency
+* Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Also right click on other nodes with the same level of stringency
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * Within a "Grouping" there are one or more "Groups". You can right click on one of them and a tab appears on the right that has "Fixed Orders". Here you can load the orders beginning with an @ sign
 * The if you click on a group you can go to the "Group" menu option and click "Calculate Map"
