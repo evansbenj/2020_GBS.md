@@ -12,20 +12,18 @@ RADsex is installed here:
 First step is to make a table of reads.  This uses up some memory:
 ```
 #!/bin/sh
-#SBATCH --job-name=radsex
+#SBATCH --job-name=radsex_distrib
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=2:00:00
-#SBATCH --mem=32gb
-#SBATCH --output=radsex.%J.out
-#SBATCH --error=radsex.%J.err
+#SBATCH --mem=64gb
+#SBATCH --output=radsex_distrib.%J.out
+#SBATCH --error=radsex_distrib.%J.err
 #SBATCH --account=def-ben
 
 # run by passing an argument like this
-# sbatch ./2020_fastqc.sh ../raw_data/plate1
-/home/ben/projects/rrg-ben/ben/2020_radsex/bin/radsex process --input-dir /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_c
-liv_laev/raw_data/cutaddapted_by_species_across_three_plates/allofraseri --output-file /home/ben/projects/rrg-ben/ben/2020_GBS_mue
-l_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_allo_markers_table.tsv --threads 16 --min-depth 1
+# sbatch ./2023_RADsex_distrib.sh marker_table outputfile sexfile
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex distrib --markers-table ${1} --output-file ${2} --popmap ${3} --min-depth 1 --groups M,F -C -S 0.0001
 ```
 
 Once this is done I can summarize it using a file that specifies whether the individuals are male or female. I turned off Bonferrini correction (-C) and made the pvalue more stringent (-S 0.0001). This worked for fischbergi, which has a massive sex linked region.
