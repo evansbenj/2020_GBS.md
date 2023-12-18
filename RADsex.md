@@ -46,7 +46,7 @@ Once this is done I can summarize it using a file that specifies whether the ind
 Or output a fasta file with significant reads:
 
 ```
-/home/ben/projects/rrg-ben/ben/2020_radsex/bin/radsex signif --markers-table /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_fisc_catR1R2_markers_table.tsv --output-file /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_fisc_significant_markers.fasta --popmap /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/fischbergi_sex_R1R2cat --min-depth 5 --groups M,F --output-fasta -C -S 0.0001
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex signif --markers-table XXXmarkers_table.tsv --output-file XXX_significant_markers.fasta --popmap XX_sex_R1R2cat --min-depth 5 --groups M,F --output-fasta -C -S 0.0001
 ```
 
 And this can be done for clivii, muelleri, fischbergi, and parafraseri. 
