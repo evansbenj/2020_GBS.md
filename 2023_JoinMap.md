@@ -38,6 +38,11 @@ now the python script works well:
 ```
 ./vcf2loc.py -t CP -a SRR8704355 -b SRR8704354 -o Mitros_C659_Chr10_removed_JoinMap.recode.loc Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
 ```
+# Fixed sites
+Use cut to get a list of the fixed sites:
+```
+cut -d ' ' -f1 Mitros_C659_Chr10_removed_JoinMap.recode.loc
+```
 
 # JoinMap
 
