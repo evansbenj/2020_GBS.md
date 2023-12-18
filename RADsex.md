@@ -12,6 +12,23 @@ RADsex is installed here:
 First step is to make a table of reads.  This uses up some memory:
 ```
 #!/bin/sh
+#SBATCH --job-name=radsex_tableofreads
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=6:00:00
+#SBATCH --mem=128gb
+#SBATCH --output=radsex_tableofreads.%J.out
+#SBATCH --error=radsex_tableofreads.%J.err
+#SBATCH --account=rrg-ben
+
+# run by passing an argument like this
+# sbatch ./2023_RADsex_tableofreads.sh ./
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex process --input-dir ${1}/ --output-file ${1}/markers_table.tsv --threads 16 --min-depth 1
+```
+Once this is done I can summarize it using a file that specifies whether the individuals are male or female. I turned off Bonferrini correction (-C) and made the pvalue more stringent (-S 0.0001). This worked for fischbergi, which has a massive sex linked region.
+
+```
+#!/bin/sh
 #SBATCH --job-name=radsex_distrib
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -26,11 +43,6 @@ First step is to make a table of reads.  This uses up some memory:
 /home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex distrib --markers-table ${1} --output-file ${2} --popmap ${3} --min-depth 1 --groups M,F -C -S 0.0001
 ```
 
-Once this is done I can summarize it using a file that specifies whether the individuals are male or female. I turned off Bonferrini correction (-C) and made the pvalue more stringent (-S 0.0001). This worked for fischbergi, which has a massive sex linked region.
-
-```
-/home/ben/projects/rrg-ben/ben/2020_radsex/bin/radsex distrib --markers-table /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_fisc_catR1R2_markers_table.tsv --output-file /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_fisc_distribution.tsv --popmap /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/fischbergi_sex_R1R2cat --min-depth 5 --groups M,F -C -S 0.0001
-```
 Or output a fasta file with significant reads:
 
 ```
