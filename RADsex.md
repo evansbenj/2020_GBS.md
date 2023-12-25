@@ -6,7 +6,7 @@ Issues to keep in mind are that the method really is aimed at single read data. 
 
 RADsex is installed here:
 ```
-/home/ben/projects/rrg-ben/ben/2020_radsex/bin
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/
 ```
 
 First step is to make a table of reads.  This uses up some memory:
