@@ -66,6 +66,7 @@ The loc file can now be opened with JoinMap.
 * The if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 * This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (P1, P2, green icons)
 * If you click on one of the green icons, you can then select the "Map" tab and see the locus names and the position in cM
+* You can export this using the "Edit" menu and select "Export to File"
 
 * Below is in progress
 * Once there are maps for multiple groups (e.g. the mat and pat sites) you can right click on each group (a square yellow icon with 9 dots in it) and then go to the "Join" menue and select "Combine Groups for Map Integration". I think this makes a joint matpat map.
