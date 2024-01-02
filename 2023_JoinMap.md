@@ -41,8 +41,9 @@ now the python script works well:
 # Fixed sites
 Use cut to get a list of the fixed sites:
 ```
-cut -d ' ' -f1 Mitros_C659_Chr10_removed_JoinMap.recode.loc
+cut -d ' ' -f1 Mitros_C659_Chr10_removed_JoinMap.recode.loc > C659_Chr10_fixed.txt
 ```
+This file then needs to be edited by removing some text in the beginning and end and replacing hard returns with spaces.
 
 # JoinMap
 
