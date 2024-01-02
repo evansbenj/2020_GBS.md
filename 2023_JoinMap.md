@@ -23,7 +23,7 @@ vcftools --vcf XX_Chr1_removed.vcf --max-missing 0.8 --min-meanDP 10 --recode --
 
 I also need to change the length of the sample names so that they are less than 20 characters each (the '-e' is needed to make this work on OSX):
 ```
-sed -i -e 's/__sorted.bam//g' Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
+sed -i -e 's/__sorted.bam//g' Mitros_C659_Chr10_removed_JoinMap.recode.vcf
 ```
 
 
