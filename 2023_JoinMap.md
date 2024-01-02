@@ -54,7 +54,8 @@ The loc file can now be opened with JoinMap.
 * Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
 * Now right click on the yellow square icon and then select the "Locus Genot. Freq." tab and then click on the calculator icon in the toolbar below the part of the menu with words
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"; sort this by p value by clicking the "Signif" tab twice
-* Click on the "Loci" tab and exclude the ones that had segregation distortion
+* Highlight the significant ones by right clicking. Go to the "Population" menu and select "Exclude Marked Items". This will delete the ones with segregation distortion.
+* You can confirm that they are excluded by clicking on the "Loci" tab and checking some of them - they should have the "exclude" checkbox selected
 * Now click on the yellow population node again and select the "Grounpings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
 * Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it and a reasonably high LOD score. Use some criteria such as LOD to select notes
