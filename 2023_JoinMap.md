@@ -58,11 +58,12 @@ The loc file can now be opened with JoinMap.
 * Highlight the significant ones by right clicking. I've been excluding the ones with 4 or more asterisks. Go to the "Population" menu and select "Exclude Marked Items". This will delete the ones with segregation distortion.
 * You can confirm that they are excluded by clicking on the "Loci" tab and checking some of them - they should have the "exclude" checkbox selected
 * Click on the Yellow "Calculation Options" icon and then the "Group" tab, and select "Show weak linkages with a rec. freq. larger than:" and then click "Save to Project"
-* Now click on the yellow population node again and select the "Grounpings (tree)" pane in the right pane
+* Now click on the yellow population node again and select the "Groupings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
 * Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * Within a "Grouping" there are one or more "Groups". You can right click on one of them and a tab appears on the right that has "Fixed Orders". Here you can load the orders beginning with an @ sign
+* In the "Population" menu you can select "Exclude Identicals" and then skip the next step
 * Click on the "Loci" menu and exclude any marker with a value in the "Identical" column. If two identical markers are sequential, just exclude the second one. If two identical markers are not sequential, exclude both. If the next step does not work, delete the mapping node using the Edit menu "Delete Node" option, and then exclude all markers with an identical partner and retry map calculation in the next step
 * The if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 * This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (P1, P2, green icons)
