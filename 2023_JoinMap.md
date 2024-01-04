@@ -59,7 +59,7 @@ The loc file can now be opened with JoinMap.
 * You can confirm that they are excluded by clicking on the "Loci" tab and checking some of them - they should have the "exclude" checkbox selected
 * Now click on the yellow population node again and select the "Groupings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
-* Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it and with a LOD score of at least 4.
+* Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it and with a LOD score of at least 3.
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * Within a "Grouping" there are one or more "Groups" (hopefully only one). If you click on a Group and select the "Loci" tab you can exclude identical individuals. Start by excluding the second identical one and keeping the first.
 * Now click on the "Fixed Orders" tab. Here you can load the orders beginning with an @ sign
