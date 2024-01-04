@@ -63,13 +63,9 @@ The loc file can now be opened with JoinMap.
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * Within a "Grouping" there are one or more "Groups" (hopefully only one). If you click on a Group and select the "Loci" tab you can exclude identical individuals. Start by excluding the second identical one and keeping the first.
 * Now click on the "Fixed Orders" tab. Here you can load the orders beginning with an @ sign
-* Click on the "Loci" menu and exclude any marker with a value in the "Identical" column. If two identical markers are sequential, just exclude the second one. If two identical markers are not sequential, exclude both. If the next step does not work, delete the mapping node using the Edit menu "Delete Node" option, and then exclude all markers with an identical partner and retry map calculation in the next step
 * Then if you click on a group you can go to the "Group" menu option and click "Calculate Map"
-* This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (P1, P2, green icons)
-* If you click on one of the green icons, you can then select the "Map" tab and see the locus names and the position in cM
-* After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
-
-* Once this first round of mapping is done, you can click on the purple map icon that is the parent of the join and parental maps. Check the stress for each locus and exclude ones that are >100. Repeat the map with the reduced number of markers by going to the "Group" menu option and clicking "Calculate Map". After what may be several iterations of this, also check that the order of the markers in the map is ascending; exclude any that are out of order and redo the map until a final map is produced with sequential markers and low stress for all markers.
+* This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (1, 1_P1, 1_P2, green icons)
+* Once this first round of mapping is done, you can click on the purple map icon that is the parent of the join and parental maps. Check the stress for each locus and exclude ones that are >100 by clicking on the yellow Group icon and excluding markers in the loci tab. Repeat the map with the reduced number of markers by going to the "Group" menu option and clicking "Calculate Map". After what may be several iterations of this, also check that the order of the markers in the map is ascending; exclude any that are out of order and redo the map until a final map is produced with sequential markers and low stress for all markers.
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
   
