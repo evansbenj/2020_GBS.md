@@ -57,30 +57,20 @@ The loc file can now be opened with JoinMap.
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"; sort this by p value by clicking the "Signif" tab twice
 * Highlight the significant ones by right clicking. I've been excluding the ones with 4 or more asterisks. Go to the "Population" menu and select "Exclude Marked Items". This will delete the ones with segregation distortion.
 * You can confirm that they are excluded by clicking on the "Loci" tab and checking some of them - they should have the "exclude" checkbox selected
-* Click on the Yellow "Calculation Options" icon and then the "Group" tab, and select "Show weak linkages with a rec. freq. larger than:" and then click "Save to Project"
+* Work in progress: not sure if this creates more stress in the map: Click on the Yellow "Calculation Options" icon and then the "Group" tab, and select "Show weak linkages with a rec. freq. larger than:" and then click "Save to Project"
 * Now click on the yellow population node again and select the "Groupings (tree)" pane in the right pane
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
 * Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
 * Within a "Grouping" there are one or more "Groups". You can right click on one of them and a tab appears on the right that has "Fixed Orders". Here you can load the orders beginning with an @ sign
-* In the "Population" menu you can select "Exclude Identicals" and then skip the next step
+* Not sure how to get this to work: In the "Population" menu you can select "Exclude Identicals" and then skip the next step
 * Click on the "Loci" menu and exclude any marker with a value in the "Identical" column. If two identical markers are sequential, just exclude the second one. If two identical markers are not sequential, exclude both. If the next step does not work, delete the mapping node using the Edit menu "Delete Node" option, and then exclude all markers with an identical partner and retry map calculation in the next step
 * Then if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 * This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (P1, P2, green icons)
 * If you click on one of the green icons, you can then select the "Map" tab and see the locus names and the position in cM
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
-* Once this first round of mapping is done, use Excel to identify markers that have a genetic distance that is greater than the marker to the right. These need to be excluded.
-* Go back to JoinMap and delete the mapping node using the "Edit" menu
-* Now click on the yellow node box with a "P" that is labeled "GBS"; select the "Groupings (tree)" pane in the right pane
-* Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers again
-* Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it
-* In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 2" which has one or more groups within it
-* Within a "Grouping 2" there are one or more "Groups". You can right click on one of them and a tab appears on the right that has "Fixed Orders". Here you can load the orders beginning with an @ sign
-* At this point all the bad loci should already be excluded
-* Then if you click on a group you can go to the "Group" menu option and click "Calculate Map"
-* This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (P1, P2, green icons)
-* If you click on one of the green icons, you can then select the "Map" tab and see the locus names and the position in cM
+* Once this first round of mapping is done, you can click on the purple map icon that is the parent of the join and parental maps. Check the stress for each locus and exclude ones that are >100. Repeat the map with the reduced number of markers by going to the "Group" menu option and clicking "Calculate Map". After what may be several iterations of this, also check that the order of the markers in the map is ascending; exclude any that are out of order and redo the map until a final map is produced with sequential markers and low stress for all markers.
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
   
