@@ -70,15 +70,13 @@ ML function
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
 Regression and Kosambi function
-ML function
-* Go to the file menu and save a now project
+* Go to the file menu and save a new project
 * Load the loc file from the File menu "Load Data"
-* After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Data Tabsheet"
+* After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Data Tabsheet". You probably need to try to right click it several times until it turns fuscha.
 * Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
-* Click on the yellow icon with the squiggly stuff; in the "Group" tab click on "regression mapping"; in the "Regression Mapping" tab click on "Kosambi's" Mapping function. Then cluck "Save to Project"
-* Click on the Dataset1 node or both and then selected in the "Dataset" menu "Create Maternal and Paternal Population Nodes". This created two "root" GBS nodes (GBSP1, GBSP2). Each one can be processed as previosly
-* 
-* Now right click on the yellow square icon and then select the "Locus Genot. Freq." tab and then click on the calculator icon in the toolbar below the part of the menu with words
+* Click on the yellow icon with the squiggly stuff; in the "Group" tab click on "Regression Mapping"; in the "Regression Mapping" tab click on "Kosambi's" Mapping function. Then cluck "Save to Project"
+* Click on the Dataset1 node or both and then in the "Dataset" menu select "Create Maternal and Paternal Population Nodes". This created two "root" GBS nodes (GBSP1, GBSP2). Each one can be processed as previosly
+* Now right click on each yellow square icon (GBSP1, GBSP2) and select the "Locus Genot. Freq." tab and then click on the calculator icon in the toolbar below the part of the menu with words
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"; sort this by p value by clicking the "Signif" tab twice
 * Highlight the significant ones by right clicking. I've been excluding the ones with 4 or more asterisks. Go to the "Population" menu and select "Exclude Marked Items". This will delete the ones with segregation distortion.
 * You can confirm that they are excluded by clicking on the "Loci" tab and checking some of them - they should have the "exclude" checkbox selected
@@ -86,7 +84,7 @@ ML function
 * Click on the calculate icon in the icon toolbar; this will generate a tree with grouped markers with different stringencies (based on LOD scores but this is adjustable)
 * Right click on a node in the Grouping tree (s) that you want to focus on. This should be a node with lots of markers in it and with a LOD score of at least 3.
 * In the Population Menu, select "Create Groups Using the Grouping Tree". This creates another node in the leftmost pane called "Grouping 1" which has one or more groups within it
-* Within a "Grouping" there are one or more "Groups" (hopefully only one). If you click on a Group and select the "Loci" tab you can exclude identical individuals. Start by excluding the second identical one and keeping the first.
+* Within a "Grouping" there are one or more "Groups" (hopefully only one). If you click on a Group and select the "Loci" tab you can exclude identical individuals, but this is not necessary for the regression mapping algorithm (it is for the ML algorithm)
 * Now click on the "Fixed Orders" tab. Here you can load the orders beginning with an @ sign
 * Then if you click on a group you can go to the "Group" menu option and click "Calculate Map"
 * This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (1, 1_P1, 1_P2, green icons)
