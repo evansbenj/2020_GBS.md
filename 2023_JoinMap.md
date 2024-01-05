@@ -76,6 +76,8 @@ ML function
 * After right clicking the yellow square node in the left most pane, in the "Dataset" Menu you need to select "Create New Dataset from Data Tabsheet"
 * Now the data are loaded and you can "Check for Coding Errors" in the Dataset menu.
 * Click on the yellow icon with the squiggly stuff; in the "Group" tab click on "regression mapping"; in the "Regression Mapping" tab click on "Kosambi's" Mapping function. Then cluck "Save to Project"
+* Click on the Dataset1 node or both and then selected in the "Dataset" menu "Create Maternal and Paternal Population Nodes". This created two "root" GBS nodes (GBSP1, GBSP2). Each one can be processed as previosly
+* 
 * Now right click on the yellow square icon and then select the "Locus Genot. Freq." tab and then click on the calculator icon in the toolbar below the part of the menu with words
 * This will test for segregation distortion and the results (X2 values) are in the "Locus Genot Freq" pane in a column called "X2"; sort this by p value by clicking the "Signif" tab twice
 * Highlight the significant ones by right clicking. I've been excluding the ones with 4 or more asterisks. Go to the "Population" menu and select "Exclude Marked Items". This will delete the ones with segregation distortion.
