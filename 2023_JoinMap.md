@@ -68,5 +68,134 @@ The loc file can now be opened with JoinMap.
 * Once this first round of mapping is done, you can click on the purple map icon that is the parent of the join and parental maps. Check the stress for each locus and exclude ones that are >100 by clicking on the yellow Group icon and excluding markers in the loci tab. Repeat the map with the reduced number of markers by going to the "Group" menu option and clicking "Calculate Map". After what may be several iterations of this, also check that the order of the markers in the map is ascending; exclude any that are out of order and redo the map until a final map is produced with sequential markers and low stress for all markers.
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
-  
+
+Plotting matpat maps
+```R
+library (ggplot2)
+library(tidyverse)
+library(stringr) # needed to split a column
+library(reshape2) # this facilitates the overlay plot
+library(ggformula) # for spline derivative
+options(scipen=999)
+setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C659/results")
+
+# concatenate joinmap files from each chr like this:
+# head -1 Chr1_jointmap.txt > all_joinmap.txt; awk 'FNR>1{print}' *jointmap*txt >> all_joinmap.txt
+my_df <- read.table(gzfile("all_joinmap.txt"), header = T)
+#colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df[c('Chr', 'Pos')] <- str_split_fixed(my_df$Locus, '_', 2)
+
+my_df$Chr <- factor(my_df$Chr,
+                    levels = c("Chr1", "Chr2","Chr3",
+                               "Chr4","Chr5","Chr6",
+                               "Chr7","Chr8","Chr9",
+                               "Chr10"), ordered = T)
+
+# From the Smith et al paper	GSE153058_xla_v10.2_cen 1.bed	https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153058	
+# Chr   Start     Stop      Average_of_centromere_coordinates	Chr_Length
+# Chr1L	96582536	97638551	97110544	233740090
+# Chr1S	78922130	79008823	78965477	202412970
+# Chr2L	70076389	70258699	70167544	191000146
+# Chr2S	54347978	55190352	54769165	169306100
+# Chr3L	19140049	19259400	19199725	161426101
+# Chr3S	18944075	19466505	19205290	131962816
+# Chr4L	36375516	36534915	36455216	155250554
+# Chr4S	29328671	29423025	29375848	132731174
+# Chr5L	63210646	63362980	63286813	171415384
+# Chr5S	54099924	54162122	54131023	143394103
+# Chr6L	78555074	78657199	78606137	164223595
+# Chr6S	55253614	55304911	55279263	137316286
+# Chr7L	58158940	58355130	58257035	139837618
+# Chr7S	47582934	47603112	47593023	113060389
+# Chr8L	21900593	22069988	21985291	135449133
+# Chr8S	49180152	49237882	49209017	103977862
+# Chr9_10L	23812947	23941927	23877437	137811819
+# Chr9_10S	25065099	25179840	25122470	117266291
+
+# this uses the p/q arm ratios of Bredeson et al. BioRxiv
+# Locations of trop centromeres
+# Chr   Ave
+# Chr1	89237096.5
+# Chr2	67510626.5
+# Chr3	16750087
+# Chr4	46596006.5
+# Chr5	62015161.5
+# Chr6	73091979
+# Chr7	60385499
+# Chr8	21445719.5
+# Chr9	42124650
+# Chr10	21225599.5
+
+mat_pat_only <- my_df[(my_df$Group == "1_P1")|(my_df$Group == "1_P2"),];head(mat_pat_only)
+mat_pat_only$Chr <- factor(mat_pat_only$Chr,
+                    levels = c("Chr1", "Chr2","Chr3",
+                               "Chr4","Chr5","Chr6",
+                               "Chr7","Chr8","Chr9",
+                               "Chr10"), ordered = T)
+
+png(filename = "Recombination_plot.png",w=1000, h=200,units = "px", bg="transparent")
+p<-ggplot(mat_pat_only %>% arrange(Chr), aes(x=as.numeric(Pos)/1000000, y=as.numeric(Position), col = Group)) + 
+  scale_color_manual(breaks = c("1_P1", "1_P2"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
+  geom_point(size=0.5) +
+  #geom_line() +
+  stat_spline() +
+  #geom_line(aes(colour = "red"), linetype = 1) +
+  scale_y_continuous(name="Map Units (cM)", limits=c(0,2000), breaks=c(0,500,1000,1500)) +
+  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  #geom_hline(yintercept=0) +
+  #geom_hline(yintercept=c(-0.5,0.5), linetype='dashed', color=c('black', 'black'))+
+  # get rid of gray background
+  facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
+  geom_point(data = data.frame(Pos = 89237096.5, Position = 0, Chr = "Chr1"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 67510626.5, Position = 0, Chr = "Chr2"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 16750087, Position = 0, Chr = "Chr3"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 46596006.5, Position = 0, Chr = "Chr4"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 62015161.5, Position = 0, Chr = "Chr5"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 73091979, Position = 0, Chr = "Chr6"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 60385499, Position = 0, Chr = "Chr7"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 21445719.5, Position = 0, Chr = "Chr8"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 42124650, Position = 0, Chr = "Chr9"), colour="black", size=3) +
+  geom_point(data = data.frame(Pos = 21225599.5, Position = 0, Chr = "Chr10"), colour="black", size=3) +
+  theme_classic() +
+  expand_limits(x = 0) +
+  theme(text = element_text(size = 12)) # +
+  # guides(color = guide_legend(override.aes = list(size = 5)))
+# Get rid of the legend
+#theme(legend.position = "none")
+p 
+dev.off()
+
+# get mat and pat total length
+
+mat_length <- 0
+pat_length <- 0
+
+chrs <- c("Chr1", "Chr2","Chr3",
+          "Chr4","Chr5","Chr6",
+          "Chr7","Chr8","Chr9",
+          "Chr10")
+for(i in 1:length(chrs)){
+  mat_length <- mat_length + max(my_df[(my_df$Group == "1_P1")&(my_df$Chr == chrs[i]),]$Position)
+  pat_length <- pat_length + max(my_df[(my_df$Group == "1_P2")&(my_df$Chr == chrs[i]),]$Position)
+}
+
+mat_length; pat_length
+
+# get the sum of 
+
+# https://stackoverflow.com/questions/6356665/how-do-i-plot-the-first-derivative-of-the-smoothing-function
+require(splines) #thx @Chase for the notice
+model <- lm(as.numeric(Position)~as.numeric(Pos),data=my_df)
+
+dY <- diff(as.numeric(Pos))/diff(as.numeric(Position))  # the derivative of your function
+dX <- rowMeans(embed(X$t,2)) # centers the X values for plotting
+plot(dX,dY,type="l",main="Derivative") #check
+
+# https://stats.stackexchange.com/questions/147733/equation-of-a-fitted-smooth-spline-and-its-analytical-derivative
+# subset Chr1 only
+Chr1_only <- my_df[my_df$Chr == "Chr1",];Chr1_only
+spline <- interpSpline(as.numeric(Chr1_only$Pos),as.numeric(Chr1_only$Position))
+plot(spline)
+points(x,y)
+```
 
