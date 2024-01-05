@@ -87,8 +87,7 @@ Regression and Kosambi function
 * Within a "Grouping" there are one or more "Groups" (hopefully only one). If you click on a Group and select the "Loci" tab you can exclude identical individuals, but this is not necessary for the regression mapping algorithm (it is for the ML algorithm)
 * Now click on the "Fixed Orders" tab. Here you can load the orders beginning with an @ sign
 * Then if you click on a group you can go to the "Group" menu option and click "Calculate Map"
-* This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains the joint map plus one for each parent (1, 1_P1, 1_P2, green icons)
-* Once this first round of mapping is done, you can click on the purple map icon that is the parent of the join and parental maps. Check the stress for each locus and exclude ones that are >100 by clicking on the yellow Group icon and excluding markers in the loci tab. Repeat the map with the reduced number of markers by going to the "Group" menu option and clicking "Calculate Map". After what may be several iterations of this, also check that the order of the markers in the map is ascending; exclude any that are out of order and redo the map until a final map is produced with sequential markers and low stress for all markers.
+* This generates a "Mapping" icon within the "Group" that has squiggly yellow pattern. Within this there is a map icon (purple) that contains three yellow maps. These are usually the same (I think) and I am using the 3rd one
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
 
