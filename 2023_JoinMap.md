@@ -18,7 +18,7 @@ Using vcftools I am going to filter a bit more to (1) ensure that >80% of the sa
 
 ```
 module load StdEnv/2020 vcftools/0.1.16
-vcftools --vcf XX_Chr1_removed.vcf --max-missing 0.8 --min-meanDP 10 --recode --out XX_Chr1_removed_JoinMap
+vcftools --vcf XX_Chr1_removed.vcf --max-missing 0.8 --min-meanDP 8 --recode --out XX_Chr1_removed_JoinMap
 ```
 
 I also need to change the length of the sample names so that they are less than 20 characters each (the '-e' is needed to make this work on OSX):
