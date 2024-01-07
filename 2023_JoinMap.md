@@ -54,6 +54,10 @@ Easiest thing to do is to use sed to replace this
 ```
 sed -i -e 's/\.:0\,0:\./0:0\,0:0/g' XB_Chr1_JoinMap_maxmiss80DP10.recode_noGQ.vcf
 ```
+and maybe also:
+```
+sed -i -e 's/\.\/0:0\,0:0:\./0\/0:0\,0:0:0/g'  XB_Chr1_JoinMap_maxmiss80DP10.recode_noGQ.vcf
+```
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
