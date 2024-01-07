@@ -59,9 +59,9 @@ and maybe also:
 sed -i -e 's/\.\/0:0\,0:0:\./0\/0:0\,0:0:0/g' XL_Chr3L_JoinMap_maxmiss80DP8_noGQ.vcf
 ```
 and maybe this also:
-
-.:0,0,0:.:
-sed -i -e 's/xx .:0,0,0:.: xx/xx .:0,0,0:.: xx/g' XL_Chr3L_JoinMap_maxmiss80DP8_noGQ.vcf
+```
+sed -i -e 's/\.:0\,0\,0:\.:/0:0\,0\,0:0:/g' XL_Chr9_10S_JoinMap_maxmiss80DP8_noGQ.vcf
+```
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
