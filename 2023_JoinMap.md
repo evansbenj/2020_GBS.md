@@ -38,12 +38,28 @@ now the python script works well:
 ```
 ./vcf2loc.py -t CP -a SRR8704355 -b SRR8704354 -o Mitros_C659_Chr10_removed_JoinMap.recode.loc Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
 ```
+
+# Potential problems
+Sometimes there are still sites in the vcf file with this field `./.:0,0:.:.`
+You can see them like this
+```
+bcftools query -f '[\t%DP]\n' Mitros_C660_removed_Chr7_min80DP9_noGQ.vcf | grep '\.'
+```
+and you can locate them like this:
+```
+bcftools query -f '[\t%PL]\n' Mitros_C660_removed_Chr7_min80DP9_noGQ.vcf | grep '\.'
+grep '0,12,141' Mitros_C660_removed_Chr7_min80DP6_noGQ.vcf | grep '0,21,230' | grep '0,36,412' | grep '0,33,405'
+```
+Easiest thing to do is to use sed to replace this
+`./.:0,0:.:.`  with this `./.:0,0:0:0`
+
 # Fixed sites
 Use cut to get a list of the fixed sites:
 ```
 cut -d ' ' -f1 Mitros_C659_Chr10_removed_JoinMap.recode.loc > C659_Chr10_fixed.txt
 ```
 This file then needs to be edited by removing some text in the beginning and end and replacing hard returns with spaces.
+
 
 # JoinMap
 
