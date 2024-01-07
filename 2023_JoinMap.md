@@ -51,7 +51,7 @@ bcftools query -f '[\t%PL]\n' Mitros_C660_removed_Chr7_min80DP9_noGQ.vcf | grep 
 grep '0,12,141' Mitros_C660_removed_Chr7_min80DP6_noGQ.vcf | grep '0,21,230' | grep '0,36,412' | grep '0,33,405'
 ```
 Easiest thing to do is to use sed to replace this
-``
+```
 sed -i -e 's/\.:0\,0:\./0:0\,0:0/g' XB_Chr1_JoinMap_maxmiss80DP10.recode_noGQ.vcf
 ```
 
