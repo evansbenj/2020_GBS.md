@@ -71,6 +71,12 @@ and maybe this also:
 ```
 sed -i -e 's/\.:0\,0\,0\,0\,0:\.:/0:0\,0\,0\,0\,0:0:/g' XL_Chr9_10S_JoinMap_maxmiss80DP8_noGQ.vcf
 ```
+and even after all this for one file (XL_Chr9_10S) I had to analyse parts of the file until I found two offending lines, which I removed, and then it worked for the whole file. This is because these two sites both had a unphased homoz alt genotype call:
+```
+GT:AD:DP:PGT:PID:PL:PS   1/1:0,54:54:.:.:2430,163,0:.
+```
+
+When I changed the '1\1' to '1|1' it worked.
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
