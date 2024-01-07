@@ -52,12 +52,16 @@ grep '0,12,141' Mitros_C660_removed_Chr7_min80DP6_noGQ.vcf | grep '0,21,230' | g
 ```
 Easiest thing to do is to use sed to replace this
 ```
-sed -i -e 's/\.:0\,0:\./0:0\,0:0/g' XB_Chr1_JoinMap_maxmiss80DP10.recode_noGQ.vcf
+sed -i -e 's/\.:0\,0:\./0:0\,0:0/g' XL_Chr3L_JoinMap_maxmiss80DP8_noGQ.vcf
 ```
 and maybe also:
 ```
-sed -i -e 's/\.\/0:0\,0:0:\./0\/0:0\,0:0:0/g'  XB_Chr1_JoinMap_maxmiss80DP10.recode_noGQ.vcf
+sed -i -e 's/\.\/0:0\,0:0:\./0\/0:0\,0:0:0/g' XL_Chr3L_JoinMap_maxmiss80DP8_noGQ.vcf
 ```
+and maybe this also:
+
+.:0,0,0:.:
+sed -i -e 's/xx .:0,0,0:.: xx/xx .:0,0,0:.: xx/g' XL_Chr3L_JoinMap_maxmiss80DP8_noGQ.vcf
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
