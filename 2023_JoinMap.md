@@ -137,21 +137,33 @@ Regression and Kosambi function
 * After right clicking and selecting all of the rows, you can export this using the "Edit" menu and select "Export to File"
 
 
-Plotting matpat maps
+# Plotting matpat maps
 ```R
 library (ggplot2)
 library(tidyverse)
 library(stringr) # needed to split a column
 library(reshape2) # this facilitates the overlay plot
 library(ggformula) # for spline derivative
+library(splines) # for splines
+library(ggrcs) # for spline
+library(rms) # needed for spline
+library(scam) # needed for spline
 options(scipen=999)
-setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C659/results")
-
+setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C660/regkos_results_allin")
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C660/DP8_results_allin")
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XT_GW/results_maxmiss80DP8_segdist_removed")
 # concatenate joinmap files from each chr like this:
 # head -1 Chr1_jointmap.txt > all_joinmap.txt; awk 'FNR>1{print}' *jointmap*txt >> all_joinmap.txt
-my_df <- read.table(gzfile("all_joinmap.txt"), header = T)
-#colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-my_df[c('Chr', 'Pos')] <- str_split_fixed(my_df$Locus, '_', 2)
+# head -1 C660_Chr1_regkos_matmap.txt > all_joinmap_regkos_mat.txt; awk 'FNR>1{print}' *regkos_matmap*txt >> all_joinmap_regkos_mat.txt
+# head -1 C660_Chr1_regkos_patmap.txt > all_joinmap_regkos_pat.txt; awk 'FNR>1{print}' *regkos_patmap*txt >> all_joinmap_regkos_pat.txt
+my_df_mat <- read.table("all_GW_joinmap_regkos_mat.txt", header = T, sep = "\t")
+my_df_pat <- read.table("all_GW_joinmap_regkos_pat.txt", header = T, sep = "\t")
+colnames(my_df_mat) <- c("SN","Nr","Locus","SegPat","Identical","Group","cM")
+colnames(my_df_pat) <- c("SN","Nr","Locus","SegPat","Identical","Group","cM")
+my_df_mat$matpat <- "mat"
+my_df_pat$matpat <- "pat"
+my_df <- rbind(my_df_mat,my_df_pat)
+my_df[c('Chr', 'Coordinate')] <- str_split_fixed(my_df$Locus, '_', 2)
 
 my_df$Chr <- factor(my_df$Chr,
                     levels = c("Chr1", "Chr2","Chr3",
@@ -194,38 +206,106 @@ my_df$Chr <- factor(my_df$Chr,
 # Chr9	42124650
 # Chr10	21225599.5
 
-mat_pat_only <- my_df[(my_df$Group == "1_P1")|(my_df$Group == "1_P2"),];head(mat_pat_only)
-mat_pat_only$Chr <- factor(mat_pat_only$Chr,
-                    levels = c("Chr1", "Chr2","Chr3",
-                               "Chr4","Chr5","Chr6",
-                               "Chr7","Chr8","Chr9",
-                               "Chr10"), ordered = T)
+# convert to numeric
+my_df[, c(7,10)] <- sapply(my_df[, c(7,10)], as.numeric)
+my_df$Coordinate_Mb <- my_df$Coordinate/1000000
+# Calculate the derivatives for plotting first
+# save the results to a big df called "master_derivative_df"
+
+#create data frame with 0 rows and 3 columns
+master_derivative_df <- data.frame(matrix(ncol = 5, nrow = 0))
+
+#provide column names
+colnames(master_derivative_df) <- c('Coordinate_Mb', 'predictions', 'df', 'matpat', 'Chr')
+
+library(mgcv)
+
+# Cycle through each Chr and each mat pat
+for(i in unique(my_df$Chr)){
+  for(j in unique(my_df$matpat)){
+    print(i)
+    print(j)
+    # select only the Chr1
+    my_df_matpat_Chr_only <- my_df[(my_df$Chr==i)&(my_df$matpat==j),]
+    # Build the model
+    model <- gam(cM ~ s(Coordinate_Mb), data = my_df_matpat_Chr_only)
+    # add the predicted values to the df
+    my_df_matpat_Chr_only <-cbind(my_df_matpat_Chr_only,model$fitted.values)
+    colnames(my_df_matpat_Chr_only)[12] <- "fitted_values"
+    # Make predictions for length of chr every 5Mb
+    lengths <- as.data.frame(seq(as.integer(min(my_df_matpat_Chr_only$Coordinate_Mb)),as.integer(max(my_df_matpat_Chr_only$Coordinate_Mb)),5))
+    colnames(lengths) <- "Coordinate_Mb"
+    predictions <- model %>% predict(lengths)
+    # now make a new df with the 5Mb coordinate increments and also the predicted values
+    new_lengths <- cbind(lengths,predictions)
+    
+    ## now evaluate derivatives of smooths with associated standard 
+    ## errors, by finite differencing...
+    X0 <- predict(model,as.data.frame(new_lengths),type="lpmatrix") 
+    
+    eps <- 1e-7 ## finite difference interval
+    x.mesh <- new_lengths$Coordinate_Mb + eps ## shift the evaluation mesh
+    newd <- data.frame(Coordinate_Mb = x.mesh)
+    X1 <- predict(model,newd,type="lpmatrix")
+    
+    Xp <- (X1-X0)/eps ## maps coefficients to (fd approx.) derivatives
+    #colnames(Xp)      ## can check which cols relate to which smooth
+    
+    #par(mfrow=c(2,2))
+    ## calculate derivatives and corresponding CIs
+    Xi <- Xp*0 
+    Xi[,1:9+1] <- Xp[,1:9+1] ## Xi%*%coef(b) = smooth deriv i
+    # df has the derivative for each value in "x.mesh"
+    df <- Xi%*%coef(model)              ## ith smooth derivative 
+    df.sd <- rowSums(Xi%*%model$Vp*Xi)^.5 ## cheap diag(Xi%*%b$Vp%*%t(Xi))^.5
+    #plot(x.mesh,df,type="l",ylim=range(c(df+2*df.sd,df-2*df.sd)))
+    #lines(x.mesh,df+2*df.sd,lty=2);lines(x.mesh,df-2*df.sd,lty=2)
+    derivative_df <-cbind(new_lengths,df)
+    derivative_df$matpat <- j
+    derivative_df$Chr <- i
+    master_derivative_df <- rbind(master_derivative_df,derivative_df)
+  }
+}  
+
+
 
 png(filename = "Recombination_plot.png",w=1000, h=200,units = "px", bg="transparent")
-p<-ggplot(mat_pat_only %>% arrange(Chr), aes(x=as.numeric(Pos)/1000000, y=as.numeric(Position), col = Group)) + 
-  scale_color_manual(breaks = c("1_P1", "1_P2"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
+p<-ggplot(my_df %>% arrange(Chr), aes(x=Coordinate/1000000, y=cM, col = matpat)) + 
+  scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
   geom_point(size=0.5) +
+  geom_smooth(method = "scam", 
+              # b-spline monotonic increase
+              # see ?shape.constrained.smooth.terms
+              formula = y ~ s(x, k = 10, bs = "mpi"), 
+              se = FALSE) +
   #geom_line() +
-  stat_spline() +
+  #smooth.spline(x=as.numeric(Coordinate)/1000000) +
+  #stat_smooth(method = smP, se= FALSE, colour='red', formula = y~x) +
+  #stat_spline() +
+  #geom_spline(aes(x =Coordinate/1000000, y = cM, colour = matpat), nknots = 5) +
+  #stat_smooth(method = lm, formula = y ~ splines::bs(x, df = 2)) +
+  # stat_smooth(method = "lm", formula = y~ns(x,knots = seq(0,250000000,500000)),  lty = 1, col = "red", se=FALSE) +
   #geom_line(aes(colour = "red"), linetype = 1) +
-  scale_y_continuous(name="Map Units (cM)", limits=c(0,2000), breaks=c(0,500,1000,1500)) +
+  #geom_line(aes(my_df$Coordinate,my_df$cM), data=data.frame(spline(my_df$Coordinate,my_df$cM, n=100))) +
+  scale_y_continuous(name="Map Units (cM)", limits=c(0,260), breaks=c(0,50,100,150)) +
   scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
   #geom_hline(yintercept=0) +
   #geom_hline(yintercept=c(-0.5,0.5), linetype='dashed', color=c('black', 'black'))+
   # get rid of gray background
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
-  geom_point(data = data.frame(Pos = 89237096.5, Position = 0, Chr = "Chr1"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 67510626.5, Position = 0, Chr = "Chr2"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 16750087, Position = 0, Chr = "Chr3"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 46596006.5, Position = 0, Chr = "Chr4"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 62015161.5, Position = 0, Chr = "Chr5"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 73091979, Position = 0, Chr = "Chr6"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 60385499, Position = 0, Chr = "Chr7"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 21445719.5, Position = 0, Chr = "Chr8"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 42124650, Position = 0, Chr = "Chr9"), colour="black", size=3) +
-  geom_point(data = data.frame(Pos = 21225599.5, Position = 0, Chr = "Chr10"), colour="black", size=3) +
+  geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
   theme_classic() +
   expand_limits(x = 0) +
+  theme(legend.title=element_blank()) +
   theme(text = element_text(size = 12)) # +
   # guides(color = guide_legend(override.aes = list(size = 5)))
 # Get rid of the legend
@@ -233,22 +313,64 @@ p<-ggplot(mat_pat_only %>% arrange(Chr), aes(x=as.numeric(Pos)/1000000, y=as.num
 p 
 dev.off()
 
+
+# Now plot derivatives
+master_derivative_df$Chr <- factor(master_derivative_df$Chr,
+                    levels = c("Chr1", "Chr2","Chr3",
+                               "Chr4","Chr5","Chr6",
+                               "Chr7","Chr8","Chr9",
+                               "Chr10"), ordered = T)
+
+png(filename = "Derivative_plot.png",w=1000, h=200,units = "px", bg="transparent")
+p<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=df, col = matpat)) + 
+  scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
+  #geom_point(size=0.5) +
+  geom_line() +
+  scale_y_continuous(name="Recombination rate (cM/Mb)", limits=c(-1,10), breaks=seq(0,10,2)) +
+  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
+  geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
+  geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
+  theme_classic() +
+  expand_limits(x = 0) +
+  theme(legend.title=element_blank()) +
+  theme(text = element_text(size = 12)) # +
+p 
+dev.off()
+
 # get mat and pat total length
 
-mat_length <- 0
-pat_length <- 0
+mat_cM_length <- 0
+pat_cM_length <- 0
+mat_Coordinate_length <- 0
+pat_Coordinate_length <- 0
 
 chrs <- c("Chr1", "Chr2","Chr3",
           "Chr4","Chr5","Chr6",
           "Chr7","Chr8","Chr9",
           "Chr10")
 for(i in 1:length(chrs)){
-  mat_length <- mat_length + max(my_df[(my_df$Group == "1_P1")&(my_df$Chr == chrs[i]),]$Position)
-  pat_length <- pat_length + max(my_df[(my_df$Group == "1_P2")&(my_df$Chr == chrs[i]),]$Position)
+  mat_cM_length <- mat_cM_length + max(my_df[(my_df$matpat == "mat")&(my_df$Chr == chrs[i]),]$cM)
+  pat_cM_length <- pat_cM_length + max(my_df[(my_df$matpat == "pat")&(my_df$Chr == chrs[i]),]$cM)
+  mat_Coordinate_length <- mat_Coordinate_length + max(my_df[(my_df$matpat == "mat")&(my_df$Chr == chrs[i]),]$Coordinate)-
+                                                  min(my_df[(my_df$matpat == "mat")&(my_df$Chr == chrs[i]),]$Coordinate)
+  pat_Coordinate_length <- pat_Coordinate_length + max(my_df[(my_df$matpat == "pat")&(my_df$Chr == chrs[i]),]$Coordinate)-
+                                                  min(my_df[(my_df$matpat == "pat")&(my_df$Chr == chrs[i]),]$Coordinate)
 }
 
-mat_length; pat_length
+mat_cM_length; pat_cM_length
+mat_Coordinate_length; pat_Coordinate_length
 
+mat_cM_length/mat_Coordinate_length*1000000
+pat_cM_length/pat_Coordinate_length*1000000
 # get the sum of 
 
 # https://stackoverflow.com/questions/6356665/how-do-i-plot-the-first-derivative-of-the-smoothing-function
