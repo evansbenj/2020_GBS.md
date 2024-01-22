@@ -66,7 +66,6 @@ and maybe this also:
 ```
 sed -i -e 's/\.:0\,0\,0\,0:\.:/0:0\,0\,0\,0:0:/g' XL_Chr9_10S_JoinMap_maxmiss80DP8_noGQ.vcf
 ```
-
 and maybe this also:
 ```
 sed -i -e 's/\.:0\,0\,0\,0\,0:\.:/0:0\,0\,0\,0\,0:0:/g' XL_Chr9_10S_JoinMap_maxmiss80DP8_noGQ.vcf
@@ -82,6 +81,11 @@ GT:AD:DP:PGT:PID:PL:PS   1/1:0,54:54:.:.:2430,163,0:.
 ```
 
 When I changed the '1\1' to '1|1' it worked.
+
+I tried this and it fixed the problem for one input file:
+```
+sed -i -e 's/1\/1\:0\,/1\|1\:0\,/g'  Mitros_C659_Chr8_removed_JoinMap_min80DP8_noGQ.vcf
+```
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
