@@ -85,6 +85,8 @@ I tried this and it fixed the problem for one input file:
 ```
 sed -i -e 's/1\/1\:0\,/1\|1\:0\,/g'  Mitros_C659_Chr8_removed_JoinMap_min80DP8_noGQ.vcf
 ```
+But in another there was still a problematic entry:
+'1/1:1,14:15:395,15,0' which I changed to '1|1:1,14:15:395,15,0' and then it worked
 
 # Fixed sites
 Use cut to get a list of the fixed sites:
