@@ -26,19 +26,25 @@ I also need to change the length of the sample names so that they are less than 
 sed -i -e 's/__sorted.bam//g' Mitros_C659_Chr10_removed_JoinMap.recode.vcf
 ```
 
-# Remove GQ field
-Now I want to use a python script (https://github.com/tomkurowski/vcf2loc) to convert the vcf file to a JoinMap input file (loc). But there was an error because the GQ field has non-numeric values ('.') sometimes. I'm using bcftools to remove this field in hopes this will fix the problem:
+Save only GT field
 ```
 module load bcftools/1.11   StdEnv/2020 intel/2020.1.217
-bcftools annotate -x FORMAT/GQ Mitros_C659_Chr10_removed_JoinMap.recode.vcf -Ov -o Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
+bcftools annotate -x INFO,^FORMAT/GT Mitros_C659_Chr10_removed_JoinMap.recode.vcf -Ov -o Mitros_C659_Chr10_removed_JoinMap_onlyGT.vcf
 ```
-
-now the python script works well:
+get rid of bars
+```
+sed -i 's/|/\//g' Mitros_C659_Chr10_removed_JoinMap_onlyGT.vcf
+```
+now the python script (usually) works well:
 ```
 /home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2023_Mitros_trop/JoinMap_C659/vcf2loc/vcf2loc.py -t CP -a SRR8704355 -b SRR8704354 -o Mitros_C659_Chr10_removed_JoinMap.recode.loc Mitros_C659_Chr10_removed_JoinMap.recode_noGQ.vcf
+/home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2023_Mitros_trop/JoinMap_C659/vcf2loc/vcf2loc.py -t CP -a SRR8704346_and_7 -b SRR8704348_and_9 -o temp_new.vcf.loc temp_new_new.vcf
 ```
+(this stalls when there are data only in the parents but not in any offspring, but this should not occur after vcftools filtering
+(it also stalls when one parent is 0/1 and the other is 1/1). These sites need to be manually removed
 
-# Potential problems
+
+# Potential problems (deprecated; not used)
 Sometimes there are still sites in the vcf file with this field `./.:0,0:.:.`
 You can see them like this
 ```
