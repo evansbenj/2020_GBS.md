@@ -160,27 +160,52 @@ library(ggrcs) # for spline
 library(rms) # needed for spline
 library(scam) # needed for spline
 options(scipen=999)
-setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C660/regkos_results_allin")
-setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/C660/DP8_results_allin")
-setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XT_GW/results_maxmiss80DP8_segdist_removed")
+#setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XB/XB_segdist_removed_results")
+setwd("/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XL/XL_DP8_results_new")
+setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XB/XB_DP8_results_new")
+#setwd("/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/JoinMap/XL/XL_regkos_segdist_included")
 # concatenate joinmap files from each chr like this:
 # head -1 Chr1_jointmap.txt > all_joinmap.txt; awk 'FNR>1{print}' *jointmap*txt >> all_joinmap.txt
 # head -1 C660_Chr1_regkos_matmap.txt > all_joinmap_regkos_mat.txt; awk 'FNR>1{print}' *regkos_matmap*txt >> all_joinmap_regkos_mat.txt
 # head -1 C660_Chr1_regkos_patmap.txt > all_joinmap_regkos_pat.txt; awk 'FNR>1{print}' *regkos_patmap*txt >> all_joinmap_regkos_pat.txt
-my_df_mat <- read.table("all_GW_joinmap_regkos_mat.txt", header = T, sep = "\t")
-my_df_pat <- read.table("all_GW_joinmap_regkos_pat.txt", header = T, sep = "\t")
+my_df_mat <- read.table("XB_all_joinmap_regkosDP8_mat.txt", header = T, sep = "\t")
+my_df_pat <- read.table("XB_all_joinmap_regkosDP8_pat.txt", header = T, sep = "\t")
 colnames(my_df_mat) <- c("SN","Nr","Locus","SegPat","Identical","Group","cM")
 colnames(my_df_pat) <- c("SN","Nr","Locus","SegPat","Identical","Group","cM")
 my_df_mat$matpat <- "mat"
 my_df_pat$matpat <- "pat"
 my_df <- rbind(my_df_mat,my_df_pat)
+
 my_df[c('Chr', 'Coordinate')] <- str_split_fixed(my_df$Locus, '_', 2)
 
+# This is needed to correctly parse Chr9_10L
+good <- subset(my_df, (Chr == "Chr1L")|(Chr == "Chr2L")|(Chr == "Chr3L")|(Chr == "Chr4L")|
+                 (Chr == "Chr5L")|(Chr == "Chr6L")|(Chr == "Chr7L")|(Chr == "Chr8L")|
+                 (Chr == "Chr1S")|(Chr == "Chr2S")|(Chr == "Chr3S")|(Chr == "Chr4S")|
+                 (Chr == "Chr5S")|(Chr == "Chr6S")|(Chr == "Chr7S")|(Chr == "Chr8S"));good
+bad <- subset(my_df, (Chr == "Chr9"));bad
+bad[c('Chr', 'Coordinate1')] <- str_split_fixed(bad$Coordinate, '_', 2);bad
+bad$Chr1 <- paste("Chr9_",bad$Chr, sep="")
+bad$Chr <- bad$Chr1
+bad$Coordinate <- bad$Coordinate1
+bad <- bad %>% select(c(-Chr1,-Coordinate1))
+
+my_df <- rbind(good,bad)
+#my_df$chr_num <- substr(my_df$Chr, 1, nchar(my_df$Chr)-1)
+
 my_df$Chr <- factor(my_df$Chr,
-                    levels = c("Chr1", "Chr2","Chr3",
-                               "Chr4","Chr5","Chr6",
-                               "Chr7","Chr8","Chr9",
-                               "Chr10"), ordered = T)
+                    levels = c("Chr1L", "Chr2L","Chr3L",
+                               "Chr4L","Chr5L","Chr6L",
+                               "Chr7L","Chr8L","Chr9_10L",
+                               "Chr1S", "Chr2S","Chr3S",
+                               "Chr4S","Chr5S","Chr6S",
+                               "Chr7S","Chr8S","Chr9_10S"), ordered = T)
+
+my_df$LorS <- ifelse(my_df$Chr %in% c("Chr1L", "Chr2L","Chr3L",
+                                       "Chr4L","Chr5L","Chr6L",
+                                       "Chr7L","Chr8L","Chr9_10L"), "L", "S")
+
+
 
 # From the Smith et al paper	GSE153058_xla_v10.2_cen 1.bed	https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153058	
 # Chr   Start     Stop      Average_of_centromere_coordinates	Chr_Length
@@ -219,6 +244,8 @@ my_df$Chr <- factor(my_df$Chr,
 
 # convert to numeric
 my_df[, c(7,10)] <- sapply(my_df[, c(7,10)], as.numeric)
+
+# make a Mb coordinate column
 my_df$Coordinate_Mb <- my_df$Coordinate/1000000
 # Calculate the derivatives for plotting first
 # save the results to a big df called "master_derivative_df"
@@ -230,90 +257,107 @@ master_derivative_df <- data.frame(matrix(ncol = 5, nrow = 0))
 colnames(master_derivative_df) <- c('Coordinate_Mb', 'predictions', 'df', 'matpat', 'Chr')
 
 library(mgcv)
-
+#knotz <- 7
+# adapted from code here: ?predict.gam
 # Cycle through each Chr and each mat pat
 for(i in unique(my_df$Chr)){
   for(j in unique(my_df$matpat)){
     print(i)
     print(j)
+    #i <- "Chr1L"
+    #j <- "pat"
     # select only the Chr1
     my_df_matpat_Chr_only <- my_df[(my_df$Chr==i)&(my_df$matpat==j),]
-    # Build the model
-    model <- gam(cM ~ s(Coordinate_Mb), data = my_df_matpat_Chr_only)
-    # add the predicted values to the df
-    my_df_matpat_Chr_only <-cbind(my_df_matpat_Chr_only,model$fitted.values)
-    colnames(my_df_matpat_Chr_only)[12] <- "fitted_values"
-    # Make predictions for length of chr every 5Mb
-    lengths <- as.data.frame(seq(as.integer(min(my_df_matpat_Chr_only$Coordinate_Mb)),as.integer(max(my_df_matpat_Chr_only$Coordinate_Mb)),5))
-    colnames(lengths) <- "Coordinate_Mb"
-    predictions <- model %>% predict(lengths)
-    # now make a new df with the 5Mb coordinate increments and also the predicted values
-    new_lengths <- cbind(lengths,predictions)
-    
-    ## now evaluate derivatives of smooths with associated standard 
-    ## errors, by finite differencing...
-    X0 <- predict(model,as.data.frame(new_lengths),type="lpmatrix") 
-    
-    eps <- 1e-7 ## finite difference interval
-    x.mesh <- new_lengths$Coordinate_Mb + eps ## shift the evaluation mesh
-    newd <- data.frame(Coordinate_Mb = x.mesh)
-    X1 <- predict(model,newd,type="lpmatrix")
-    
-    Xp <- (X1-X0)/eps ## maps coefficients to (fd approx.) derivatives
-    #colnames(Xp)      ## can check which cols relate to which smooth
-    
-    #par(mfrow=c(2,2))
-    ## calculate derivatives and corresponding CIs
-    Xi <- Xp*0 
-    Xi[,1:9+1] <- Xp[,1:9+1] ## Xi%*%coef(b) = smooth deriv i
-    # df has the derivative for each value in "x.mesh"
-    df <- Xi%*%coef(model)              ## ith smooth derivative 
-    df.sd <- rowSums(Xi%*%model$Vp*Xi)^.5 ## cheap diag(Xi%*%b$Vp%*%t(Xi))^.5
-    #plot(x.mesh,df,type="l",ylim=range(c(df+2*df.sd,df-2*df.sd)))
-    #lines(x.mesh,df+2*df.sd,lty=2);lines(x.mesh,df-2*df.sd,lty=2)
-    derivative_df <-cbind(new_lengths,df)
-    derivative_df$matpat <- j
-    derivative_df$Chr <- i
-    master_derivative_df <- rbind(master_derivative_df,derivative_df)
+    # plot(my_df_matpat_Chr_only$Coordinate_Mb,my_df_matpat_Chr_only$cM)
+    if((dim(my_df_matpat_Chr_only)[1] > 10)&
+       (max(my_df_matpat_Chr_only$Coordinate_Mb)-min(my_df_matpat_Chr_only$Coordinate_Mb) >25)){
+        # Build the model
+        #model <- gam(cM ~ s(Coordinate_Mb, k=knotz), data = my_df_matpat_Chr_only)
+        model <- scam(cM ~ s(Coordinate_Mb), #, bs = "mpi"), 
+                      data = my_df_matpat_Chr_only) 
+        # add the predicted values to the df
+        my_df_matpat_Chr_only$fitted.values <-model$fitted.values
+        # plot(my_df_matpat_Chr_only$Coordinate_Mb,my_df_matpat_Chr_only$fitted.values)
+        # Make predictions for length of chr every 5Mb
+        lengths <- as.data.frame(seq(as.integer(min(my_df_matpat_Chr_only$Coordinate_Mb)),as.integer(max(my_df_matpat_Chr_only$Coordinate_Mb)),2))
+        colnames(lengths) <- "Coordinate_Mb"
+        predictions <- model %>% predict(lengths) # this sometimes produces some slightly negative values
+        # above is the same as this:
+        #  predictions <- predict(model,lengths)
+        # predictions <- predict(model,lengths,type="lpmatrix")
+        # now make a new df with the 5Mb coordinate increments and also the predicted values
+        new_lengths <- cbind(lengths,predictions)
+        # plot(new_lengths$Coordinate_Mb,new_lengths$predictions)
+        # re-estimate the model using the fixed intervals and predicted values
+        # model <- scam(predictions ~ s(Coordinate_Mb, bs = "mpi", k=knotz), data = new_lengths)
+        model <- scam(predictions ~ s(Coordinate_Mb), data = new_lengths) # trying without the monotonic increase
+        # try derivative.scam function
+        d1 <- derivative.scam(model,smooth.number=1,deriv=1)
+        # THIS WORKS BUT ONLY WHEN "bs = "mpi" IS NOT USED
+        new_lengths$derivative <- d1$d
+        # ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=predictions)) + 
+        #    geom_smooth(data = new_lengths, method = scam, 
+        #              formula = y ~ s(x), #, bs = "mpi"), # the "bs = "mpi" section seems to mess things up
+        #              se = FALSE) + geom_point(size=0.5) 
+        # ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=derivative)) + 
+        #  geom_line() + geom_point()
+        # plot(new_lengths$Coordinate_Mb,new_lengths$predictions)
+        # plot(new_lengths$Coordinate_Mb,d1$d)
+        new_lengths$matpat <- j
+        new_lengths$Chr <- i
+        master_derivative_df <- rbind(master_derivative_df,new_lengths)
+    }    
   }
 }  
 
+#png(filename = "temp.png",w=1500, h=200,units = "px", bg="transparent")
+#  ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=predictions)) + 
+#  geom_smooth(data = new_lengths, method = scam, 
+#              formula = y ~ s(x, k = knotz), #, bs = "mpi"), # the "bs = "mpi" section seems to mess things up
+#              se = FALSE) + geom_point(size=0.5) 
+#dev.off()
+#png(filename = "temp2.png",w=1500, h=200,units = "px", bg="transparent")
+#  ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=derivative)) + 
+#  geom_line() + geom_point()
+#dev.off()
 
-
-png(filename = "Recombination_plot.png",w=1000, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df %>% arrange(Chr), aes(x=Coordinate/1000000, y=cM, col = matpat)) + 
+png(filename = "Recombination_plot.png",w=1500, h=200,units = "px", bg="transparent")
+p<-ggplot(my_df %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
   geom_point(size=0.5) +
-  geom_smooth(method = "scam", 
-              # b-spline monotonic increase
-              # see ?shape.constrained.smooth.terms
-              formula = y ~ s(x, k = 10, bs = "mpi"), 
-              se = FALSE) +
-  #geom_line() +
-  #smooth.spline(x=as.numeric(Coordinate)/1000000) +
-  #stat_smooth(method = smP, se= FALSE, colour='red', formula = y~x) +
-  #stat_spline() +
-  #geom_spline(aes(x =Coordinate/1000000, y = cM, colour = matpat), nknots = 5) +
-  #stat_smooth(method = lm, formula = y ~ splines::bs(x, df = 2)) +
-  # stat_smooth(method = "lm", formula = y~ns(x,knots = seq(0,250000000,500000)),  lty = 1, col = "red", se=FALSE) +
+  #geom_smooth(method = "scam", 
+  #            # b-spline monotonic increase
+  #            # see ?shape.constrained.smooth.terms
+  #            formula = y ~ s(x, k = 10, bs = "mpi"), 
+  #            se = FALSE) +
+  geom_line() +
+    #smooth.spline(x=as.numeric(Coordinate)/1000000) +
+  #stat_smooth(method = "gam", se= FALSE, colour=matpat, formula = y~x) +
+    #stat_spline() +
+  # geom_spline(aes(x =Coordinate/1000000, y = cM, colour = matpat), nknots = 10) +
+  #stat_smooth(method = "gam", formula = y ~ splines::bs(x, df = 2)) +
+    # stat_smooth(method = "lm", formula = y~ns(x,knots = seq(0,250000000,500000)),  lty = 1, col = "red", se=FALSE) +
   #geom_line(aes(colour = "red"), linetype = 1) +
-  #geom_line(aes(my_df$Coordinate,my_df$cM), data=data.frame(spline(my_df$Coordinate,my_df$cM, n=100))) +
-  scale_y_continuous(name="Map Units (cM)", limits=c(0,260), breaks=c(0,50,100,150)) +
+    #geom_line(aes(my_df$Coordinate,my_df$cM), data=data.frame(spline(my_df$Coordinate,my_df$cM, n=100))) +
+  scale_y_continuous(name="Map Units (cM)", limits=c(0,200), breaks=c(0,50,100,150,200)) +
   scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
   #geom_hline(yintercept=0) +
   #geom_hline(yintercept=c(-0.5,0.5), linetype='dashed', color=c('black', 'black'))+
   # get rid of gray background
-  facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
-  geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
+  #facet_wrap(~Chr, nrow=2, scales = "free_x")+
+  facet_grid(. ~ Chr, scales = "free", space='free') +
+  #facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
+  # facet_grid(~Chr,scales="free_x",space = "free_x") +
+  #geom_point(data = data.frame(Coordinate = 89237096.5, cM = 0, Chr = "Chr1"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 67510626.5, cM = 0, Chr = "Chr2"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 16750087, cM = 0, Chr = "Chr3"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 46596006.5, cM = 0, Chr = "Chr4"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 62015161.5, cM = 0, Chr = "Chr5"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 73091979, cM = 0, Chr = "Chr6"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 60385499, cM = 0, Chr = "Chr7"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 21445719.5, cM = 0, Chr = "Chr8"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 42124650, cM = 0, Chr = "Chr9"), colour="black", size=3) +
+  #geom_point(data = data.frame(Coordinate = 21225599.5, cM = 0, Chr = "Chr10"), colour="black", size=3) +
   theme_classic() +
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
@@ -326,30 +370,33 @@ dev.off()
 
 
 # Now plot derivatives
-master_derivative_df$Chr <- factor(master_derivative_df$Chr,
-                    levels = c("Chr1", "Chr2","Chr3",
-                               "Chr4","Chr5","Chr6",
-                               "Chr7","Chr8","Chr9",
-                               "Chr10"), ordered = T)
 
-png(filename = "Derivative_plot.png",w=1000, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=df, col = matpat)) + 
+master_derivative_df$Chr <- factor(master_derivative_df$Chr,
+                    levels = c("Chr1L", "Chr2L","Chr3L",
+                               "Chr4L","Chr5L","Chr6L",
+                               "Chr7L","Chr8L","Chr9_10L",
+                               "Chr1S", "Chr2S","Chr3S",
+                               "Chr4S","Chr5S","Chr6S",
+                               "Chr7S","Chr8S","Chr9_10S"), ordered = T)
+
+png(filename = "Derivative_plot.png",w=1500, h=200,units = "px", bg="transparent")
+p<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
   #geom_point(size=0.5) +
   geom_line() +
-  scale_y_continuous(name="Recombination rate (cM/Mb)", limits=c(-1,10), breaks=seq(0,10,2)) +
+  scale_y_continuous(name="Recombination rate (cM/Mb)", limits=c(-1,8), breaks=seq(0,8,2)) +
   scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
-  geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
-  geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
   theme_classic() +
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
@@ -398,5 +445,184 @@ Chr1_only <- my_df[my_df$Chr == "Chr1",];Chr1_only
 spline <- interpSpline(as.numeric(Chr1_only$Pos),as.numeric(Chr1_only$Position))
 plot(spline)
 points(x,y)
+
+
+# now scale all the chromosomes and then plot the slopes for 
+# pat and mat on one overlay plot
+# for XB use the XB genome lengths
+# Chr1L	232529968
+# Chr2L	184566230
+# Chr3L	145564450
+# Chr4L	156120766
+# Chr5L	174499025
+# Chr6L	157843503
+# Chr7L	136892545
+# Chr8L	123836260
+# Chr9_10L	135078615
+# Chr1S	196169797
+# Chr2S	167897112
+# Chr3S	127416163
+# Chr4S	131359389
+# Chr5S	139053355
+# Chr6S	137668414
+# Chr7S	105895007
+# Chr8S	105436523
+# Chr9_10S	110702965
+
+XB_chrlengths <- data.frame(
+  chromosome = c("Chr1L", "Chr2L","Chr3L",
+    "Chr4L","Chr5L","Chr6L",
+    "Chr7L","Chr8L","Chr9_10L",
+    "Chr1S", "Chr2S","Chr3S",
+    "Chr4S","Chr5S","Chr6S",
+    "Chr7S","Chr8S","Chr9_10S"),
+  length = c("232529968", "184566230","145564450",
+    "156120766","174499025","157843503",
+    "136892545","123836260","135078615",
+    "196169797", "167897112","127416163",
+    "131359389","139053355","137668414",
+    "105895007","105436523","110702965")
+  )
+XB_chrlengths$length <- as.numeric(XB_chrlengths$length)
+
+# for XL use XL
+# Chr1L	233740090
+# Chr1S	202412970
+# Chr2L	191000146
+# Chr2S	169306100
+# Chr3L	161426101
+# Chr3S	131962816
+# Chr4L	155250554
+# Chr4S	132731174
+# Chr5L	171415384
+# Chr5S	143394103
+# Chr6L	164223595
+# Chr6S	137316286
+# Chr7L	139837618
+# Chr7S	113060389
+# Chr8L	135449133
+# Chr8S	103977862
+# Chr9_10L	137811819
+# Chr9_10S	117266291
+
+# for XT use XT
+# Chr1	217471165
+# Chr2	181034960
+# Chr3	153873356
+# Chr4	153961318
+# Chr5	164033574
+# Chr6	154486311
+# Chr7	133565929
+# Chr8	147241509
+# Chr9	91218943
+# Chr10	52432565
+
+# standardize coordinates for all chrs
+# divide all by length of Chr1L
+my_df$Standardized_Coordinate <- my_df$Coordinate/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr1L"]
+# now update the other chrs
+my_df$Standardized_Coordinate[my_df$Chr == "Chr2L"] <-my_df$Coordinate[my_df$Chr == "Chr2L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr2L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr3L"] <-my_df$Coordinate[my_df$Chr == "Chr3L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr3L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr4L"] <-my_df$Coordinate[my_df$Chr == "Chr4L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr4L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr5L"] <-my_df$Coordinate[my_df$Chr == "Chr5L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr5L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr6L"] <-my_df$Coordinate[my_df$Chr == "Chr6L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr6L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr7L"] <-my_df$Coordinate[my_df$Chr == "Chr7L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr7L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr8L"] <-my_df$Coordinate[my_df$Chr == "Chr8L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr8L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10L"] <-my_df$Coordinate[my_df$Chr == "Chr9_10L"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr9_10L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr1S"] <-my_df$Coordinate[my_df$Chr == "Chr1S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr1S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr2S"] <-my_df$Coordinate[my_df$Chr == "Chr2S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr2S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr3S"] <-my_df$Coordinate[my_df$Chr == "Chr3S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr3S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr4S"] <-my_df$Coordinate[my_df$Chr == "Chr4S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr4S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr5S"] <-my_df$Coordinate[my_df$Chr == "Chr5S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr5S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr6S"] <-my_df$Coordinate[my_df$Chr == "Chr6S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr6S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr7S"] <-my_df$Coordinate[my_df$Chr == "Chr7S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr7S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr8S"] <-my_df$Coordinate[my_df$Chr == "Chr8S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr8S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10S"] <-my_df$Coordinate[my_df$Chr == "Chr9_10S"]/XB_chrlengths$length[XB_chrlengths$chromosome == "Chr9_10S"]
+
+# do not standardize the cM for each chromosome because different amounts of recombination occur in each one
+
+# Now get the derivative of the generalized additive model (gam)
+
+#create data frame with 0 rows and 3 columns
+monster_derivative_df <- data.frame(matrix(ncol = 5, nrow = 0))
+
+#provide column names
+colnames(monster_derivative_df) <- c('Coordinate_Mb', 'predictions', 'df', 'matpat', 'Chr')
+
+library(mgcv)
+# knotz <- 10
+# adapted from code here: ?predict.gam
+# Cycle through each Chr and each mat pat
+for(i in unique(my_df$Chr)){
+  for(j in unique(my_df$matpat)){
+    print(i)
+    print(j)
+    #i <- "Chr2L"
+    #j <- "mat"
+    # select only one chromosme at a time
+    # and only the mat or pat recombination events
+    my_df_matpat_Chr_only <- my_df[(my_df$Chr==i)&(my_df$matpat==j),]
+    if((dim(my_df_matpat_Chr_only)[1] > 10)&
+       (max(my_df_matpat_Chr_only$Coordinate_Mb)-min(my_df_matpat_Chr_only$Coordinate_Mb) >25)){
+      # Build the model
+      # model <- gam(cM ~ s(Standardized_Coordinate, k=knotz), data = my_df_matpat_Chr_only)
+      # this is the scam model with monotonic increase
+      model <- scam(cM ~ s(Standardized_Coordinate), #, bs = "mpi"), 
+                    data = my_df_matpat_Chr_only) 
+      # add the predicted values to the df
+      my_df_matpat_Chr_only$fitted.values <-model$fitted.values
+      # Make predictions for length of chr every 0.005 units
+      lengths <- as.data.frame(seq(0,1,0.005))
+      colnames(lengths) <- "Standardized_Coordinate"
+      predictions <- model %>% predict(lengths)
+      # now make a new df with the 0.005 increments and also the predicted values
+      # the length is 1 so this should be 200 predictions per chromosome
+      new_lengths <- cbind(lengths,predictions)
+      model <- scam(predictions ~ s(Standardized_Coordinate), data = new_lengths) # trying without the monotonic increase
+      # try derivative.scam function
+      d1 <- derivative.scam(model,smooth.number=1,deriv=1)
+      # THIS WORKS BUT ONLY WHEN "bs = "mpi" IS NOT USED
+      new_lengths$derivative <- d1$d
+      # ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=predictions)) + 
+      #    geom_smooth(data = new_lengths, method = scam, 
+      #              formula = y ~ s(x), #, bs = "mpi"), # the "bs = "mpi" section seems to mess things up
+      #              se = FALSE) + geom_point(size=0.5) 
+      # ggplot(data=new_lengths, aes(x=Coordinate_Mb, y=derivative)) + 
+      #  geom_line() + geom_point()
+      # plot(new_lengths$Coordinate_Mb,new_lengths$predictions)
+      # plot(new_lengths$Coordinate_Mb,d1$d)
+      new_lengths$matpat <- j
+      new_lengths$Chr <- i
+      monster_derivative_df <- rbind(monster_derivative_df,new_lengths)
+    }    
+  }
+}  
+
+
+png(filename = "Combined_Scaled_Derivative_plot.png",w=1500, h=200,units = "px", bg="transparent")
+p<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivative, col = matpat)) + 
+  scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
+  geom_point(size=0.5, alpha = 0.02) +
+  geom_smooth() +
+  scale_y_continuous(name="Recombination rate (cM/scaled Coordinates)", limits=c(-200,1000), breaks=seq(0,750,250)) +
+  scale_x_continuous(name="Scaled Coordinates", breaks=c(0,0.25,0.5,0.75,1)) +
+  #facet_grid(~factor(matpat)) +
+  #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr3"), aes(xintercept=16.750087), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr4"), aes(xintercept=46.5960065), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr5"), aes(xintercept=62.0151615), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr6"), aes(xintercept=73.091979), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr7"), aes(xintercept=60.385499), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr8"), aes(xintercept=21.4457195), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr9"), aes(xintercept=42.124650), colour="black") + 
+  #geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
+  theme_classic() +
+  expand_limits(x = 0) +
+  theme(legend.title=element_blank()) +
+  theme(text = element_text(size = 12)) # +
+p 
+dev.off()
+
 ```
 
