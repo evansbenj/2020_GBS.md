@@ -2,7 +2,10 @@
 
 I found the results from OneMap unsatisfying for several reasons. The main one is that I was unable to replicate findings from Bredreson etal. using the same data (they used JoinMap). As well the map distances I calculated seemed way off (too big).
 
-So I am trying again with JoinMap.
+So I am trying again with JoinMap. I'm using code here to convert vcf to loc format:
+```
+https://github.com/tomkurowski/vcf2loc
+```
 
 # Filtering
 The vcf files have been filtered using these criteria:
