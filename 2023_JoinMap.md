@@ -594,25 +594,25 @@ pat_cM_length/(pat_Coordinate_length/1000000)
 
 # standardize coordinates for all chrs
 # divide all by length of Chr1L
-my_df$Standardized_Coordinate <- my_df$Coordinate/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr1L"]*100
+my_df$Standardized_Coordinate <- my_df$Coordinate/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr1L"]
 # now update the other chrs
-my_df$Standardized_Coordinate[my_df$Chr == "Chr2L"] <-my_df$Coordinate[my_df$Chr == "Chr2L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr2L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr3L"] <-my_df$Coordinate[my_df$Chr == "Chr3L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr3L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr4L"] <-my_df$Coordinate[my_df$Chr == "Chr4L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr4L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr5L"] <-my_df$Coordinate[my_df$Chr == "Chr5L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr5L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr6L"] <-my_df$Coordinate[my_df$Chr == "Chr6L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr6L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr7L"] <-my_df$Coordinate[my_df$Chr == "Chr7L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr7L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr8L"] <-my_df$Coordinate[my_df$Chr == "Chr8L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr8L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10L"] <-my_df$Coordinate[my_df$Chr == "Chr9_10L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr9_10L"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr1S"] <-my_df$Coordinate[my_df$Chr == "Chr1S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr1S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr2S"] <-my_df$Coordinate[my_df$Chr == "Chr2S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr2S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr3S"] <-my_df$Coordinate[my_df$Chr == "Chr3S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr3S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr4S"] <-my_df$Coordinate[my_df$Chr == "Chr4S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr4S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr5S"] <-my_df$Coordinate[my_df$Chr == "Chr5S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr5S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr6S"] <-my_df$Coordinate[my_df$Chr == "Chr6S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr6S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr7S"] <-my_df$Coordinate[my_df$Chr == "Chr7S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr7S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr8S"] <-my_df$Coordinate[my_df$Chr == "Chr8S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr8S"]*100
-my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10S"] <-my_df$Coordinate[my_df$Chr == "Chr9_10S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr9_10S"]*100
+my_df$Standardized_Coordinate[my_df$Chr == "Chr2L"] <-my_df$Coordinate[my_df$Chr == "Chr2L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr2L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr3L"] <-my_df$Coordinate[my_df$Chr == "Chr3L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr3L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr4L"] <-my_df$Coordinate[my_df$Chr == "Chr4L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr4L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr5L"] <-my_df$Coordinate[my_df$Chr == "Chr5L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr5L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr6L"] <-my_df$Coordinate[my_df$Chr == "Chr6L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr6L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr7L"] <-my_df$Coordinate[my_df$Chr == "Chr7L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr7L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr8L"] <-my_df$Coordinate[my_df$Chr == "Chr8L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr8L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10L"] <-my_df$Coordinate[my_df$Chr == "Chr9_10L"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr9_10L"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr1S"] <-my_df$Coordinate[my_df$Chr == "Chr1S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr1S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr2S"] <-my_df$Coordinate[my_df$Chr == "Chr2S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr2S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr3S"] <-my_df$Coordinate[my_df$Chr == "Chr3S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr3S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr4S"] <-my_df$Coordinate[my_df$Chr == "Chr4S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr4S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr5S"] <-my_df$Coordinate[my_df$Chr == "Chr5S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr5S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr6S"] <-my_df$Coordinate[my_df$Chr == "Chr6S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr6S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr7S"] <-my_df$Coordinate[my_df$Chr == "Chr7S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr7S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr8S"] <-my_df$Coordinate[my_df$Chr == "Chr8S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr8S"]
+my_df$Standardized_Coordinate[my_df$Chr == "Chr9_10S"] <-my_df$Coordinate[my_df$Chr == "Chr9_10S"]/XL_chrlengths$length[XL_chrlengths$chromosome == "Chr9_10S"]
 
 # do not standardize the cM for each chromosome because different amounts of recombination occur in each one
 
@@ -646,7 +646,7 @@ for(i in unique(my_df$Chr)){
       # add the predicted values to the df
       my_df_matpat_Chr_only$fitted.values <-model$fitted.values
       # Make predictions for length of chr every 0.005 units
-      lengths <- as.data.frame(seq(0,100,0.5))
+      lengths <- as.data.frame(seq(0,1,0.05))
       colnames(lengths) <- "Standardized_Coordinate"
       predictions <- model %>% predict(lengths)
       # now make a new df with the 0.005 increments and also the predicted values
@@ -659,21 +659,21 @@ for(i in unique(my_df$Chr)){
       new_lengths$matpat <- j
       new_lengths$Chr <- i
       # trim predictions from new_lengths that do not have data
-      new_derivative_df <- subset(new_lengths, (Standardized_Coordinate > as.numeric(min(my_df_matpat_Chr_only$Coordinate))/(XL_chrlengths$length[XL_chrlengths$chromosome == i]/100))&
-                                    (Standardized_Coordinate < as.numeric(max(my_df_matpat_Chr_only$Coordinate))/(XL_chrlengths$length[XL_chrlengths$chromosome == i]/100)))
+      new_derivative_df <- subset(new_lengths, (Standardized_Coordinate > as.numeric(min(my_df_matpat_Chr_only$Coordinate))/(XL_chrlengths$length[XL_chrlengths$chromosome == i]))&
+                                    (Standardized_Coordinate < as.numeric(max(my_df_matpat_Chr_only$Coordinate))/(XL_chrlengths$length[XL_chrlengths$chromosome == i])))
       monster_derivative_df <- rbind(monster_derivative_df,new_derivative_df)
     }    
   }
 }  
 
 
-png(filename = "XL_Combined_Scaled_Derivative_plot.png",w=500, h=300,units = "px", bg="transparent")
+png(filename = "XL_Combined_Scaled_Derivative_miso.png",w=500, h=300,units = "px", bg="transparent")
 p<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
-  geom_point(size=0.5, alpha = 0.05) +
+  geom_point(size=0.5, alpha = 0.5) +
   geom_smooth() +
-  scale_y_continuous(name="Recombination rate (cM/scaled Coordinates)", limits=c(-1,15), breaks=seq(0,20,5)) +
-  scale_x_continuous(name="Scaled Coordinates", breaks=c(0,25,50,75,100)) +
+  scale_y_continuous(name="Recombination rate\n(cM/scaled Coordinates)", limits=c(-10,525), breaks=seq(0,500,100)) +
+  scale_x_continuous(name="Scaled Coordinates", limits=c(0,1), breaks=c(0,.5,1)) +
   #facet_grid(~factor(matpat)) +
   #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
   #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
@@ -687,6 +687,7 @@ p<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivative, co
   #geom_vline(data=filter(my_df, Chr=="Chr10"), aes(xintercept=21.2255995), colour="black") + 
   theme_classic() +
   expand_limits(x = 0) +
+  theme(legend.position="none") +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 12)) # +
 p 
