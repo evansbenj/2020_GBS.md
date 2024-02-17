@@ -1286,7 +1286,7 @@ jpeg("./Fig4_Scaled_recombination.jpg",w=12, h=4, units ="in", bg="transparent",
 dev.off()
 
 ```
-XL
+* XB
 ```R
 library (ggplot2)
 library(tidyverse)
