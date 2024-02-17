@@ -52,7 +52,7 @@ library(latticeExtra)
 manhattan.plot<-function(chr, pos, pvalue, 
                          sig.level=NA, annotate=NULL, ann.default=list(),
                          should.thin=T, thin.pos.places=2, thin.logp.places=2, 
-                         xlab="Chromosome", ylab=expression(-log[10](p-value)),
+                         xlab="Chromosome", ylab=expression(-log[10](p)),
                          col=c("gray","darkgray"), panel.extra=NULL, pch=20, cex=0.8,...) {
   
   if (length(chr)==0) stop("chromosome vector is empty")
@@ -252,7 +252,7 @@ manhattan.plot<-function(chr, pos, pvalue,
 chromosome.plot<-function(chr, pos, pvalue, 
                          sig.level=NA, annotate=NULL, ann.default=list(),
                          should.thin=T, thin.pos.places=2, thin.logp.places=2, 
-                         xlab="Chromosome", ylab=expression(-log[10](p-value)),
+                         xlab="Chromosome", ylab=expression(-log[10](p)),
                          col=c("gray","darkgray"), panel.extra=NULL, pch=20, cex=0.8,...) {
   
   if (length(chr)==0) stop("chromosome vector is empty")
@@ -285,7 +285,7 @@ chromosome.plot<-function(chr, pos, pvalue,
   grp <- NULL
   ann.settings <- list()
   label.default<-list(x="peak",y="peak",adj=NULL, pos=3, offset=0.5, 
-                      col=NULL, fontface=NULL, fontsize=NULL, show=F)
+                      col=NULL, fontface=NULL, fonte=18, show=F)
   parse.label<-function(rawval, groupname) {
     r<-list(text=groupname)
     if(is.logical(rawval)) {
@@ -378,13 +378,22 @@ chromosome.plot<-function(chr, pos, pvalue,
                  #at=((posmax+posmin)/2+posshift),
                  labels=T, 
                  ticks=T, rot=0,
+                 text.cex=1,
                  #tck = seq(0,200,50),
                  check.overlap=F
       )
     } else if (side=="top" || side=="right") {
       panel.axis(side=side, draw.labels=F, ticks=F);
-    }
-    else {
+    } else if(side=="left") {
+      panel.axis(side=side, outside=T,
+                 #at=((posmax+posmin)/2+posshift),
+                 labels=T, 
+                 ticks=T, rot=0,
+                 text.cex=1,
+                 #tck = seq(0,200,50),
+                 check.overlap=F
+      )
+    } else {
       axis.default(side=side,...);
     }
   }
@@ -498,7 +507,7 @@ muel_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                         panel=function(x, y, ...){
                                         panel.rect(xleft=695, ybottom=0,
                                         xright=733, ytop=10, alpha=0.3, col="light blue")
-                                        panel.text(200,9,labels=expression(italic("X. muelleri")),fontsize=20)})
+                                        panel.text(275,9,labels=expression(italic("X. muelleri")),fontsize=14)})
 muel_wgs_plot
 
 
@@ -519,7 +528,7 @@ ann[with(SexChr, pvalue<=a["0.1%"])]<-2
 ann[with(SexChr, pvalue<=a["0.05%"])]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
-p2 <- xyplot(ts[12], type = "p", col = "red", cex = 10)
+#p2 <- xyplot(ts[12], type = "p", col = "red", cex = 10)
 
 muel_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
@@ -528,18 +537,18 @@ muel_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                     SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F)),
                                                 ylim = c(0,8),
-                                                xlab = "Chr4L",
+                                                xlab = " ",ylab = "",
                                                 par.settings = theme.novpadding,
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=111, ybottom=0,
                                                 xright=147, ytop=8, alpha=0.3, col="light blue")
-                                                panel.text(40,7,labels=expression(italic("X. muelleri")),fontsize=20)})
+                                                panel.rect(xleft=36.4, ybottom=0,
+                                                xright=36.6, ytop=8, col="black")
+                                                panel.text(40,7,labels=expression(paste(italic("X. muelleri")," Chr4L")),fontsize=20)})
 
 
-muel_sexchr_plot <- muel_sexchr_plot + layer(panel.points(x=36.4, y=0, col = "black", fill = "black", cex = 3, pch=23))
 
-
-
+muel_sexchr_plot
 
 
 #pdf("./muelleri_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -578,7 +587,7 @@ fisc_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=468, ybottom=0,
                                                 xright=532, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(220,15,labels=expression(italic("X. fischbergi")),fontsize=20)})
+                                                panel.text(295,15,labels=expression(italic("X. fischbergi")),fontsize=14)})
 fisc_wgs_plot
 
 #pdf("./fisc_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -606,14 +615,16 @@ fisc_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                     "SIG"=list(col="red",label=F)),
                                                   ylim = c(0,17),
-                                                  xlab = "Chr3L",
+                                                  xlab = "",
                                                   par.settings = theme.novpadding,
                                                   panel=function(x, y, ...){
                                                   panel.rect(xleft=41, ybottom=0,
                                                   xright=105, ytop=17, alpha=0.3, col="light blue")
-                                                  panel.text(40,15,labels=expression(italic("X. fischbergi")),fontsize=20)})
+                                                  panel.rect(xleft=19.1, ybottom=0,
+                                                  xright=19.3, ytop=17, col="black")
+                                                  panel.text(40,15,labels=expression(paste(italic("X. fischbergi")," Chr3L")),fontsize=20)})
 
-fisc_sexchr_plot <- fisc_sexchr_plot + layer(panel.points(x=19.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
+fisc_sexchr_plot 
 
 
 #pdf("./fisch_manhattan_angsd_Chr3L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -889,7 +900,7 @@ lend_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=440, ybottom=0,
                                                 xright=441.2, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(250,15,labels=expression(italic("X. lenduensis")),fontsize=20)})
+                                                panel.text(302,15,labels=expression(italic("X. lenduensis")),fontsize=14)})
                     
 
 
@@ -920,15 +931,17 @@ lend_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                     "SIG"=list(col="red",label=F)),
                                                     ylim = c(0,12),
-                                                    xlab = "Chr3L",
+                                                    xlab = "",ylab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=15, ybottom=0,
                                                     xright=16.2, ytop=12, alpha=0.3, col="light blue")
-                                                    panel.text(43,10,labels=expression(italic("X. lenduensis")),fontsize=20)})
+                                                    panel.rect(xleft=19.1, ybottom=0,
+                                                    xright=19.3, ytop=12, col="black")
+                                                    panel.text(43,10,labels=expression(paste(italic("X. lenduensis")," Chr3L")),fontsize=20)})
 
 
-lend_sexchr_plot <- lend_sexchr_plot + layer(panel.points(x=19.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
+lend_sexchr_plot 
 
 #pdf("./lend_manhattan_angsd_Chr3L__only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
 jpeg("./lend_manhattan_angsd_SexChr_only.jpg",w=7, h=3.0, units ="in", bg="transparent", res = 200)
@@ -1221,7 +1234,7 @@ laev_lab_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=405, ybottom=0,
                                                     xright=425, ytop=11, alpha=0.3, col="light blue")
-                                                    panel.text(200,10,labels=expression(italic("X. laevis")),fontsize=20)})
+                                                    panel.text(250,10,labels=expression(italic("X. laevis")),fontsize=14)})
 
 
 
@@ -1256,14 +1269,16 @@ laev_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                                                     #"neardmw"=list(col="green",label=F),
                                                     #"dmw"=list(col="blue",label=F)),
                                                     ylim = c(0,11),
-                                                    xlab = "Chr2L",
+                                                    xlab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=177, ybottom=0,
                                                     xright=190, ytop=11, alpha=0.3, col="light blue")
-                                                    panel.text(40,9,labels=expression(italic("X. laevis")),fontsize=20)})
+                                                    panel.rect(xleft=70.1, ybottom=0,
+                                                    xright=70.3, ytop=11, col="black")
+                                                    panel.text(40,9,labels=expression(paste(italic("X. laevis")," Chr2L")),fontsize=20)})
 
-laev_sexchr_plot <- laev_sexchr_plot + layer(panel.points(x=70.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
+laev_sexchr_plot 
 
 #p_SL
 #pdf("./laev_family_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -1343,11 +1358,15 @@ p_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr
                                                     xlab = "Chr2L",
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=182, ybottom=0,
-                                                    xright=183, ytop=17, alpha=0.3, col="light blue")})
+                                                    xright=183, ytop=17, alpha=0.3, col="light blue")
+                                                    panel.rect(xleft=70.1, ybottom=0,
+                                                    xright=70.3, ytop=17, alpha=0.3, col="black")
+                                                    panel.text(40,15,labels=expression(paste("wild ",italic("X. laevis"))),fontsize=20)})
 
+p_SL
 
 pdf("./wildlaev_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-p_SL
+  p_SL
 dev.off()
 
 
@@ -1402,18 +1421,31 @@ ann[with(SexChr, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
 ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
-p_SL <- manhattan.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                                   "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                                   "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                                   "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
-                       SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                    "SIG"=list(col="red",label=F),
-                                                    "neardmw"=list(col="green",label=F),
-                                                    "dmw"=list(col="blue",label=F)))
+
+p_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                    "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                    "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                    "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                     "SIG"=list(col="red",label=F),
+                                                     "neardmw"=list(col="green",label=F),
+                                                     "dmw"=list(col="blue",label=F)),
+                                                      #"neardmw"=list(col="green",label=F),
+                                                      #"dmw"=list(col="blue",label=F))),
+                                                      ylim = c(0,17),
+                                                      xlab = "Chr2L",
+                                                      panel=function(x, y, ...){
+                                                      panel.rect(xleft=182, ybottom=0,
+                                                      xright=183, ytop=17, alpha=0.3, col="light blue")
+                                                      panel.rect(xleft=70.1, ybottom=0,
+                                                      xright=70.3, ytop=17, alpha=0.3, col="black")
+                                                      panel.text(40,15,labels=expression(italic("X. victorianus")),fontsize=20)})
+
+p_SL
 
 
 pdf("./vict_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-p_SL
+  p_SL
 dev.off()
 
 # vict uncertain----
@@ -1523,7 +1555,7 @@ ann[with(SexChr, pvalue<=a["0.05%"])]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))#,"neardmw","dmw"))
 
 
-p_SL <- manhattan.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+p_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                    "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                    "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                    "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
@@ -1535,8 +1567,13 @@ p_SL <- manhattan.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4
                                                     xlab = "Chr2L",
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=182, ybottom=0,
-                                                    xright=183, ytop=15, alpha=0.3, col="light blue")})
+                                                    xright=183, ytop=5, alpha=0.3, col="light blue")
+                                                    panel.rect(xleft=70.1, ybottom=0,
+                                                    xright=70.3, ytop=5, alpha=0.3, col="black")
+                                                    panel.text(40,4,labels=expression(italic("X. gilli")),fontsize=20)})
 
+
+p_SL
 
 pdf("./gill_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
   p_SL
@@ -1584,8 +1621,8 @@ trop_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3",
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1024, ybottom=0,
                                                 xright=1040, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(140,15,labels=expression(italic("X. tropicalis")),
-                                                fontsize=20)})
+                                                panel.text(150,15,labels=expression(italic("X. tropicalis")),
+                                                fontsize=14)})
 
 pdf("./trop_all_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
     trop_wgs_plot
@@ -1609,14 +1646,16 @@ trop_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1","Chr2","C
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                     "SIG"=list(col="red",label=F)),
                                                     ylim = c(0,17),
-                                                    xlab = "Chr7",
+                                                    xlab = "",ylab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=6, ybottom=0,
                                                     xright=11, ytop=17, alpha=0.3, col="light blue")
-                                                    panel.text(37,14,labels=expression(italic("X. tropicalis")),fontsize=20)})
+                                                    panel.rect(xleft=60.3, ybottom=0,
+                                                    xright=60.5, ytop=17, col="black")
+                                                    panel.text(37,14,labels=expression(paste(italic("X. tropicalis")," Chr7")),fontsize=20)})
 
-trop_sexchr_plot <- trop_sexchr_plot + layer(panel.points(x=60.3, y=0, col = "black", fill = "black", cex = 3, pch=23))
+trop_sexchr_plot 
 
 
 pdf("./trop_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -1959,10 +1998,13 @@ my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
 
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
 #make annotation factor
 ann<-rep(1, length(my_df$pvalue))
-ann[with(my_df, pvalue<=0.0001)]<-2
-ann[with(my_df, pvalue<=0.00001)]<-3
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
@@ -1978,7 +2020,7 @@ bore_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1210, ybottom=0,
                                                 xright=1290, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(300,15,labels=expression(paste(italic("X. borealis")," east",sep=" ")),fontsize=20)})
+                                                panel.text(336,15,labels=expression(paste(italic("X. borealis")," east",sep=" ")),fontsize=14)})
 bore_wgs_plot
 #pdf("./bore_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
 jpeg("./bore_manhattan_angsd.jpg",w=14, h=3.0, units ="in", bg="transparent", res = 200)
@@ -2002,20 +2044,24 @@ bore_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                     "SIG"=list(col="red",label=F)),
                                                     ylim = c(0,17),
-                                                    xlab = "Chr8L",
+                                                    xlab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=0, ybottom=0,
                                                     xright=71.5, ytop=17, alpha=0.3, col="light blue")
-                                                    panel.text(43,15,labels=expression(paste(italic("X. borealis")," east",sep=" ")),
+                                                    panel.rect(xleft=22, ybottom=0,
+                                                    xright=22.3, ytop=17, col="black")
+                                                    panel.text(43,15,labels=expression(paste(italic("X. borealis")," east Chr8L",sep=" ")),
                                                                fontsize=20)})
-bore_sexchr_plot <- bore_sexchr_plot + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+bore_sexchr_plot 
 
 
-#pdf("./bore_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-jpeg("./bore_manhattan_angsd_SexChr_only.jpg",w=7, h=3.0, units ="in", bg="transparent", res = 200)
+pdf("./bore_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
   bore_sexchr_plot
 dev.off()
+
+
 
 # allo_family1 ----
 # read the data from allo_fam1
@@ -2166,7 +2212,7 @@ allo_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                               panel=function(x, y, ...){
                                               panel.rect(xleft=1088, ybottom=0,
                                               xright=1105, ytop=17, alpha=0.3, col="light blue")
-                                              panel.text(250,15,labels=expression(italic("X. allofraseri")),fontsize=20)})
+                                              panel.text(295,15,labels=expression(italic("X. allofraseri")),fontsize=14)})
 
 
 allo_wgs_plot
@@ -2201,14 +2247,16 @@ allo_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                    "SIG"=list(col="red",label=F)),
                                                     ylim= c(0,17),
-                                                    xlab = "Chr7L",
+                                                    xlab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=8, ybottom=0,
                                                     xright=25, ytop=17, alpha=0.3, col="light blue")
-                                                    panel.text(35,15,labels=expression(italic("X. allofraseri")),fontsize=20)})
+                                                    panel.rect(xleft=58.2, ybottom=0,
+                                                    xright=58.5, ytop=17, col="black")
+                                                    panel.text(35,15,labels=expression(paste(italic("X. allofraseri")," Chr7L")),fontsize=20)})
 
-allo_sexchr_plot <- allo_sexchr_plot + layer(panel.points(x=58.2, y=0, col = "black", fill = "black", cex = 3, pch=23))
+allo_sexchr_plot 
 
 pdf("./allo_all_manhattan_angsd_Chr7L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
   allo_sexchr_plot
@@ -2248,7 +2296,7 @@ pygm_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1333, ybottom=0,
                                                 xright=1355, ytop=16, alpha=0.3, col="light blue")
-                                                panel.text(250,14,labels=expression(italic("X. pygmaeus")),fontsize=20)})
+                                                panel.text(300,14,labels=expression(italic("X. pygmaeus")),fontsize=14)})
 
 pygm_wgs_plot
 
@@ -2277,15 +2325,17 @@ pygm_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
                        SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                     "SIG"=list(col="red",label=F)),
                                                     ylim= c(0,17),
-                                                    xlab = "Chr8L",
+                                                    xlab = "",ylab = "",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=117, ybottom=0,
                                                     xright=135.4, ytop=17, alpha=0.3, col="light blue")
-                                                    panel.text(35,14,labels=expression(italic("X. pygmaeus")),fontsize=20)})
+                                                    panel.rect(xleft=22, ybottom=0,
+                                                    xright=22.3, ytop=17, col="black")
+                                                    panel.text(35,14,labels=expression(paste(italic("X. pygmaeus")," Chr8L")),fontsize=20)})
 
 
-pygm_sexchr_plot <- pygm_sexchr_plot + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+pygm_sexchr_plot 
 
 
 pdf("./pygm_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -2296,7 +2346,7 @@ dev.off()
 # read the data from pygm_wildonly
 my_df <- read.table(gzfile("pygm_only_wild_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+#View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
@@ -2330,16 +2380,25 @@ ann[with(SexChr, pvalue<=0.00001)]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
-p_SL <- manhattan.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                                   "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                                   "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                                   "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
-                       SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                    "SIG"=list(col="red",label=F)))
+pygm_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                                "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                                    SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                                 "SIG"=list(col="red",label=F)),
+                                                                ylim= c(0,10),
+                                                                xlab = "Chr8L",ylab = "",
+                                                                par.settings = theme.novpadding,
+                                                                panel=function(x, y, ...){
+                                                                panel.rect(xleft=117, ybottom=0,
+                                                                xright=135.4, ytop=10, alpha=0.3, col="light blue")
+                                                                panel.rect(xleft=22, ybottom=0,
+                                                                xright=22.3, ytop=10, col="black")
+                                                                panel.text(35,8,labels=expression(paste("wild ",italic("X. pygmaeus"))),fontsize=20)})
 
 
 pdf("./pygm_wildonly_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-p_SL
+  pygm_sexchr_plot
 dev.off()
 
 
@@ -2575,7 +2634,7 @@ p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                 "SIG"=list(col="red",label=F)))
 
 pdf("./allo_fam1_mat_all_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+  p
 dev.off()
 
 # Highlight Chromosome of interest
@@ -2595,13 +2654,18 @@ allomat_fam1_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","
                                                          "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                          "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
                              SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                          "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,15),
+                                                          "SIG"=list(col="red",label=F)), 
+                                                          ylim = c(0,15),
+                                                          xlab = "",
                                                           par.settings = theme.novpadding,
                                                           panel=function(x, y, ...){
                                                           panel.rect(xleft=8, ybottom=0,
-                                                          xright=25, ytop=17, alpha=0.3, col="light blue")})
+                                                          xright=25, ytop=17, alpha=0.3, col="light blue")
+                                                          panel.rect(xleft=58.2, ybottom=0,
+                                                          xright=58.5, ytop=17, col="black")
+                                                          panel.text(100,13,labels="maternal",fontsize=12)})
 
-allomat_fam1_SL <- allomat_fam1_SL + layer(panel.points(x=58.2, y=0, col = "black", fill = "black", cex = 3, pch=23))
+allomat_fam1_SL 
 
 
 pdf("./allo_fam1_mat_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -2636,7 +2700,7 @@ p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                 "SIG"=list(col="red",label=F)))
 
 pdf("./allo_fam1_pat_all_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+  p
 dev.off()
 
 # Highlight Chromosome of interest
@@ -2654,17 +2718,22 @@ allopat_fam1_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","
                                                               "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                               "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
                                   SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                               "SIG"=list(col="red",label=F)),xlab="",ylab="", ylim = c(0,15),
+                                                               "SIG"=list(col="red",label=F)),
+                                                                ylab="", ylim = c(0,15),
+                                                                xlab = "",                              
                                                                 par.settings = theme.novpadding,
                                                                 panel=function(x, y, ...){
                                                                 panel.rect(xleft=8, ybottom=0,
-                                                                xright=25, ytop=17, alpha=0.3, col="light blue")})
+                                                                xright=25, ytop=17, alpha=0.3, col="light blue")
+                                                                panel.rect(xleft=58.2, ybottom=0,
+                                                                xright=58.5, ytop=17, col="black")
+                                                                panel.text(100,13,labels="paternal",fontsize=12)})
 
-allopat_fam1_SL <- allopat_fam1_SL + layer(panel.points(x=58.2, y=0, col = "black", fill = "black", cex = 3, pch=23))
+allopat_fam1_SL 
 
 
 pdf("./allo_fam1_pat_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-allopat_fam1_SL
+  allopat_fam1_SL
 dev.off()
 
 library(gridExtra)
@@ -2822,13 +2891,17 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 muel_mat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                                         "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                                         "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                                         "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
-                             SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                          "SIG"=list(col="red",label=F)),xlab="", 
-                                                          ylim = c(0,8));muel_mat_SL
+                                                               "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                               "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                               "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                                   SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                                "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,8),
+                                                                par.settings = theme.novpadding,
+                                                                panel=function(x, y, ...){
+                                                                panel.rect(xleft=111, ybottom=0,
+                                                                xright=147, ytop=8, alpha=0.3, col="light blue")})
 
+muel_mat_SL <- muel_mat_SL + layer(panel.points(x=36.4, y=0, col = "black", fill = "black", cex = 3, pch=23))
 
 pdf("./muel_fam1_mat_all_manhattan_angsd_Chr4L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
 muel_mat_SL
@@ -2857,11 +2930,19 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 muel_pat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                                         "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                                         "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                                         "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
-                             SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                          "SIG"=list(col="red",label=F)), xlab="", ylim = c(0,8))
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", 
+                                                            ylab="", ylim = c(0,8),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=111, ybottom=0,
+                                                            xright=147, ytop=8, alpha=0.3, col="light blue")})
+
+muel_pat_SL <- muel_pat_SL + layer(panel.points(x=36.4, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
 
 
 pdf("./muel_fam1_pat_all_manhattan_angsd_Chr4L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
@@ -2901,9 +2982,13 @@ fisc_mat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3
                                                            "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                            "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
                                SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                            "SIG"=list(col="red",label=F)),xlab="", 
-                               ylim = c(0,8));fisc_mat_SL
+                                                            "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,8),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=41, ybottom=0,
+                                                            xright=105, ytop=8, alpha=0.3, col="light blue")})
 
+fisc_mat_SL <- fisc_mat_SL + layer(panel.points(x=19.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
 
 pdf("./fisc_fam1_mat_all_manhattan_angsd_Chr4L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
 fisc_mat_SL
@@ -2936,11 +3021,17 @@ fisc_pat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3
                                                            "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                            "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
                                SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                            "SIG"=list(col="red",label=F)), xlab="", ylim = c(0,8))
+                                                            "SIG"=list(col="red",label=F)),xlab="",
+                                                            ylab="",ylim = c(0,8),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=41, ybottom=0,
+                                                            xright=105, ytop=8, alpha=0.3, col="light blue")})
 
+fisc_pat_SL <- fisc_pat_SL + layer(panel.points(x=19.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
 
 pdf("./fisc_fam1_pat_all_manhattan_angsd_Chr3L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-fisc_pat_SL
+  fisc_pat_SL
 dev.off()
 
 library(gridExtra)
@@ -2949,6 +3040,252 @@ grid.arrange(fisc_mat_SL, fisc_pat_SL, ncol=2, nrow =1)
 dev.off()
 
 
+
+
+# bore_mat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("bor_out_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
+
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("bore_Chr8L_mat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+bore_mat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,12),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=0, ybottom=0,
+                                                            xright=71.5, ytop=12, alpha=0.3, col="light blue")})
+
+bore_mat_SL <- bore_mat_SL + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./bore_pat_mat_all_manhattan_angsd_Chr8L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+  bore_mat_SL
+dev.off()
+
+# bore_pat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("bor_out_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("bore_Chr8L_pat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
+# Get rid of the scaffold data
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+bore_pat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", 
+                                                            ylab="", ylim = c(0,12),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=0, ybottom=0,
+                                                            xright=71.5, ytop=12, alpha=0.3, col="light blue")})
+
+bore_pat_SL <- bore_pat_SL + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./bore_pat_all_manhattan_angsd_Chr8L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+  bore_pat_SL
+dev.off()
+
+library(gridExtra)
+pdf("./bore_pat_SL_matpat_angsd_Chr8L_only.pdf",w=7, h=2.0, version="1.4", bg="transparent")
+  grid.arrange(bore_mat_SL, bore_pat_SL, ncol=2, nrow =1)
+dev.off()
+
+
+
+
+# pygm_mat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("pygm_only_labreared_out_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("pyg_Chr8L_mat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+pygm_mat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,17),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=117, ybottom=0,
+                                                            xright=135.4, ytop=17, alpha=0.3, col="light blue")})
+
+pygm_mat_SL <- pygm_mat_SL + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./pygm_pat_mat_all_manhattan_angsd_Chr8L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+pygm_mat_SL
+dev.off()
+
+# pygm_pat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("pygm_only_labreared_out_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("pyg_Chr8L_pat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
+# Get rid of the scaffold data
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+pygm_pat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", 
+                                                            ylab="", ylim = c(0,17),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=117, ybottom=0,
+                                                            xright=135.4, ytop=17, alpha=0.3, col="light blue")})
+
+pygm_pat_SL <- pygm_pat_SL + layer(panel.points(x=22, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./pygm_pat_all_manhattan_angsd_Chr8L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+  pygm_pat_SL
+dev.off()
+
+library(gridExtra)
+pdf("./pygm_pat_SL_matpat_angsd_Chr8L_only.pdf",w=7, h=2.0, version="1.4", bg="transparent")
+  grid.arrange(pygm_mat_SL, pygm_pat_SL, ncol=2, nrow =1)
+dev.off()
+
+
+# laev_mat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("laevis_out_Xlaev_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("XL_Chr2L_mat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+laev_mat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", ylim = c(0,12),
+                                                              par.settings = theme.novpadding,
+                                                              panel=function(x, y, ...){
+                                                              panel.rect(xleft=177, ybottom=0,
+                                                              xright=190, ytop=12, alpha=0.3, col="light blue")})
+
+laev_mat_SL <- laev_mat_SL + layer(panel.points(x=70.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./laev_pat_mat_all_manhattan_angsd_Chr2L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+  laev_mat_SL
+dev.off()
+
+# laev_pat_only ----
+setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
+my_df <- read.table("laevis_out_Xlaev_additive_F1.lrt0.gz", header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+# get percentiles from whole genome including all sites
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+# now open only mat sites for Chr8L
+SexChr <- read.table("XL_Chr2L_pat_angsdout.txt", header = T)
+colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
+# Get rid of the scaffold data
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+laev_pat_SL <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                               SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),xlab="", 
+                                                            ylab="", ylim = c(0,12),
+                                                            par.settings = theme.novpadding,
+                                                            panel=function(x, y, ...){
+                                                            panel.rect(xleft=177, ybottom=0,
+                                                            xright=190, ytop=12, alpha=0.3, col="light blue")})
+
+laev_pat_SL <- laev_pat_SL + layer(panel.points(x=70.1, y=0, col = "black", fill = "black", cex = 3, pch=23))
+
+pdf("./laev_pat_all_manhattan_angsd_Chr2L_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+  laev_pat_SL
+dev.off()
+
+library(gridExtra)
+pdf("./laev_pat_SL_matpat_angsd_Chr8L_only.pdf",w=7, h=2.0, version="1.4", bg="transparent")
+grid.arrange(laev_mat_SL, laev_pat_SL, ncol=2, nrow =1)
+dev.off()
 
 
 
@@ -3409,13 +3746,20 @@ dev.off()
 library(gridExtra)
 
 
-jpeg("./multiple_sexchronly_manhattan_angsd.jpg",w=12, h=8.0, units ="in", bg="transparent", res = 200)
-  grid.arrange(laev_sexchr_plot,pygm_sexchr_plot,
+jpeg("./Fig2_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=8.0, units ="in", bg="transparent", res = 200)
+      grid.arrange(laev_sexchr_plot,pygm_sexchr_plot,
                allo_sexchr_plot,lend_sexchr_plot,
                fisc_sexchr_plot,muel_sexchr_plot, 
                bore_sexchr_plot,trop_sexchr_plot, ncol=2, nrow =4)
 dev.off()
 
+# SI Fig1 ---- 
+jpeg("./SI_Fig1_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+      grid.arrange(laev_lab_wgs_plot,pygm_wgs_plot,
+             allo_wgs_plot,lend_wgs_plot,
+             fisc_wgs_plot,muel_wgs_plot, 
+             bore_wgs_plot,trop_wgs_plot, ncol=1, nrow =8)
+dev.off()
 
 
 jpeg("./allo_matpat_3families_angsd.jpg",w=12, h=8.0, units ="in", bg="transparent", res = 200)
@@ -3424,22 +3768,30 @@ jpeg("./allo_matpat_3families_angsd.jpg",w=12, h=8.0, units ="in", bg="transpare
              allomat_fam2_SL, allopat_fam2_SL, ncol=2, nrow =3)
 dev.off()
 
-jpeg("./allo_matpat_family1_angsd.jpg",w=6, h=1.5, units ="in", bg="transparent", res = 200)
-  grid.arrange(arrangeGrob(allomat_fam1_SL, top = "Maternal"),
-               arrangeGrob(allopat_fam1_SL, top = "Paternal"), ncol = 2)
+title1=text_grob("X. allofraseri", size = 12, face = "italic")
+jpeg("./Fig3_allo_matpat_family1_angsd.jpg",w=6, h=1.7, units ="in", bg="transparent", res = 200)
+    grid.arrange(arrangeGrob(allomat_fam1_SL),
+    arrangeGrob(allopat_fam1_SL), ncol = 2)#, top=title1)
 dev.off()
 
+library(ggpubr)
 jpeg("./allo_matpat_family0_and_2_angsd.jpg",w=10, h=3.0, units ="in", bg="transparent", res = 200)
   grid.arrange(arrangeGrob(allomat_fam0_SL,allomat_fam2_SL, top = "Maternal"),
              arrangeGrob(allopat_fam0_SL,allopat_fam2_SL, top = "Paternal"), ncol = 2)
 dev.off()
 
 jpeg("./trop_matpat_4_families_angsd.jpg",w=10, h=10.0, units ="in", bg="transparent", res = 200)
-  grid.arrange(arrangeGrob(GE_trop_mat_SL, top = "Maternal"),
-               arrangeGrob(GE_trop_pat_SL, top = "Paternal"),
+  grid.arrange(GE_trop_mat_SL, GE_trop_pat_SL,
                GW_trop_mat_SL,GW_trop_pat_SL,
                C659_mat_SL,C659_pat_SL,C660_mat_SL,
                C660_pat_SL, ncol = 2)
 dev.off()
 
+jpeg("./female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=12.0, units ="in", bg="transparent", res = 200)
+  grid.arrange(laev_mat_SL, laev_pat_SL,
+             pygm_mat_SL,pygm_pat_SL,
+             bore_mat_SL,bore_pat_SL,
+             fisc_mat_SL,fisc_pat_SL,
+             muel_mat_SL, muel_pat_SL, ncol = 2, nrow=5)
+dev.off()
 ```
