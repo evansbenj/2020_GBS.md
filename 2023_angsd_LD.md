@@ -663,20 +663,20 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+fras_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
-                   # my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                  #          "SIG"=list(col="red",label=F),
-                  #          "chr2L"=list(col="green",label=F),
-                  #          "chr3L"=list(col="blue",label=F),
-                  #          "chr5S"=list(col="purple",label=F)))
+                                                "SIG"=list(col="red",label=F)),
+                    ylim= c(0,10),xlab="",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(237,8,labels=expression(italic("X. fraseri")),fontsize=14)})
+
 
 pdf("./fras_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-  p
+  fras_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -724,15 +724,20 @@ ann[with(my_df, pvalue<=a["0.05%"])]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+para_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                                "SIG"=list(col="red",label=F)),                                                
+                    ylim= c(0,10),xlab="",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                       panel.text(283,8,labels=expression(italic("X. parafraseri")),fontsize=14)})
+
 
 pdf("./parafras_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+para_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -764,7 +769,7 @@ dev.off()
 # read the data from wittei
 my_df <- read.table(gzfile("wittei_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+# View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
@@ -780,12 +785,17 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+witt_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                                "SIG"=list(col="red",label=F)),
+                    ylim= c(0,12),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(220,10,labels=expression(italic("X. wittei")),fontsize=14)})
+
 
 pdf("./witt_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
   p
@@ -835,15 +845,20 @@ ann[with(my_df, pvalue<=a["0.05%"])]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+long_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                                "SIG"=list(col="red",label=F)),
+                    ylim= c(0,14),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(261,9,labels=expression(italic("X. longipes")),fontsize=14)})
+
 
 pdf("./long_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-     p
+long_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -972,17 +987,22 @@ ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+larg_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                  "SIG"=list(col="red",label=F),
                                                  "neardmw"=list(col="green",label=F),
-                                                 "dmw"=list(col="blue",label=F)))
+                                                 "dmw"=list(col="blue",label=F)),                   
+                    ylim= c(0,8),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(240,6.6,labels=expression(italic("X. largeni")),fontsize=14)})
+
 
 pdf("./larg_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+larg_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1036,17 +1056,22 @@ ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+itom_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F),
                                                 "neardmw"=list(col="green",label=F),
-                                                "dmw"=list(col="blue",label=F)))
+                                                "dmw"=list(col="blue",label=F)),
+                    ylim= c(0,12),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(297,10,labels=expression(italic("X. itombwensis")),fontsize=14)})
+
 
 pdf("./itom_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+ itom_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1100,17 +1125,23 @@ ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+cliv_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F),
                                                 "neardmw"=list(col="green",label=F),
-                                                "dmw"=list(col="blue",label=F)))
+                                                "dmw"=list(col="blue",label=F)),
+                    ylim= c(0,15),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(211,13,labels=expression(italic("X. clivii")),fontsize=14)})
+
+
 
 pdf("./cliv_all_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+cliv_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1163,17 +1194,22 @@ ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
 ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+cliv_erit_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F),
                                                 "neardmw"=list(col="green",label=F),
-                                                "dmw"=list(col="blue",label=F)))
+                                                "dmw"=list(col="blue",label=F)),
+                    ylim= c(0,10),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(300,8,labels=expression(paste("Eritrea ",italic("X. clivii"))),fontsize=14)})
+
 
 pdf("./clivonlyEritrea_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+  cliv_erit_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1215,9 +1251,9 @@ a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 ann<-rep(1, length(my_df$pvalue))
 ann[with(my_df, pvalue<=a["0.1%"])]<-2
 ann[with(my_df, pvalue<=a["0.05%"])]<-3
-#ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
-#ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 
@@ -1225,10 +1261,10 @@ laev_lab_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","
                                                    "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                    "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                    "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                       my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                    "SIG"=list(col="red",label=F)),
-                                                    #"neardmw"=list(col="green",label=F),
-                                                    #"dmw"=list(col="blue",label=F)),
+                                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                                "SIG"=list(col="red",label=F),
+                                                                "neardmw"=list(col="green",label=F),
+                                                                "dmw"=list(col="blue",label=F)),
                                                     ylim= c(0,11),xlab="",
                                                     par.settings = theme.novpadding,
                                                     panel=function(x, y, ...){
@@ -1302,31 +1338,32 @@ a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 ann<-rep(1, length(my_df$pvalue))
 ann[with(my_df, pvalue<=a["0.1%"])]<-2
 ann[with(my_df, pvalue<=a["0.05%"])]<-3
-#ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
-#ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG")) #,"neardmw","dmw"))
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+wild_xl_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)),
-                                               # "neardmw"=list(col="green",label=F),
-                                               # "dmw"=list(col="blue",label=F))),
-                                              ylim= c(0,16),
-                                              xlab = "Chr2L",
-                                              panel=function(x, y, ...){
-                                              panel.rect(xleft=416, ybottom=0,
-                                              xright=418, ytop=16, alpha=0.3, col="light blue")})
+                              my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                          "SIG"=list(col="red",label=F),
+                                                          "neardmw"=list(col="green",label=F),
+                                                          "dmw"=list(col="blue",label=F)),
+                              ylim= c(0,17),xlab="",
+                              par.settings = theme.novpadding,
+                              panel=function(x, y, ...){
+                                panel.rect(xleft=405, ybottom=0,
+                                           xright=425, ytop=11, alpha=0.3, col="light blue")
+                                panel.text(280,15,labels=expression(paste("wild ",italic("X. laevis"))),fontsize=14)})
 
-p
+wild_xl_wgs
 pdf("./wildlaev_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-  p
+wild_xl_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1392,18 +1429,21 @@ ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+vict_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F),
                                                 "neardmw"=list(col="green",label=F),
-                                                "dmw"=list(col="blue",label=F)))
-
+                                                "dmw"=list(col="blue",label=F)),
+                                                ylim= c(0,10),xlab = "",
+                                                par.settings = theme.novpadding,
+                                                panel=function(x, y, ...){
+                                                panel.text(275,9,labels=expression(italic("X. victorianus")),fontsize=14)})
 
 pdf("./vict_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+  vict_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1515,29 +1555,31 @@ a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 ann<-rep(1, length(my_df$pvalue))
 ann[with(my_df, pvalue<=a["0.1%"])]<-2
 ann[with(my_df, pvalue<=a["0.05%"])]<-3
-#ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
-#ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))#,"neardmw","dmw"))
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
+
+
+# make the manhattan plot using the custom function above
+gill_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                      "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                      "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                      "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
+                           my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                       "SIG"=list(col="red",label=F),
+                                                       "neardmw"=list(col="green",label=F),
+                                                       "dmw"=list(col="blue",label=F)),
+                           ylim= c(0,7),xlab = "",
+                           par.settings = theme.novpadding,
+                           panel=function(x, y, ...){
+                             panel.text(208,5.5,labels=expression(italic("X. gilli")),fontsize=14)})
 
 
 
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                               "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                               "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                               "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)),
-                                                #"neardmw"=list(col="green",label=F),
-                                                #"dmw"=list(col="blue",label=F)),
-                                                ylim= c(0,6),
-                                                panel=function(x, y, ...){
-                                                panel.rect(xleft=416, ybottom=0,
-                                                xright=418, ytop=6, alpha=0.3, col="light blue")})
-
-p
+#gilli_wgs
 
 pdf("./gill_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-  p
+gill_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1621,7 +1663,7 @@ trop_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3",
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1024, ybottom=0,
                                                 xright=1040, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(150,15,labels=expression(italic("X. tropicalis")),
+                                                panel.text(190,15,labels=expression(paste(italic("X. tropicalis")," Ghana")),
                                                 fontsize=14)})
 
 pdf("./trop_all_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -1653,7 +1695,7 @@ trop_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1","Chr2","C
                                                     xright=11, ytop=17, alpha=0.3, col="light blue")
                                                     panel.rect(xleft=60.3, ybottom=0,
                                                     xright=60.5, ytop=17, col="black")
-                                                    panel.text(37,14,labels=expression(paste(italic("X. tropicalis")," Chr7")),fontsize=20)})
+                                                    panel.text(45,14,labels=expression(paste(italic("X. tropicalis")," Ghana Chr7")),fontsize=20)})
 
 trop_sexchr_plot 
 
@@ -1893,19 +1935,20 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
+mell_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
                                                "Chr5","Chr6","Chr7","Chr8","Chr9",
                                                "Chr10")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F)),
-                                                ylim= c(0,11),
-                                                panel=function(x, y, ...){
-                                                panel.rect(xleft=1021, ybottom=0,
-                                                xright=1030, ytop=11, alpha=0.3, col="light blue")})
+                    ylim= c(0,9),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.text(170,7,labels=expression(italic("X. mellotropicalis")),fontsize=14)})
+
 
 
 pdf("./mello_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-  p
+mell_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1943,7 +1986,7 @@ dev.off()
 # read the data from boum
 my_df <- read.table(gzfile("boum_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+#View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
@@ -1956,15 +1999,20 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+boum_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                                "SIG"=list(col="red",label=F)),
+                                        ylim= c(0,9),xlab = "",
+                                        par.settings = theme.novpadding,
+                                       panel=function(x, y, ...){
+                                       panel.text(311,7,labels=expression(italic("X. boumbaensis")),fontsize=14)})
+
 
 pdf("./boum_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+    boum_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -2280,7 +2328,9 @@ a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 ann<-rep(1, length(my_df$pvalue))
 ann[with(my_df, pvalue<=a["0.1%"])]<-2
 ann[with(my_df, pvalue<=a["0.05%"])]<-3
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 
@@ -2289,9 +2339,11 @@ pygm_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)),
-                                                ylim= c(0,16),xlab="",
+                                my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F),
+                                                            "neardmw"=list(col="green",label=F),
+                                                            "dmw"=list(col="blue",label=F)),
+                                ylim= c(0,16),xlab="",
                                                 par.settings = theme.novpadding,
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1333, ybottom=0,
@@ -2353,21 +2405,31 @@ my_df <- my_df[my_df$chr != "Scaffolds",]
 
 #make annotation factor
 ann<-rep(1, length(my_df$pvalue))
-ann[with(my_df, pvalue<=0.0001)]<-2
-ann[with(my_df, pvalue<=0.00001)]<-3
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+wild_pygm_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F),
+                                                            "neardmw"=list(col="green",label=F),
+                                                            "dmw"=list(col="blue",label=F)),
+                                ylim= c(0,8),xlab="",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.rect(xleft=1333, ybottom=0,
+                                 xright=1355, ytop=16, alpha=0.3, col="light blue")
+                      panel.text(345,6,labels=expression(paste("wild ",italic("X. pygmaeus"))),fontsize=14)})
 
 pdf("./pygm_wildonly_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+wild_pygm_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -2380,7 +2442,7 @@ ann[with(SexChr, pvalue<=0.00001)]<-3
 ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
-pygm_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+wild_pygm_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
                                                                 "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
                                                                 "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
                                                                 "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
@@ -2398,7 +2460,7 @@ pygm_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L",
 
 
 pdf("./pygm_wildonly_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-  pygm_sexchr_plot
+wild_pygm_sexchr_plot
 dev.off()
 
 
@@ -3794,7 +3856,7 @@ dev.off()
 # multiple Manhattan plots ----
 library(gridExtra)
 
-
+# Fig 2 ----
 jpeg("./Fig2_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=8.0, units ="in", bg="transparent", res = 200)
       grid.arrange(laev_sexchr_plot,pygm_sexchr_plot,
                allo_sexchr_plot,lend_sexchr_plot,
@@ -3812,7 +3874,7 @@ dev.off()
 
 
 
-
+library(gridExtra)
 library(ggpubr)
 jpeg("./allo_matpat_family0_and_2_angsd.jpg",w=10, h=3.0, units ="in", bg="transparent", res = 200)
   grid.arrange(arrangeGrob(allomat_fam0_SL,allomat_fam2_SL, top = "Maternal"),
@@ -3828,9 +3890,9 @@ jpeg("./Fig3_allo_matpat_family1_angsd.jpg",w=10, h=3, units ="in", bg="transpar
       arrangeGrob(allopat_fam1_SL), ncol = 2, top=title1)
 dev.off()
 
-# SI Fig2 ---- 
+# SI Fig3 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig2_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig3_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
   grid.arrange(laev_mat_SL, laev_pat_SL,
              pygm_mat_SL,pygm_pat_SL,
              bore_mat_SL,bore_pat_SL,
@@ -3839,19 +3901,34 @@ jpeg("./SI_Fig2_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units
 dev.off()
 
 
-# SI Fig3 ---- 
+# SI Fig4 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig3_allo_matpat_2families_angsd.jpg",w=12, h=4.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig4_allo_matpat_2families_angsd.jpg",w=12, h=4.0, units ="in", bg="transparent", res = 200)
 grid.arrange(allomat_fam0_SL, allopat_fam0_SL, 
              allomat_fam2_SL, allopat_fam2_SL, ncol=2, nrow =2, top=title1)
 dev.off()
 
-# SI Fig4 ---- 
+# SI Fig5 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig4_trop_matpat_4_families_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig5_trop_matpat_4_families_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
 grid.arrange(GE_trop_mat_SL, GE_trop_pat_SL,
              GW_trop_mat_SL,GW_trop_pat_SL,
              C659_mat_SL,C659_pat_SL,
              C660_mat_SL,C660_pat_SL, ncol = 2, nrow =4, top=title1)
+dev.off()
+
+# SI Fig6a ---- 
+jpeg("./SI_Fig6a_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+  grid.arrange(vict_wgs,gill_wgs,
+               larg_wgs,cliv_wgs,
+               fras_wgs,para_wgs,
+               itom_wgs,boum_wgs, ncol=1, nrow =8)
+dev.off()
+
+# SI Fig6b ---- 
+jpeg("./SI_Fig6b_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+  grid.arrange(witt_wgs,long_wgs,
+             mell_wgs,wild_xl_wgs, 
+             wild_pygm_wgs,cliv_erit_wgs,ncol=1, nrow =8)
 dev.off()
 ```
