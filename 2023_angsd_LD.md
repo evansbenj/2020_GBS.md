@@ -995,10 +995,10 @@ larg_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","C
                                                  "SIG"=list(col="red",label=F),
                                                  "neardmw"=list(col="green",label=F),
                                                  "dmw"=list(col="blue",label=F)),                   
-                    ylim= c(0,8),xlab = "",
+                    ylim= c(0,10),xlab = "",
                     par.settings = theme.novpadding,
                     panel=function(x, y, ...){
-                      panel.text(240,6.6,labels=expression(italic("X. largeni")),fontsize=14)})
+                      panel.text(240,8,labels=expression(italic("X. largeni")),fontsize=14)})
 
 
 pdf("./larg_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -1235,7 +1235,7 @@ p_SL
 dev.off()
 
 
-# laevis ----
+# laevis lab ----
 # read the data from laevis
 my_df <- read.table(gzfile("laevis_out_Xlaev_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
@@ -1270,7 +1270,7 @@ laev_lab_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","
                                                     panel=function(x, y, ...){
                                                     panel.rect(xleft=405, ybottom=0,
                                                     xright=425, ytop=11, alpha=0.3, col="light blue")
-                                                    panel.text(250,10,labels=expression(italic("X. laevis")),fontsize=14)})
+                                                    panel.text(280,10,labels=expression(paste("lab ",italic("X. laevis"))),fontsize=14)})
 
 
 
@@ -1358,8 +1358,8 @@ wild_xl_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L"
                               par.settings = theme.novpadding,
                               panel=function(x, y, ...){
                                 panel.rect(xleft=405, ybottom=0,
-                                           xright=425, ytop=11, alpha=0.3, col="light blue")
-                                panel.text(280,15,labels=expression(paste("wild ",italic("X. laevis"))),fontsize=14)})
+                                           xright=425, ytop=17, alpha=0.3, col="light blue")
+                                panel.text(300,15,labels=expression(paste("wild ",italic("X. laevis"))),fontsize=14)})
 
 wild_xl_wgs
 pdf("./wildlaev_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -1569,10 +1569,10 @@ gill_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","C
                                                        "SIG"=list(col="red",label=F),
                                                        "neardmw"=list(col="green",label=F),
                                                        "dmw"=list(col="blue",label=F)),
-                           ylim= c(0,7),xlab = "",
+                           ylim= c(0,10),xlab = "",
                            par.settings = theme.novpadding,
                            panel=function(x, y, ...){
-                             panel.text(208,5.5,labels=expression(italic("X. gilli")),fontsize=14)})
+                             panel.text(208,8,labels=expression(italic("X. gilli")),fontsize=14)})
 
 
 
@@ -1622,7 +1622,7 @@ pdf("./gill_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="tran
 dev.off()
 
 
-# tropicalis - all ----
+# tropicalis - Ghana ----
 # read the data from trop_all - this is only from Ghana not from Mitros
 my_df <- read.table(gzfile("out_Xtrop_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
@@ -1658,7 +1658,7 @@ trop_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3",
                                                "Chr10")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F)),
-                                                ylim= c(0,17),
+                                                ylim= c(0,17),xlab = "",
                                                 par.settings = theme.novpadding,
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1024, ybottom=0,
@@ -1868,14 +1868,21 @@ ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
+trop_wild_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
                                                "Chr5","Chr6","Chr7","Chr8","Chr9",
                                                "Chr10")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
+                                my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),
+                                ylim= c(0,17),xlab = "",
+                                par.settings = theme.novpadding,
+                                panel=function(x, y, ...){
+                                  panel.rect(xleft=1024, ybottom=0,
+                                             xright=1040, ytop=17, alpha=0.3, col="light blue")
+                                  panel.text(168,15,labels=expression(paste("wild ",italic("X. tropicalis"))),
+                                             fontsize=14)})
 
 pdf("./trop_wildonly_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
+  trop_wild_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -1943,7 +1950,9 @@ mell_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4
                     ylim= c(0,9),xlab = "",
                     par.settings = theme.novpadding,
                     panel=function(x, y, ...){
-                      panel.text(170,7,labels=expression(italic("X. mellotropicalis")),fontsize=14)})
+                      panel.rect(xleft=1024, ybottom=0,
+                                 xright=1040, ytop=17, alpha=0.3, col="light blue")
+                      panel.text(178,7,labels=expression(italic("X. mellotropicalis")),fontsize=14)})
 
 
 
@@ -2005,10 +2014,10 @@ boum_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","C
                                                "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
                     my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                 "SIG"=list(col="red",label=F)),
-                                        ylim= c(0,9),xlab = "",
+                                        ylim= c(0,10),xlab = "",
                                         par.settings = theme.novpadding,
                                        panel=function(x, y, ...){
-                                       panel.text(311,7,labels=expression(italic("X. boumbaensis")),fontsize=14)})
+                                       panel.text(311,8,labels=expression(italic("X. boumbaensis")),fontsize=14)})
 
 
 pdf("./boum_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -2037,7 +2046,7 @@ pdf("./boum_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="tran
 p_SL
 dev.off()
 
-# borealis ----
+# borealis lab family ----
 # read the data from borealis
 my_df <- read.table(gzfile("bor_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
@@ -2068,7 +2077,7 @@ bore_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1210, ybottom=0,
                                                 xright=1290, ytop=17, alpha=0.3, col="light blue")
-                                                panel.text(336,15,labels=expression(paste(italic("X. borealis")," east",sep=" ")),fontsize=14)})
+                                                panel.text(315,15,labels=expression(paste("lab ",italic("X. borealis"))),fontsize=14)})
 bore_wgs_plot
 #pdf("./bore_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
 jpeg("./bore_manhattan_angsd.jpg",w=14, h=3.0, units ="in", bg="transparent", res = 200)
@@ -2109,6 +2118,87 @@ pdf("./bore_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="tran
   bore_sexchr_plot
 dev.off()
 
+
+# wild borealis west ----
+# read the data from borealis
+my_df <- read.table(gzfile("XB_wild_westonly_additive_F1.lrt0.gz"), header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
+# Get rid of the scaffold data
+my_df <- my_df[my_df$chr != "Scaffolds",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(my_df$pvalue))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+# make the manhattan plot using the custom function above
+wild_bor_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
+                                my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F)),
+                                ylim= c(0,12),xlab="",
+                                par.settings = theme.novpadding,
+                                panel=function(x, y, ...){
+                                  panel.rect(xleft=1210, ybottom=0,
+                                             xright=1290, ytop=17, alpha=0.3, col="light blue")
+                                  panel.text(336,10,labels=expression(paste(italic("X. borealis")," west",sep=" ")),fontsize=14)})
+wild_bor_wgs_plot
+#pdf("./bore_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
+jpeg("./wild_bore_west_manhattan_angsd.jpg",w=14, h=3.0, units ="in", bg="transparent", res = 200)
+  wild_bor_wgs_plot
+dev.off()
+
+# wild borealis east ----
+# read the data from borealis
+my_df <- read.table(gzfile("XB_wild_eastonly_additive_F1.lrt0.gz"), header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
+# Get rid of the scaffold data
+my_df <- my_df[my_df$chr != "Scaffolds",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(my_df$pvalue))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+# make the manhattan plot using the custom function above
+wild_bor_east_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                               "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                               "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                               "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
+                                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                                "SIG"=list(col="red",label=F)),
+                                    ylim= c(0,10),xlab="",
+                                    par.settings = theme.novpadding,
+                                    panel=function(x, y, ...){
+                                      panel.rect(xleft=1210, ybottom=0,
+                                                 xright=1290, ytop=17, alpha=0.3, col="light blue")
+                                      panel.text(336,8,labels=expression(paste(italic("X. borealis")," east",sep=" ")),fontsize=14)})
+wild_bor_east_wgs_plot
+#pdf("./bore_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
+jpeg("./wild_bore_east_manhattan_angsd.jpg",w=14, h=3.0, units ="in", bg="transparent", res = 200)
+  wild_bor_east_wgs_plot
+dev.off()
+
+
+
+pdf("./bore_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+wild_bor_sexchr_plot
+dev.off()
 
 
 # allo_family1 ----
@@ -2348,7 +2438,7 @@ pygm_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                 panel=function(x, y, ...){
                                                 panel.rect(xleft=1333, ybottom=0,
                                                 xright=1355, ytop=16, alpha=0.3, col="light blue")
-                                                panel.text(300,14,labels=expression(italic("X. pygmaeus")),fontsize=14)})
+                                                panel.text(300,14,labels=expression(paste(italic("X. pygmaeus"))),fontsize=14)})
 
 pygm_wgs_plot
 
@@ -2394,6 +2484,90 @@ pdf("./pygm_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="
   pygm_sexchr_plot
 dev.off()
 
+
+# pygm_lab ----
+# read the data from pygm_lab
+my_df <- read.table(gzfile("pygm_only_labreared_out_additive_F1.lrt0.gz"), header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
+# Get rid of the scaffold data
+my_df <- my_df[my_df$chr != "Scaffolds",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(my_df$pvalue))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
+ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
+ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
+
+
+
+# make the manhattan plot using the custom function above
+pygm_lab_wgs_plot <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                           "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                           "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                           "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
+                                my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                            "SIG"=list(col="red",label=F),
+                                                            "neardmw"=list(col="green",label=F),
+                                                            "dmw"=list(col="blue",label=F)),
+                                ylim= c(0,16),xlab="",
+                                par.settings = theme.novpadding,
+                                panel=function(x, y, ...){
+                                  panel.rect(xleft=1333, ybottom=0,
+                                             xright=1355, ytop=16, alpha=0.3, col="light blue")
+                                  panel.text(340,14,labels=expression(paste("lab ",italic("X. pygmaeus"))),fontsize=14)})
+
+pygm_lab_wgs_plot
+
+pdf("./pygm_lab_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
+  pygm_lab_wgs_plot
+dev.off()
+
+# Highlight Chromosome of interest
+SexChr <- my_df[my_df$chr == "Chr8L",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(SexChr$pvalue))
+ann[with(SexChr, pvalue<=a["0.1%"])]<-2
+ann[with(SexChr, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+
+pygm_labonly_sexchr_plot <- chromosome.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
+                                                                "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
+                                                                "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
+                                                                "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
+                                    SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                                 "SIG"=list(col="red",label=F)),
+                                    ylim= c(0,17),
+                                    xlab = "",ylab = "",
+                                    par.settings = theme.novpadding,
+                                    panel=function(x, y, ...){
+                                      panel.rect(xleft=117, ybottom=0,
+                                                 xright=135.4, ytop=17, alpha=0.3, col="light blue")
+                                      panel.rect(xleft=22, ybottom=0,
+                                                 xright=22.3, ytop=17, col="black")
+                                      panel.text(35,14,labels=expression(paste("lab ",italic("X. pygmaeus")," Chr8L")),fontsize=20)})
+
+
+pygm_labonly_sexchr_plot 
+
+
+pdf("./pygm_all_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
+pygm_labonly_sexchr_plot
+dev.off()
+
+
 # pygm_wildonly ----
 # read the data from pygm_wildonly
 my_df <- read.table(gzfile("pygm_only_wild_out_additive_F1.lrt0.gz"), header = T)
@@ -2421,12 +2595,12 @@ wild_pygm_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3
                                                             "SIG"=list(col="red",label=F),
                                                             "neardmw"=list(col="green",label=F),
                                                             "dmw"=list(col="blue",label=F)),
-                                ylim= c(0,8),xlab="",
+                                ylim= c(0,10),xlab="",
                     par.settings = theme.novpadding,
                     panel=function(x, y, ...){
                       panel.rect(xleft=1333, ybottom=0,
                                  xright=1355, ytop=16, alpha=0.3, col="light blue")
-                      panel.text(345,6,labels=expression(paste("wild ",italic("X. pygmaeus"))),fontsize=14)})
+                      panel.text(350,8,labels=expression(paste("wild ",italic("X. pygmaeus"))),fontsize=14)})
 
 pdf("./pygm_wildonly_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
 wild_pygm_wgs
@@ -2464,55 +2638,6 @@ wild_pygm_sexchr_plot
 dev.off()
 
 
-# pygm_labonly ----
-# read the data from pygm_labonly
-my_df <- read.table(gzfile("pygm_only_labreared_out_additive_F1.lrt0.gz"), header = T)
-colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
-#my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
-# Get rid of the scaffold data
-my_df <- my_df[my_df$chr != "Scaffolds",]
-
-#make annotation factor
-ann<-rep(1, length(my_df$pvalue))
-ann[with(my_df, pvalue<=0.0001)]<-2
-ann[with(my_df, pvalue<=0.00001)]<-3
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
-
-
-# make the manhattan plot using the custom function above
-p <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                               "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                               "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                               "Chr7S","Chr8S","Chr9_10S")), my_df$pos, 
-                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                "SIG"=list(col="red",label=F)))
-
-pdf("./pygm_labonly_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-p
-dev.off()
-
-# Highlight Chromosome of interest
-SexChr <- my_df[my_df$chr == "Chr8L",]
-
-#make annotation factor
-ann<-rep(1, length(SexChr$pvalue))
-ann[with(SexChr, pvalue<=0.0001)]<-2
-ann[with(SexChr, pvalue<=0.00001)]<-3
-ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
-
-
-p_SL <- manhattan.plot(factor(SexChr$chr, levels=c("Chr1L","Chr2L","Chr3L","Chr4L",
-                                                   "Chr5L","Chr6L","Chr7L","Chr8L","Chr9_10L",
-                                                   "Chr1S","Chr2S","Chr3S","Chr4S","Chr5S","Chr6S",
-                                                   "Chr7S","Chr8S","Chr9_10S")), SexChr$pos, 
-                       SexChr$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
-                                                    "SIG"=list(col="red",label=F)))
-
-
-pdf("./pygm_labonly_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-p_SL
-dev.off()
 
 
 
@@ -3864,14 +3989,35 @@ jpeg("./Fig2_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=8.0, units ="in", 
                bore_sexchr_plot,trop_sexchr_plot, ncol=2, nrow =4)
 dev.off()
 
-# SI Fig1 ---- 
-jpeg("./SI_Fig1_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
-      grid.arrange(laev_lab_wgs_plot,pygm_wgs_plot,
-             allo_wgs_plot,lend_wgs_plot,
-             fisc_wgs_plot,muel_wgs_plot, 
-             bore_wgs_plot,trop_wgs_plot, ncol=1, nrow =8)
+# SI Fig1a ---- 
+jpeg("./SI_Fig1a_multiple_sexchronly_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+      grid.arrange(laev_lab_wgs_plot,wild_xl_wgs,
+                   pygm_lab_wgs_plot,wild_pygm_wgs,
+                   bore_wgs_plot,wild_bor_east_wgs_plot,
+                   wild_bor_wgs_plot,ncol=1, nrow =8)
 dev.off()
 
+# SI Fig1b ---- 
+jpeg("./SI_Fig1b_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+      grid.arrange(cliv_wgs,cliv_erit_wgs,
+             vict_wgs,gill_wgs,
+             larg_wgs,allo_wgs_plot,
+             lend_wgs_plot,fisc_wgs_plot,ncol=1, nrow =8)
+dev.off()
+
+# SI Fig1c ---- 
+jpeg("./SI_Fig1c_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+    grid.arrange(fras_wgs,para_wgs,
+             muel_wgs_plot,itom_wgs,
+             boum_wgs,witt_wgs,
+             long_wgs,ncol=1, nrow=8)
+dev.off()
+
+# SI Fig1d ---- 
+jpeg("./SI_Fig1d_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
+    grid.arrange(trop_wgs_plot,trop_wild_wgs,
+             mell_wgs,ncol=1, nrow =8)
+dev.off()
 
 
 library(gridExtra)
@@ -3880,8 +4026,6 @@ jpeg("./allo_matpat_family0_and_2_angsd.jpg",w=10, h=3.0, units ="in", bg="trans
   grid.arrange(arrangeGrob(allomat_fam0_SL,allomat_fam2_SL, top = "Maternal"),
              arrangeGrob(allopat_fam0_SL,allopat_fam2_SL, top = "Paternal"), ncol = 2)
 dev.off()
-
-
 
 # Fig3 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
@@ -3917,18 +4061,4 @@ grid.arrange(GE_trop_mat_SL, GE_trop_pat_SL,
              C660_mat_SL,C660_pat_SL, ncol = 2, nrow =4, top=title1)
 dev.off()
 
-# SI Fig6a ---- 
-jpeg("./SI_Fig6a_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
-  grid.arrange(vict_wgs,gill_wgs,
-               larg_wgs,cliv_wgs,
-               fras_wgs,para_wgs,
-               itom_wgs,boum_wgs, ncol=1, nrow =8)
-dev.off()
-
-# SI Fig6b ---- 
-jpeg("./SI_Fig6b_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
-  grid.arrange(witt_wgs,long_wgs,
-             mell_wgs,wild_xl_wgs, 
-             wild_pygm_wgs,cliv_erit_wgs,ncol=1, nrow =8)
-dev.off()
 ```
