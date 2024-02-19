@@ -481,7 +481,7 @@ theme.novpadding <- list(
 #my_df <- read.table("muelleri_additive_lt_0.1_only.txt", header = F)
 my_df <- read.table(gzfile("muel_XL_v10_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
 
@@ -560,6 +560,7 @@ dev.off()
 # read the data from fisch
 my_df <- read.table(gzfile("fisc_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 #my_df[my_df$pvalue == 1,] <-0.9
 # Get rid of the scaffold data
@@ -636,6 +637,7 @@ dev.off()
 # read the data from fisch
 my_df <- read.table(gzfile("fraseri_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -709,6 +711,7 @@ dev.off()
 # read the data from fisch
 my_df <- read.table(gzfile("parafras_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -769,6 +772,8 @@ dev.off()
 # read the data from wittei
 my_df <- read.table(gzfile("wittei_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+
 # View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -798,7 +803,7 @@ witt_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1L","Chr2L","Chr3L","C
 
 
 pdf("./witt_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
-  p
+  witt_wgs
 dev.off()
 
 # Highlight Chromosome of interest
@@ -830,6 +835,7 @@ dev.off()
 # read the data from longipes
 my_df <- read.table(gzfile("long_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -889,6 +895,7 @@ dev.off()
 # read the data from lenduensis
 my_df <- read.table(gzfile("lend_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -969,6 +976,7 @@ dev.off()
 # read the data from largeni
 my_df <- read.table(gzfile("larg_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1038,6 +1046,7 @@ dev.off()
 # read the data from itombwensis
 my_df <- read.table(gzfile("itom_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1053,6 +1062,7 @@ ann[with(my_df, pvalue<=a["0.05%"])]<-3
 ann[with(my_df, chr=="Chr2L" & pos>=180693575 & pos<184720555)]<-4
 ann[with(my_df, chr=="Chr2L" & pos>=182693575 & pos<182720555)]<-5
 ann<-factor(ann, levels=1:5, labels=c("NS","MID","SIG","neardmw","dmw"))
+#ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
 
 
 # make the manhattan plot using the custom function above
@@ -1107,6 +1117,7 @@ dev.off()
 # read the data from cliv_all
 my_df <- read.table(gzfile("cliv_all_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1177,6 +1188,7 @@ dev.off()
 # read the data from cliv_onlyEritrea
 my_df <- read.table(gzfile("clivonlyEritrea_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1239,6 +1251,7 @@ dev.off()
 # read the data from laevis
 my_df <- read.table(gzfile("laevis_out_Xlaev_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1326,6 +1339,7 @@ dev.off()
 # read the data from wild laevis
 my_df <- read.table(gzfile("XLwild_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-0.0000000000000032196
 # Get rid of the scaffold data
@@ -1411,6 +1425,7 @@ dev.off()
 # read the data from vict
 my_df <- read.table(gzfile("vict_out_Xlaev_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1492,7 +1507,8 @@ dev.off()
 # read the data from vict including 3 uncertain sexes with preliminary designations
 my_df <- read.table(gzfile("vict_plusuncertain_out_Xlaev_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+# View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
@@ -1543,6 +1559,7 @@ dev.off()
 # read the data from gilli
 my_df <- read.table(gzfile("gilli_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -1626,6 +1643,7 @@ dev.off()
 # read the data from trop_all - this is only from Ghana not from Mitros
 my_df <- read.table(gzfile("out_Xtrop_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 # rename chromosomes
 my_df[my_df$chr == "Chr1:1-217471166",]$chr <- "Chr1"
@@ -1708,7 +1726,8 @@ dev.off()
 # read the data from trop_GW
 my_df <- read.table(gzfile("GW_out_Xtrop_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+#View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-15
 # rename chromosomes
 my_df[my_df$chr == "Chr1:1-217471166",]$chr <- "Chr1"
@@ -1774,6 +1793,7 @@ dev.off()
 # read the data from trop_GE
 my_df <- read.table(gzfile("GE_out_Xtrop_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-15
 # rename chromosomes
@@ -1840,6 +1860,7 @@ dev.off()
 # read the data from trop_wildonly
 my_df <- read.table(gzfile("Xtrop_wild_caught_only_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-15
 # rename chromosomes
@@ -1873,12 +1894,12 @@ trop_wild_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3",
                                                "Chr10")), my_df$pos, 
                                 my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
                                                             "SIG"=list(col="red",label=F)),
-                                ylim= c(0,17),xlab = "",
+                                ylim= c(0,10),xlab = "",
                                 par.settings = theme.novpadding,
                                 panel=function(x, y, ...){
                                   panel.rect(xleft=1024, ybottom=0,
-                                             xright=1040, ytop=17, alpha=0.3, col="light blue")
-                                  panel.text(168,15,labels=expression(paste("wild ",italic("X. tropicalis"))),
+                                             xright=1040, ytop=10, alpha=0.3, col="light blue")
+                                  panel.text(168,8,labels=expression(paste("wild ",italic("X. tropicalis"))),
                                              fontsize=14)})
 
 pdf("./trop_wildonly_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
@@ -1908,11 +1929,90 @@ pdf("./trop_wildonly_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4",
 p_SL
 dev.off()
 
+# tropicalis - Mitros C659 ----
+# read the data from Mitros C659
+my_df <- read.table(gzfile("out_Mitros_trop_C659_additive_F1.lrt0.gz"), header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+#View(my_df) # check if there are any pvalues equal to zero
+my_df[my_df$pvalue == 0,]$pvalue <-0.000000000000035971
+
+# Get rid of the scaffold data
+my_df <- my_df[my_df$chr != "Scafs",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(my_df$pvalue))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+# make the manhattan plot using the custom function above
+Mitros_C659_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
+                                               "Chr5","Chr6","Chr7","Chr8","Chr9",
+                                               "Chr10")), my_df$pos, 
+                    my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                "SIG"=list(col="red",label=F)),
+                    ylim= c(0,15),xlab = "",
+                    par.settings = theme.novpadding,
+                    panel=function(x, y, ...){
+                      panel.rect(xleft=1024, ybottom=0,
+                                 xright=1040, ytop=15, alpha=0.3, col="light blue")
+                      panel.text(220,13,labels=expression(paste(italic("X. tropicalis")," family C659")),fontsize=14)})
+
+
+pdf("./Mitros_C659_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
+  Mitros_C659_wgs
+dev.off()
+
+# tropicalis - Mitros C660 ----
+# read the data from Mitros C660
+my_df <- read.table(gzfile("out_Mitros_trop_C660_additive_F1.lrt0.gz"), header = T)
+colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+#View(my_df) # check if there are any pvalues equal to zero
+#my_df[my_df$pvalue == 0,]$pvalue <-0.000000000000035971
+
+# Get rid of the scaffold data
+my_df <- my_df[my_df$chr != "Scafs",]
+
+# get percentiles
+a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
+
+#make annotation factor
+ann<-rep(1, length(my_df$pvalue))
+ann[with(my_df, pvalue<=a["0.1%"])]<-2
+ann[with(my_df, pvalue<=a["0.05%"])]<-3
+ann<-factor(ann, levels=1:3, labels=c("NS","MID","SIG"))
+
+
+# make the manhattan plot using the custom function above
+Mitros_C660_wgs <- manhattan.plot(factor(my_df$chr, levels=c("Chr1","Chr2","Chr3","Chr4",
+                                                             "Chr5","Chr6","Chr7","Chr8","Chr9",
+                                                             "Chr10")), my_df$pos, 
+                                  my_df$pvalue, annotate=list(ann, "MID"=list(col="orange",label=F), 
+                                                              "SIG"=list(col="red",label=F)),
+                                  ylim= c(0,15),xlab = "",
+                                  par.settings = theme.novpadding,
+                                  panel=function(x, y, ...){
+                                    panel.rect(xleft=1024, ybottom=0,
+                                               xright=1040, ytop=15, alpha=0.3, col="light blue")
+                                    panel.text(220,13,labels=expression(paste(italic("X. tropicalis")," family C660")),fontsize=14)})
+
+
+pdf("./Mitros_C660_manhattan_angsd.pdf",w=14, h=3.0, version="1.4", bg="transparent")
+  Mitros_C660_wgs
+dev.off()
+
 
 # mellotropicalis ----
 # read the data from mello
 my_df <- read.table(gzfile("out_Xmello_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-15
 # rename chromosomes
@@ -1995,6 +2095,7 @@ dev.off()
 # read the data from boum
 my_df <- read.table(gzfile("boum_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -2050,6 +2151,7 @@ dev.off()
 # read the data from borealis
 my_df <- read.table(gzfile("bor_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -2123,6 +2225,7 @@ dev.off()
 # read the data from borealis
 my_df <- read.table(gzfile("XB_wild_westonly_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -2161,6 +2264,7 @@ dev.off()
 # read the data from borealis
 my_df <- read.table(gzfile("XB_wild_eastonly_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 # Get rid of the scaffold data
@@ -2196,15 +2300,13 @@ dev.off()
 
 
 
-pdf("./bore_manhattan_angsd_SexChr_only.pdf",w=7, h=3.0, version="1.4", bg="transparent")
-wild_bor_sexchr_plot
-dev.off()
 
 
 # allo_family1 ----
 # read the data from allo_fam1
 my_df <- read.table(gzfile("allo_family1_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2263,7 +2365,8 @@ dev.off()
 # read the data from allo_fam2
 my_df <- read.table(gzfile("allo_family2_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-View(my_df) # check if there are any pvalues equal to zero
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
+#View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
 my_df <- my_df[my_df$chr != "Scaffolds",]
@@ -2318,6 +2421,7 @@ dev.off()
 # read the data from allo_all
 my_df <- read.table(gzfile("all_allo_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$pvalue == 0,]$pvalue <-2.3315e-15
 # Get rid of the scaffold data
@@ -2406,6 +2510,7 @@ dev.off()
 # read the data from pygm_all
 my_df <- read.table(gzfile("pygm_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2489,6 +2594,7 @@ dev.off()
 # read the data from pygm_lab
 my_df <- read.table(gzfile("pygm_only_labreared_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2572,6 +2678,7 @@ dev.off()
 # read the data from pygm_wildonly
 my_df <- read.table(gzfile("pygm_only_wild_out_additive_F1.lrt0.gz"), header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2667,6 +2774,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_fam0_mat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2734,6 +2842,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_fam0_pat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2805,6 +2914,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_family1_mat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2871,6 +2981,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_family1_pat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -2942,6 +3053,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_fam2_mat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3006,6 +3118,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("allo_fam2_pat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3074,13 +3187,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("muel_XL_v10_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr4L
 SexChr <- read.table("muel_Chr4L_family1_mat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["0.1%"])]<-2
@@ -3112,13 +3226,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("muel_XL_v10_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr4L
 SexChr <- read.table("muel_Chr4L_family1_pat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3167,13 +3282,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("fisc_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr3L
 SexChr <- read.table("fisc_Chr3L_family1_mat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["0.1%"])]<-2
@@ -3204,13 +3320,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("fisc_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr3L
 SexChr <- read.table("fisc_Chr3L_family1_pat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3254,6 +3371,7 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("bor_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
 
 # get percentiles from whole genome including all sites
@@ -3262,6 +3380,7 @@ a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 # now open only mat sites for Chr8L
 SexChr <- read.table("bore_Chr8L_mat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
@@ -3295,13 +3414,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("bor_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr8L
 SexChr <- read.table("bore_Chr8L_pat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3346,14 +3466,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("pygm_only_labreared_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr8L
 SexChr <- read.table("pyg_Chr8L_mat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["0.1%"])]<-2
@@ -3384,13 +3504,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("pygm_only_labreared_out_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr8L
 SexChr <- read.table("pyg_Chr8L_pat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3432,14 +3553,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("laevis_out_Xlaev_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr8L
 SexChr <- read.table("XL_Chr2L_mat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["0.1%"])]<-2
@@ -3470,13 +3591,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("laevis_out_Xlaev_additive_F1.lrt0.gz", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.001, 0.0005))
 
 # now open only mat sites for Chr8L
 SexChr <- read.table("XL_Chr2L_pat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3519,14 +3641,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("Mitros_trop_C659_mat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C659 mat sites for Chr7
 SexChr <- read.table("Mitros_trop_C659_mat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["1%"])]<-2
@@ -3556,13 +3678,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("Mitros_trop_C659_pat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C659 mat sites for Chr7
 SexChr <- read.table("Mitros_trop_C659_pat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3603,14 +3726,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("Mitros_trop_C660_mat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C660 mat sites for Chr7
 SexChr <- read.table("Mitros_trop_C660_mat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["1%"])]<-2
@@ -3641,13 +3764,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("Mitros_trop_C660_pat_angsdout.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C660 mat sites for Chr7
 SexChr <- read.table("Mitros_trop_C660_pat_angsdout.txt", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3691,14 +3815,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("GE_trop__mat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C660 mat sites for Chr7
 SexChr <- read.table("GE_trop__mat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["1%"])]<-2
@@ -3729,13 +3853,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("GE_trop__pat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only C660 mat sites for Chr7
 SexChr <- read.table("GE_trop__pat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3781,14 +3906,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("GW_trop__mat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only GW mat sites for Chr7
 SexChr <- read.table("GW_trop__mat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #make annotation factor
 ann<-rep(1, length(SexChr$pvalue))
 ann[with(SexChr, pvalue<=a["1%"])]<-2
@@ -3817,13 +3942,14 @@ dev.off()
 setwd('/Users/Shared/Previously\ Relocated\ Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/gets_matpat')
 my_df <- read.table("GW_trop__pat_angsdout", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 # get percentiles from whole genome including all sites
 a <- quantile(my_df$pvalue, probs = c(0.01, 0.005))
 
 # now open only GW pat sites for Chr7
 SexChr <- read.table("GW_trop__pat_angsdout", header = T)
 colnames(SexChr) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
-
+SexChr <- SexChr[(SexChr$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 #my_df[my_df$pvalue == 0,]$pvalue <-2.2204e-15
 # Get rid of the scaffold data
@@ -3867,6 +3993,7 @@ dev.off()
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/mapped_to_XL_v10_only')
 my_df <- read.table("2023_XT_notads_WGS_P_gt_0.001_only.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 
 #my_df[my_df$pvalue == 0,]$pvalue <-1.1102e-16
@@ -3920,6 +4047,7 @@ dev.off()
 setwd('/Users/Shared/Previously Relocated Items/Security/projects/2022_GBS_lotsof_Xennies/2023_angsd/mapped_to_XL_v10_only')
 my_df <- read.table("XT_withtads_P_gt_0.001_only.txt", header = T)
 colnames(my_df) <- c("chr","pos","MAJ","MIN","FREQ","LRT","pvalue")
+my_df <- my_df[(my_df$FREQ > 0.1),] # minimum allele freq = 10%
 #View(my_df) # check if there are any pvalues equal to zero
 my_df[my_df$chr == "Chr1:1-217471166",]$chr <- "Chr1"
 my_df[my_df$chr == "Chr2:1-181034961",]$chr <- "Chr2"
@@ -4015,8 +4143,9 @@ dev.off()
 
 # SI Fig1d ---- 
 jpeg("./SI_Fig1d_multiple_wgs_noSL_manhattan_angsd.jpg",w=12, h=13.0, units ="in", bg="transparent", res = 200)
-    grid.arrange(trop_wgs_plot,trop_wild_wgs,
-             mell_wgs,ncol=1, nrow =8)
+    grid.arrange(trop_wgs_plot,
+                 Mitros_C659_wgs,Mitros_C660_wgs,
+                 trop_wild_wgs,mell_wgs,ncol=1, nrow =8)
 dev.off()
 
 
