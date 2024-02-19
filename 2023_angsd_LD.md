@@ -4163,9 +4163,9 @@ jpeg("./Fig3_allo_matpat_family1_angsd.jpg",w=10, h=3, units ="in", bg="transpar
       arrangeGrob(allopat_fam1_SL), ncol = 2, top=title1)
 dev.off()
 
-# SI Fig3 ---- 
+# SI Fig2 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig3_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig2_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
   grid.arrange(laev_mat_SL, laev_pat_SL,
              pygm_mat_SL,pygm_pat_SL,
              bore_mat_SL,bore_pat_SL,
@@ -4174,16 +4174,16 @@ jpeg("./SI_Fig3_female_heterogamy_matpat_5_species_angsd.jpg",w=10, h=8.0, units
 dev.off()
 
 
-# SI Fig4 ---- 
+# SI Fig3 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig4_allo_matpat_2families_angsd.jpg",w=12, h=4.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig3_allo_matpat_2families_angsd.jpg",w=12, h=4.0, units ="in", bg="transparent", res = 200)
 grid.arrange(allomat_fam0_SL, allopat_fam0_SL, 
              allomat_fam2_SL, allopat_fam2_SL, ncol=2, nrow =2, top=title1)
 dev.off()
 
-# SI Fig5 ---- 
+# SI Fig4 ---- 
 title1=text_grob("Maternal                                                              Paternal", size = 16)
-jpeg("./SI_Fig5_trop_matpat_4_families_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_Fig4_trop_matpat_4_families_angsd.jpg",w=10, h=8.0, units ="in", bg="transparent", res = 200)
 grid.arrange(GE_trop_mat_SL, GE_trop_pat_SL,
              GW_trop_mat_SL,GW_trop_pat_SL,
              C659_mat_SL,C659_pat_SL,
