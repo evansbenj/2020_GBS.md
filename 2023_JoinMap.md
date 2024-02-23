@@ -375,9 +375,9 @@ for(i in unique(my_df$Chr)){
 #  geom_line() + geom_point()
 #dev.off()
 
-
+# XT_Recombination ----
 png(filename = "XT_Recombination_plot_miso.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
+XT_Recombination<-ggplot(my_df %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
   # the "group = 1" part was needed to avoid a warning for some reason
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal',' ')) +
   geom_point(size=0.5, alpha = 0.3) +
@@ -387,7 +387,7 @@ p<-ggplot(my_df %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, co
               bs = "miso"), 
               se = FALSE) +
   scale_y_continuous(name="Map Units\n(cM)", limits=c(-20,200), breaks=c(0,50,100,150,200)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) + # name="Coordinates (Mb)", 
   facet_grid(. ~ Chr, scales = "free", space='free') +
   #facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   # facet_grid(~Chr,scales="free_x",space = "free_x") +
@@ -405,7 +405,7 @@ p<-ggplot(my_df %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, co
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) 
-p 
+XT_Recombination
 dev.off()
 
 # Now plot derivatives
@@ -416,14 +416,14 @@ master_derivative_df$Chr <- factor(master_derivative_df$Chr,
                                               "Chr7","Chr8","Chr9",
                                               "Chr10"), ordered = T)
 
-
+# XT_Derivative ----
 png(filename = "XT_Derivative_plot_miso.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
+XT_Derivative<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5) +
   geom_line() +
   scale_y_continuous(name="Recombination rate\n(cM/Mb)", limits=c(-1,8), breaks=seq(0,8,2)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) + # name="Coordinates (Mb)", 
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
   #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
@@ -439,7 +439,7 @@ p<-ggplot(master_derivative_df %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivati
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) # +
-p 
+XT_Derivative 
 dev.off()
 
 # now scale all the chromosomes and then plot the slopes for 
@@ -600,7 +600,7 @@ for(i in unique(my_df$Chr)){
 }  
 
 
-png(filename = "XT_Combined_Scaled_Derivative_miso.png",w=300, h=300,units = "px", bg="transparent")
+png(filename = "XT_Combined_Scaled_Derivative_miso.png",w=1000, h=300,units = "px", bg="transparent")
 trop_scale<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat"), values=c("red","blue"), labels=c('Maternal','Paternal')) +
   geom_point(size=0.5, alpha = 0.5) +
@@ -624,9 +624,11 @@ trop_scale<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=deriv
   expand_limits(x = 0) +
   theme(legend.position="none") +
   theme(legend.title=element_blank()) +
+  annotate("text", x=0.28, y=600, label=as.character(expression(italic("X. tropicalis"))), size=6, parse = T, hjust = 0) +
   theme(text = element_text(size = 23)) # +
 trop_scale 
 dev.off()
+
 
 ```
 
@@ -896,10 +898,11 @@ for(i in unique(my_df$Chr)){
 #  geom_line() + geom_point()
 #dev.off()
 
+# XL_Recombination_L ----
 # subset L
 my_df_Lonly <- my_df[my_df$LorS == "L",]
 png(filename = "XL_Recombination_plot_miso_L.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
+XL_Recombination_L<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
   # the "group = 1" part was needed to avoid a warning for some reason
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal',' ')) +
   geom_point(size=0.5, alpha = 0.3) +
@@ -909,7 +912,7 @@ p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=
               bs = "miso"), 
               se = FALSE) +
   scale_y_continuous(name="Map Units\n(cM)", limits=c(-20,200), breaks=c(0,50,100,150,200)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   facet_grid(. ~ Chr, scales = "free", space='free') +
   #facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   # facet_grid(~Chr,scales="free_x",space = "free_x") +
@@ -927,13 +930,14 @@ p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) 
-p 
+XL_Recombination_L 
 dev.off()
 
+# XL_Recombination_S ----
 # subset S
 my_df_Sonly <- my_df[my_df$LorS == "S",]
 png(filename = "XL_Recombination_plot_miso_S.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df_Sonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
+XL_Recombination_S<-ggplot(my_df_Sonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
   # the "group = 1" part was needed to avoid a warning for some reason
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5, alpha = 0.3) +
@@ -943,7 +947,7 @@ p<-ggplot(my_df_Sonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=
               bs = "miso"), 
               se = FALSE) +
   scale_y_continuous(name="Map Units\n(cM)", limits=c(-20,200), breaks=c(0,50,100,150,200)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   facet_grid(. ~ Chr, scales = "free", space='free') +
   #facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   # facet_grid(~Chr,scales="free_x",space = "free_x") +
@@ -964,7 +968,7 @@ theme_classic() +
 # guides(color = guide_legend(override.aes = list(size = 5)))
 # Get rid of the legend
 #theme(legend.position = "none")
-p 
+XL_Recombination_S 
 dev.off()
 
 
@@ -983,16 +987,17 @@ master_derivative_df$LorS <- ifelse(master_derivative_df$Chr %in%
                                       "Chr4L","Chr5L","Chr6L",
                                       "Chr7L","Chr8L","Chr9_10L"), "L", "S")
 
+# XL_Derivative_L ----
 # subset L
 master_derivative_df_Lonly <- master_derivative_df[master_derivative_df$LorS == "L",]
 
 png(filename = "XL_Derivative_plot_miso_Lonly.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
+XL_Derivative_L<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5) +
   geom_line() +
   scale_y_continuous(name="Recombination rate\n(cM/Mb)", limits=c(-1,8), breaks=seq(0,8,2)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
   #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
@@ -1008,19 +1013,20 @@ p<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=de
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) # +
-p 
+XL_Derivative_L
 dev.off()
 
+# XL_Derivative_S ----
 # subset S
 master_derivative_df_Sonly <- master_derivative_df[master_derivative_df$LorS == "S",]
 
 png(filename = "XL_Derivative_plot_miso_Sonly.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
+XL_Derivative_S<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5) +
   geom_line() +
   scale_y_continuous(name="Recombination rate\n(cM/Mb)", limits=c(-1,8), breaks=seq(0,8,2)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
   #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
@@ -1036,8 +1042,9 @@ p<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=de
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) # +
-p 
+XL_Derivative_S
 dev.off()
+
 # now scale all the chromosomes and then plot the slopes for 
 # pat and mat on one overlay plot
 # for XB use the XB genome lengths
@@ -1270,19 +1277,56 @@ XL_scale<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivat
   theme(legend.position="none") +
   theme(legend.title=element_blank()) +
   theme(axis.text.y = element_blank()) +
+  annotate("text", x=0.32, y=600, label=as.character(expression(italic("X. laevis"))), size=6, parse = T, hjust = 0) +
   theme(text = element_text(size = 23)) # +
 XL_scale
 dev.off()
 
 
-# combining plots ----
+# Fig 4 combining plots ----
 library(gridExtra)
 title1=text_grob("Recombination rate\n(cM/scaled Coordinates)", size = 24, rot = 90)  
 title2=text_grob("Scaled Coordinates", size =24)  
+#title3=text_grob(expression(italic("X. tropicalis")), size =20)  
+#title4=text_grob(expression(italic("X. laevis")), size =20)  
+#title5=text_grob(expression(italic("X. borealis")), size =20)  
 jpeg("./Fig4_Scaled_recombination.jpg",w=12, h=4, units ="in", bg="transparent", res = 200)
-  grid.arrange(arrangeGrob(trop_scale),
-             arrangeGrob(XL_scale), 
-             arrangeGrob(XB_scale),ncol = 3, left=title1, bottom=title2)
+  grid.arrange(arrangeGrob(trop_scale),#, top=title3),
+             arrangeGrob(XL_scale),#, top=title4), 
+             arrangeGrob(XB_scale),#, top=title5),
+             ncol = 3, left=title1, bottom=title2, widths=c(1.15,1,1))
+dev.off()
+
+# SI Fig 8 combining plots ----
+library(gridExtra)
+title1=text_grob(expression(italic("X. tropicalis")), size =20, x = 0.09, hjust = 0)  
+title2=text_grob(expression(paste(italic("X. laevis")," L")), size =20, x = 0.09, hjust = 0)  
+title3=text_grob(expression(paste(italic("X. laevis")," S")), size =20, x = 0.09, hjust = 0)  
+title4=text_grob(expression(paste(italic("X. borealis")," L")), size =20, x = 0.09, hjust = 0)  
+title5=text_grob(expression(paste(italic("X. borealis")," S")), size =20, x = 0.09, hjust = 0)  
+jpeg("./SI_Fig8_Scaled_recombination.jpg",w=14, h=12, units ="in", bg="transparent", res = 200)
+  grid.arrange(arrangeGrob(XT_Recombination, top=title1),
+             arrangeGrob(XL_Recombination_L, top=title2), 
+             arrangeGrob(XL_Recombination_S, top=title3),
+             arrangeGrob(XB_Recombination_L, top=title4), 
+             arrangeGrob(XB_Recombination_S, top=title5),
+             ncol = 1, nrow = 5)#, left=title1, bottom=title2)
+dev.off()
+
+# SI Fig 9 combining plots ----
+library(gridExtra)
+title1=text_grob(expression(italic("X. tropicalis")), size =20, x = 0.09, hjust = 0)  
+title2=text_grob(expression(paste(italic("X. laevis")," L")), size =20, x = 0.09, hjust = 0)  
+title3=text_grob(expression(paste(italic("X. laevis")," S")), size =20, x = 0.09, hjust = 0)  
+title4=text_grob(expression(paste(italic("X. borealis")," L")), size =20, x = 0.09, hjust = 0)  
+title5=text_grob(expression(paste(italic("X. borealis")," S")), size =20, x = 0.09, hjust = 0)  
+jpeg("./SI_Fig9_Derivative.jpg",w=14, h=12, units ="in", bg="transparent", res = 200)
+grid.arrange(arrangeGrob(XT_Derivative, top=title1),
+             arrangeGrob(XL_Derivative_L, top=title2), 
+             arrangeGrob(XL_Derivative_S, top=title3),
+             arrangeGrob(XB_Derivative_L, top=title4), 
+             arrangeGrob(XB_Derivative_S, top=title5),
+             ncol = 1, nrow = 5)#, left=title1, bottom=title2)
 dev.off()
 
 ```
@@ -1553,7 +1597,7 @@ for(i in unique(my_df$Chr)){
 # subset L
 my_df_Lonly <- my_df[my_df$LorS == "L",]
 png(filename = "XB_Recombination_plot_miso_L.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
+XB_Recombination_L<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
   # the "group = 1" part was needed to avoid a warning for some reason
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal',' ')) +
   geom_point(size=0.5, alpha = 0.3) +
@@ -1570,7 +1614,7 @@ p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=
               se = FALSE,
               data = subset(my_df_Lonly, ((matpat == "mat")&(Chr != "Chr8L")))) +
   scale_y_continuous(name="Map Units\n(cM)", limits=c(-20,200), breaks=c(0,50,100,150,200)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   #geom_hline(yintercept=0) +
   #geom_hline(yintercept=c(-0.5,0.5), linetype='dashed', color=c('black', 'black'))+
   # get rid of gray background
@@ -1595,13 +1639,13 @@ p<-ggplot(my_df_Lonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=
   # guides(color = guide_legend(override.aes = list(size = 5)))
 # Get rid of the legend
 #theme(legend.position = "none")
-p 
+XB_Recombination_L 
 dev.off()
 
 # subset S
 my_df_Sonly <- my_df[my_df$LorS == "S",]
 png(filename = "XB_Recombination_plot_miso_S.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(my_df_Sonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
+XB_Recombination_S<-ggplot(my_df_Sonly %>% arrange(Chr), aes(x=as.numeric(Coordinate)/1000000, y=cM, colour = matpat)) + 
   # the "group = 1" part was needed to avoid a warning for some reason
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5, alpha = 0.3) +
@@ -1643,7 +1687,7 @@ theme_classic() +
 # guides(color = guide_legend(override.aes = list(size = 5)))
 # Get rid of the legend
 #theme(legend.position = "none")
-p 
+XB_Recombination_S 
 dev.off()
 
 # try a subset with no facet
@@ -1686,12 +1730,12 @@ master_derivative_df$LorS <- ifelse(master_derivative_df$Chr %in%
 master_derivative_df_Lonly <- master_derivative_df[master_derivative_df$LorS == "L",]
 
 png(filename = "XB_Derivative_plot_miso_Lonly.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
+XB_Derivative_L<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5) +
   geom_line() +
   scale_y_continuous(name="Recombination rate\n(cM/Mb)", limits=c(-1,8), breaks=seq(0,8,2)) +
-  scale_x_continuous(name="Coordinates (Mb)", breaks=c(0,50,100,150,200,250)) +
+  scale_x_continuous(name=element_blank(), breaks=c(0,50,100,150,200,250)) +
   facet_grid(~factor(Chr),scales="free_x",space = "free_x") +
   #geom_vline(data=filter(my_df, Chr=="Chr1"), aes(xintercept=89.2370965), colour="black") + 
   #geom_vline(data=filter(my_df, Chr=="Chr2"), aes(xintercept=67.5106265), colour="black") + 
@@ -1707,14 +1751,14 @@ p<-ggplot(master_derivative_df_Lonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=de
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) # +
-p 
+XB_Derivative_L
 dev.off()
 
 # subset S
 master_derivative_df_Sonly <- master_derivative_df[master_derivative_df$LorS == "S",]
 
 png(filename = "XB_Derivative_plot_miso_Sonly.png",w=1500, h=200,units = "px", bg="transparent")
-p<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
+XB_Derivative_S<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=derivative, col = matpat)) + 
   scale_color_manual(breaks = c("mat", "pat","end"), values=c("red","blue","white"), labels=c('Maternal','Paternal','end')) +
   geom_point(size=0.5) +
   geom_line() +
@@ -1735,8 +1779,9 @@ p<-ggplot(master_derivative_df_Sonly %>% arrange(Chr), aes(x=Coordinate_Mb, y=de
   expand_limits(x = 0) +
   theme(legend.title=element_blank()) +
   theme(text = element_text(size = 18)) # +
-p 
+XB_Derivative_S
 dev.off()
+
 # now scale all the chromosomes and then plot the slopes for 
 # pat and mat on one overlay plot
 # for XB use the XB genome lengths
@@ -1970,8 +2015,11 @@ XB_scale<-ggplot(monster_derivative_df, aes(x=Standardized_Coordinate, y=derivat
   theme(legend.position="none") +
   theme(legend.title=element_blank()) +
   theme(axis.text.y = element_blank()) +
+  annotate("text", x=0.32, y=600, label=as.character(expression(italic("X. borealis"))), size=6, parse = T, hjust = 0) +
   theme(text = element_text(size = 23)) # +
 XB_scale 
 dev.off()
+
+
 
 ```
