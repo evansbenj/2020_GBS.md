@@ -1,4 +1,4 @@
-#RADsex
+# RADsex
 
 I'm first going to try this approach on the raw reads: https://github.com/SexGenomicsToolkit/radsex
 
@@ -116,4 +116,118 @@ sp <- ggplot(data_SL_sorted, aes(x=Position, y=Bias)) +
   geom_point(size=1) + 
   facet_wrap( ~ Contig, ncol=2)
 sp
+```
+
+# Parsing marker file
+
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib qw(~/perl_modules);
+#use List::MoreUtils qw/ uniq /;
+
+# on computecanada:
+# module load perl/5.30.2
+# module load gcc/9.3.0
+# cpan
+# 
+
+#  This program reads in a tab delimited marker file generated
+#  by RADsex and outputs the fastaseqs that are present in some minimum
+#  number of males and females
+
+# Example for XB_WGS
+# perl Parse_marker_table.pl 2018_2022_allofraseri_catR1R2_markers_table.tsv 021110111000000000111110000111111111111111111111111111111111000000000000000000 out.fasta max_n_fems min_n_males WorY
+
+# the 0,1, 2 indicates whether an individual is (0) male, (1) female, and or (2) skipped
+
+# the max_n_fems is the maximum number of females with the sequence
+
+# the min_n_males is the minimum number of males with the sequence (this is set up for allofraseri which may have a Y chr)
+
+# to search for W specific seqs, the binary matrix can be reversed (use 0s for females and 1s for males) and then
+# the max_n_fems refers to max number of males and the min_n_males refers to the min number of females
+
+# 2023 fraseri W 011110101101111110111111001001101110
+# ../../../Parse_RADsex_marker_table.pl markers_table.tsv 100001010010000001000000110110010001 minF7_maxM1 1 7 W
+
+my $inputfile = $ARGV[0];
+my $input2 = $ARGV[1];
+my $outputfile1 = $ARGV[2];
+my $max_n_fems = $ARGV[3];
+my $min_n_males = $ARGV[4];
+my $WorY = $ARGV[5];
+
+unless (open DATAINPUT, $inputfile) {
+	print "Can not find the input file.\n";
+	exit;
+}
+
+unless (open(OUTFILE, ">$outputfile1"))  {
+	print "I can\'t write to $outputfile1\n";
+	exit;
+}
+print "Creating output file: $outputfile1\n";
+
+
+my @sexes = split("",$ARGV[1]);
+
+my $males;
+my $females;
+my @temp;
+my $counter;
+my $y;
+my $x;
+my $number_of_male_individuals_genotyped=0;
+my $number_of_female_individuals_genotyped=0;
+
+for ($y = 0 ; $y <= $#sexes ; $y++ ) {
+	if($sexes[$y] == 0){
+		$number_of_male_individuals_genotyped +=1;
+	}	
+}	
+for ($y = 0 ; $y <= $#sexes ; $y++ ) {
+	if($sexes[$y] == 1){
+		$number_of_female_individuals_genotyped +=1;
+	}	
+}
+print "This includes ",$number_of_female_individuals_genotyped," female(s) and  ", $number_of_male_individuals_genotyped," males\n";
+
+while ( my $line = <DATAINPUT>) {
+	chomp($line);
+	@temp=split /[\t\/]/,$line;
+	if(($temp[0] !~ /^#Number/)&&($temp[0] !~ /^id/)){
+		if($#temp ne ($#sexes+2)){
+			print "The number of individuals in the input line does not match the number of individuals genotyped ",
+			$temp[0],"\t",$temp[1],"\t",$#temp," ",$#sexes+2,"\n";
+		}
+		# count the number of males and females that have this sequence
+		$males=0;
+		$females=0;
+		$counter=0;
+		for ($y = 2 ; $y <= $#temp; $y++ ) {
+			if($temp[$y] ne 0){
+				if($sexes[$counter] == 0){
+					$males+=1;
+				}
+				elsif($sexes[$counter] == 1){
+					$females+=1;
+				}	
+			}
+			$counter+=1;
+		}  # end for
+		# check if the observed is above the minimum number and below the max number
+		if(($males >= $min_n_males)&&($females <= $max_n_fems)&&($WorY eq "Y")){
+			print ">Seq_",$temp[0],"_F_",$females,"_M_",$males,"\n",$temp[1],"\n";
+			print OUTFILE ">",$temp[0],"_F_",$females,"_M_",$males,"\n",$temp[1],"\n";
+		}	
+		elsif(($males >= $min_n_males)&&($females <= $max_n_fems)&&($WorY eq "W")){
+			print ">Seq_",$temp[0],"_M_",$females,"_F_",$males,"\n",$temp[1],"\n";
+			print OUTFILE ">",$temp[0],"_M_",$females,"_F_",$males,"\n",$temp[1],"\n";
+		}	
+	} # end if
+} # end while	
+close OUTFILE;
+
 ```
