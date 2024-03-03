@@ -85,12 +85,7 @@ It is also possible to map the results and print this by chr, including the prob
 #SBATCH --error=radsex_map.%J.err
 #SBATCH --account=def-ben
 
-/home/ben/projects/rrg-ben/ben/2020_radsex/bin/radsex map --markers-file /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_a
-llo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_para_catR1R2_markers_table.tsv --output-file /home/be
-n/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates/2020_para_catR1
-R2_alignment_results.tsv --popmap /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_s
-pecies_across_three_plates/parafraseri_sex_R1R2cat --genome-file ~/projects/rrg-ben/ben/2020_XL_v9.2_refgenome/XENLA_9.2_gen
-ome.fa.gz --min-quality 20 --min-frequency 0.1 --min-depth 1 --groups M,F
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex map --markers-file markers_table.tsv --output-file cliv_significant_markers_alignment_results.tsv --popmap 2023_cliv_sex.txt --genome-file ~/projects/rrg-ben/ben/2021_XL_v10_refgenome/XENLA_10.1_genome.fa.gz --min-quality 20 --min-frequency 0.01 --min-depth 1 --groups M,F
 
 ```
 
