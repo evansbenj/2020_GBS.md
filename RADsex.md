@@ -231,3 +231,10 @@ while ( my $line = <DATAINPUT>) {
 close OUTFILE;
 
 ```
+# Blast
+```
+module load StdEnv/2020  gcc/9.3.0 blast+/2.14.0
+```
+```
+blastn -query minF11_maxM0.fasta -db ../../../../../2021_XL_v10_refgenome/XENLA_10.1_genome.fa_blastable -outfmt 6 -out minF11_maxM0_to_XLv10
+```
