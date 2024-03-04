@@ -149,8 +149,12 @@ use lib qw(~/perl_modules);
 # to search for W specific seqs, the binary matrix can be reversed (use 0s for females and 1s for males) and then
 # the max_n_fems refers to max number of males and the min_n_males refers to the min number of females
 
-# 2023 fraseri W 011110101101111110111111001001101110
+# 2024 fraseri W 011110101101111110111111001001101110
 # ../../../Parse_RADsex_marker_table.pl markers_table.tsv 100001010010000001000000110110010001 minF7_maxM1 1 7 W
+
+# 2024 longipes W 1001010010000000100001000001011110
+# ../../../Parse_RADsex_marker_table.pl markers_table.tsv 1001010010000000100001000001011110 minF7_maxM0 0 7 W
+
 
 my $inputfile = $ARGV[0];
 my $input2 = $ARGV[1];
