@@ -1,5 +1,11 @@
 # Gene density
 
+First harvest the start position of all annotated "genes" like this:
+```
+zcat < XENTR_10.0_Xenbase_longest.gff3.gz | grep 'gene        ' | cut -f1,4,9 > XENTR_10.0_Xenbase_longest.gff3_gene_starts.txt zcat < XENLA_10.1_Xenbase_longest.gff3.gz | grep 'gene        ' | cut -f1,4,9 > XENLA_10.1_Xenbase_longest.gff3_gene_starts.txt 
+```
+This resulted in 28864 for XENTR_10.0 and 44457 for XENLA_10.1. Perfect!
+
 An interesting question is whether sex-linked regions are found in areas that have high gene density. To explore this I plotted the density of start sites of annotated genes in XL and the locations of sex-linked regions. 
 
 Here is the R code for the XL plot:
