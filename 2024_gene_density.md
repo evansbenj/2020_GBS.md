@@ -229,7 +229,7 @@ for(i in 1:dim(my_gene_startsites_chronly)[1]) {
     }
 }
 
-jpeg("./SI_FigX_gene_density_SLregions.jpg",w=7, h=8.0, units ="in", bg="transparent", res = 200)
+jpeg("./SI_FigX_gene_density_SLregions.jpg",w=7, h=8.0, units ="in", bg="transparent", res = 400)
   ggplot(my_gene_startsites_chronly, aes(x = MB, fill = COLOR, col = COLOR)) + 
     #ggplot(my_data, aes(FW_H, group=group, col=group)) + 
     #stat_density(alpha = 0.5, adjust=0.1, position = "identity") +
@@ -258,5 +258,6 @@ jpeg("./SI_FigX_gene_density_SLregions.jpg",w=7, h=8.0, units ="in", bg="transpa
     theme_classic()+
     theme(strip.background = element_blank(), legend.position="none")
 dev.off()  
+
 
 ```
