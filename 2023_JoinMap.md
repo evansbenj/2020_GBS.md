@@ -17,7 +17,7 @@ The vcf files have been filtered using these criteria:
     -filter "MQ < 40.0" --filter-name "MQ40" \
 ```
 
-Using vcftools I am going to filter a bit more to (1) ensure that >80% of the samples have data and (2) ensure that there is at least 10X coverage per site
+Using vcftools I am going to filter a bit more to (1) ensure that >80% of the samples have data and (2) ensure that there is at least 8X coverage per site
 
 ```
 module load StdEnv/2020 vcftools/0.1.16
