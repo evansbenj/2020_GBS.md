@@ -277,6 +277,7 @@ for $chr_coor ( 1 .. $#pat_hash ) {
 			$same+=1
 		}
 	} 
+	# print "h ",$pat_hash[$chr_coor][1]," ",$same," ",$differences,"\n";
 	if($differences > $same){ # rephase these sites
 		for $geno ( 3 .. $#{ $pat_hash[$chr_coor] } -2) { 
 			if($pat_hash[$chr_coor][$geno] eq 'nn'){
@@ -313,7 +314,7 @@ for $chr_coor ( 1 .. ($#pat_hash-1) ) {
 
 
 my $buffer_index = scalar(@{$mat_hash[0]})-2; # this should be the index of the lower buffer index
-print "@{$mat_hash[0]}\n";
+# print "@{$mat_hash[0]}\n";
 # now go through each mat individual and check for double recombs within a 5million bp window; replace with missing as needed
 # this is needed due to bad tags (e.g. that match repetitive seqs) and have a run of weird base calls in a small 
 # genomic window
@@ -329,7 +330,7 @@ for ($chr_coor = $#mat_hash ; $chr_coor >= 1; $chr_coor-- ){
 			last INNER;
 		}
 	}
-	print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+	# print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
 }
 
 # first update the upper coordinates
@@ -337,21 +338,26 @@ for ($chr_coor = $#mat_hash ; $chr_coor >= 1; $chr_coor-- ){
 for ($chr_coor = 1 ; $chr_coor < $#mat_hash; $chr_coor++ ){ # don't do last row
 	# find positions that are $buffer bp downstream
 	INNER: for ($y = 1 ; $y <= $#mat_hash; $y++ ) { # search up from the bottom
-		if($mat_hash[$chr_coor + $y][0] < $mat_hash[$chr_coor][0]) { # this check was needed in case the markers are not in ascending order
+		if(exists($mat_hash[$chr_coor + $y][0])){
+			if($mat_hash[$chr_coor + $y][0] < $mat_hash[$chr_coor][0]) { # this check was needed in case the markers are not in ascending order
+				last INNER;
+			}	
+			elsif(($mat_hash[$chr_coor + $y][0] - $mat_hash[$chr_coor][0]) > $buffer) {
+			$mat_hash[$chr_coor][$buffer_index+1] = $chr_coor + $y; 
+				# this is the beginning index to compare to
+				last INNER;
+			}
+		}	
+		else{
 			last INNER;
 		}	
-		elsif(($mat_hash[$chr_coor + $y][0] - $mat_hash[$chr_coor][0]) > $buffer) {
-			$mat_hash[$chr_coor][$buffer_index+1] = $chr_coor + $y; 
-			# this is the beginning index to compare to
-			last INNER;
-		}
 	}
-	print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+	# print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
 }
 	
 
-my $buffer_index = scalar(@{$pat_hash[0]})-2; # this should be the index of the lower buffer index
-print "@{$pat_hash[0]}\n";
+$buffer_index = scalar(@{$pat_hash[0]})-2; # this should be the index of the lower buffer index
+# print "@{$pat_hash[0]}\n";
 # now go through each pat individual and check for double recombs within a 5million bp window; replace with missing as needed
 # this is needed due to bad tags (e.g. that patch repetitive seqs) and have a run of weird base calls in a small 
 # genomic window
@@ -366,7 +372,7 @@ for ($chr_coor = $#pat_hash ; $chr_coor >= 1; $chr_coor-- ){
 			last INNER;
 		}
 	}
-	print "hello ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+	# print "hello ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
 }
 
 
@@ -375,16 +381,21 @@ for ($chr_coor = $#pat_hash ; $chr_coor >= 1; $chr_coor-- ){
 for ($chr_coor = 1 ; $chr_coor < $#pat_hash; $chr_coor++ ){ # don't do last row
 	# find positions that are $buffer bp downstream
 	INNER: for ($y = 1 ; $y < $#pat_hash; $y++ ) { # search up from the bottom
-		if($pat_hash[$chr_coor + $y][0] < $pat_hash[$chr_coor][0]) {# this check was needed in case the markers are not in ascending order
-			last INNER;
-		}	
-		elsif(($pat_hash[$chr_coor + $y][0] - $pat_hash[$chr_coor][0]) > $buffer) {
+		if(exists($pat_hash[$chr_coor + $y][0])){
+			if($pat_hash[$chr_coor + $y][0] < $pat_hash[$chr_coor][0]) {# this check was needed in case the markers are not in ascending order
+				last INNER;
+			}	
+			elsif(($pat_hash[$chr_coor + $y][0] - $pat_hash[$chr_coor][0]) > $buffer) {
 				$pat_hash[$chr_coor][$buffer_index+1] = $chr_coor + $y; 
-			# this is the beginning index to compare to
+				# this is the beginning index to compare to
+				last INNER;
+			}
+		}
+		else{
 			last INNER;
 		}
 	}
-	print "howdy ",$#pat_hash," ",$chr_coor ," ",$buffer_index," ",$pat_hash[$chr_coor][0]," ",$y,"\n";		
+	# print "howdy ",$#pat_hash," ",$chr_coor ," ",$buffer_index," ",$pat_hash[$chr_coor][0]," ",$y,"\n";		
 }
 
 
@@ -401,7 +412,7 @@ for $chr_coor ( 1 .. ($#mat_hash-1) ) {
 }		
 
 # now pat
-for $chr_coor ( 1 .. ($#pat_hash-1) ) {	
+for $chr_coor ( 1 .. ($#pat_hash-2) ) {	# for some reason the pat_hash has an extra row at the end
 	for $geno ( 3 .. $#{ $pat_hash[$chr_coor] } -2 ) { # the minus 2 is so we don't replace the indexes of the upper and lower buffer
 		if(($pat_hash[$chr_coor][$geno] ne $pat_hash[$pat_hash[$chr_coor][$buffer_index]][$geno])&&
 		($pat_hash[$chr_coor][$geno] ne $pat_hash[$pat_hash[$chr_coor][$buffer_index+1]][$geno])){
@@ -411,29 +422,43 @@ for $chr_coor ( 1 .. ($#pat_hash-1) ) {
 }		
 
 
-
-
 	
 
 # Now print out the header, data, and footer for the mat loc
 # need to swap out $header[2] with the appropriate number of mat loc
 
-
-for $chr_coor ( 0 .. ($#mat_hash) -1 ) {	
-	print $chr_coor," ";
-	for $geno ( 0 .. $#{ $mat_hash[$chr_coor] } ) { 
-		print $mat_hash[$chr_coor][$geno]," "; 
+# print out mat input file
+print OUTFILE1 $header[0],"\n";
+print OUTFILE1 $header[1],"\n";
+print OUTFILE1 "nloc = ",$#mat_hash+1,"\n";
+print OUTFILE1 $header[1],"\n";
+for $chr_coor ( 0 .. ($#mat_hash) ) {	
+	# print $chr_coor," ";
+	for $geno ( 1 .. ($#{ $mat_hash[$chr_coor] } -2) ) { 
+		print OUTFILE1 $mat_hash[$chr_coor][$geno]," "; 
 	}
-	print "\n";	
+	print OUTFILE1 "\n";	
 }		
-
-
-
-
+for ($y = 0 ; $y <= $#footer; $y++ ) {
+	print OUTFILE1 $footer[$y],"\n";
+}
 close OUTFILE1;
-# Now printo out the header, data, and footer for the pat loc
-# need to swap out $header[2] with the appropriate number of pat loc
 
+# Now printo out the header, data, and footer for the pat loc
+print OUTFILE2 $header[0],"\n";
+print OUTFILE2 $header[1],"\n";
+print OUTFILE2 "nloc = ",$#pat_hash,"\n";
+print OUTFILE2 $header[1],"\n";
+for $chr_coor ( 0 .. ($#pat_hash)-1 ) {	
+	# print $chr_coor," ";
+	for $geno ( 1 .. ($#{ $pat_hash[$chr_coor] } -2) ) { 
+		print OUTFILE2 $pat_hash[$chr_coor][$geno]," "; 
+	}
+	print OUTFILE2 "\n";	
+}		
+for ($y = 0 ; $y <= $#footer; $y++ ) {
+	print OUTFILE2 $footer[$y],"\n";
+}
 close OUTFILE2;
 
 ```
