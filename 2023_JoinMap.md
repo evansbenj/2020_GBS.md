@@ -97,6 +97,347 @@ sed -i -e 's/1\/1\:0\,/1\|1\:0\,/g'  Mitros_C659_Chr8_removed_JoinMap_min80DP8_n
 But in another there was still a problematic entry:
 '1/1:1,14:15:395,15,0' which I changed to '1|1:1,14:15:395,15,0' and then it worked
 
+# Script to filter genotyping errors
+``` perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib qw(~/perl_modules);
+# use List::MoreUtils qw/ uniq /;
+# use Data::Dumper;
+
+# on computecanada:
+# module load perl/5.30.2
+# module load gcc/9.3.0
+# cpan
+# install List::MoreUtils
+
+#  This program reads in a vcf file that only has GT fields
+
+# to execute type Parse_and_recast_loc_file.pl loc_file mat_loc pat_loc
+
+
+my $inputfile = $ARGV[0];
+my $outputfile1 = $ARGV[1];
+my $outputfile2 = $ARGV[2];
+
+my $buffer = 2500000; # this is the amount of bp upstream and downstream to compare each position to
+
+unless (open DATAINPUT, $inputfile) {
+	print "Can not find the input file.\n";
+	exit;
+}
+
+unless (open(OUTFILE1, ">$outputfile1"))  {
+	print "I can\'t write to $outputfile1\n";
+	exit;
+}
+print "Creating output file: $outputfile1\n";
+
+unless (open(OUTFILE2, ">$outputfile2"))  {
+	print "I can\'t write to $outputfile2\n";
+	exit;
+}
+print "Creating output file: $outputfile2\n";
+
+sub uniq {
+  my %seen;
+  return grep { !$seen{$_}++ } @_;
+}
+
+my @mat_hash =(); # this will be an array of arrays
+my @pat_hash =(); # this will be an array of arrays
+
+my @temp;
+my @header;
+my @footer;
+my @my_array;
+my $switch = 0;
+my $mat_key;
+my $pat_key;
+my $mat_counter = 0;
+my $pat_counter = 0;
+my $mat_flag = 0;
+my $pat_flag = 0;
+my $chr_coor;
+my $geno;
+my $y;
+my $same=0;
+my $differences=0;
+my @chr_coor;
+
+while ( my $line = <DATAINPUT>) {
+	chomp($line);
+	@temp=split /\s+/,$line; # split on whitespace
+	# check if this is the footer
+	if($temp[0] eq 'individual'){
+		# this is the footer
+		$switch = 1;
+	}
+	if($switch == 1){
+		# add this line to the footer vector
+		push(@footer, $line); 
+	}
+	elsif($switch == 0){
+		# check if this is the header
+		if($temp[1] eq '='){
+			# this is the header
+			push(@header, $line); 
+		}
+		# otherwise, parse the data
+		if($mat_flag == 1){
+			# check if there is variation - some sites have the same genotypes for all individuals
+			# and this should be excluded
+			@my_array = uniq @temp;
+			#print "hello ", $#my_array," ", @my_array ,"\n";
+			if($#my_array > 1){
+				for ($y = 0 ; $y <= $#temp; $y++ ) {
+					$mat_hash[$mat_counter][$y+2] = $temp[$y];
+				}
+				# now add the index of the previous row; this will be updated later
+				$mat_hash[$mat_counter][$y+2] = $mat_counter -1;  # this will be used to set the lower $buffer window
+				$mat_hash[$mat_counter][$y+3] = $mat_counter +1;  # this will be used to set the upper $buffer window
+			} else{
+				$mat_counter = $mat_counter - 1;
+			}	
+			$mat_counter+=1; # this can be used for the nloc setting in the header
+			$mat_flag = 0;
+		}
+		if($temp[1] eq '<lmxll>'){ # these are mat genotypes
+			$mat_hash[$mat_counter][1] = $temp[0];
+			$mat_hash[$mat_counter][2] = $temp[1];
+			$mat_flag = 1;
+			@chr_coor = split "_",$temp[0];
+			$mat_hash[$mat_counter][0] = $chr_coor[$#chr_coor];
+		}
+		if($pat_flag == 1){
+			# check if there is variation - some sites have the same genotypes for all individuals
+			# and this should be excluded
+			@my_array = uniq @temp;
+			#print "hello ", $#my_array," ", @my_array ,"\n";
+			if($#my_array > 1){
+				for ($y = 0 ; $y <= $#temp; $y++ ) {
+					$pat_hash[$pat_counter][$y+2] = $temp[$y];
+				}
+				$pat_hash[$pat_counter][$y+2] = $pat_counter -1; # this will be used to set the lower $buffer window
+				$pat_hash[$pat_counter][$y+3] = $pat_counter +1; # this will be used to set the upper $buffer window
+			} else{
+				$pat_counter = $pat_counter - 1;
+			}	
+			$pat_counter+=1; # this can be used for the nloc setting in the header
+			$pat_flag = 0;
+		}
+		if($temp[1] eq '<nnxnp>'){ # these are pat genotypes
+			$pat_hash[$pat_counter][1] = $temp[0];
+			$pat_hash[$pat_counter][2] = $temp[1];
+			$pat_flag = 1;
+			@chr_coor = split "_",$temp[0];
+			$pat_hash[$pat_counter][0] = $chr_coor[$#chr_coor];
+		}
+	} # end elsif
+} # end while	
+close DATAINPUT;
+
+# data are read
+# now alter phase as needed by comparing lines for mat
+for $chr_coor ( 1 .. $#mat_hash ) {	
+	$differences=0;
+	$same=0;
+	for $geno ( 3 .. $#{ $mat_hash[$chr_coor] } -2 ) { 
+		# add up the number of differences compared to the previous site
+		if($mat_hash[$chr_coor][$geno] ne $mat_hash[$chr_coor-1][$geno]){
+			$differences+=1
+		}
+		else{
+			$same+=1
+		}
+	} 
+	if($differences > $same){ # rephase these sites
+		for $geno ( 3 .. $#{ $mat_hash[$chr_coor] } -2 ) { 
+			if($mat_hash[$chr_coor][$geno] eq 'll'){
+				$mat_hash[$chr_coor][$geno] = 'lm';
+			}
+			elsif($mat_hash[$chr_coor][$geno] eq 'lm'){
+				$mat_hash[$chr_coor][$geno] = 'll';
+			}
+		}	
+	}
+}
+
+# now alter phase as needed by comparing lines for pat
+for $chr_coor ( 1 .. $#pat_hash ) {	
+	$differences=0;
+	$same=0;
+	for $geno ( 3 .. $#{ $pat_hash[$chr_coor] } -2 ) { 
+		# add up the number of differences compared to the previous site
+		if($pat_hash[$chr_coor][$geno] ne $pat_hash[$chr_coor-1][$geno]){
+			$differences+=1
+		}
+		else{
+			$same+=1
+		}
+	} 
+	if($differences > $same){ # rephase these sites
+		for $geno ( 3 .. $#{ $pat_hash[$chr_coor] } -2) { 
+			if($pat_hash[$chr_coor][$geno] eq 'nn'){
+				$pat_hash[$chr_coor][$geno] = 'np';
+			}
+			elsif($pat_hash[$chr_coor][$geno] eq 'np'){
+				$pat_hash[$chr_coor][$geno] = 'nn';
+			}
+		}	
+	}
+}
+
+# now go through each mat individual and check for double recombs; replace with missing as needed
+# this is important for one-off genotype errors (e.g. due to allelic dropout or undercalled heterozygotes)
+for $chr_coor ( 1 .. ($#mat_hash-1) ) {	
+	for $geno ( 3 .. $#{ $mat_hash[$chr_coor] } -2 ) { # the minus 2 is so we don't replace the indexes of the upper and lower buffer
+		if(($mat_hash[$chr_coor][$geno] ne $mat_hash[$chr_coor-1][$geno])&&
+		($mat_hash[$chr_coor][$geno] ne $mat_hash[$chr_coor+1][$geno])){
+			$mat_hash[$chr_coor][$geno] = "--"
+		}	
+	}
+}		
+
+# now go through each pat individual and check for double recombs; replace with missing as needed
+# this is important for one-off genotype errors (e.g. due to allelic dropout or undercalled heterozygotes)
+for $chr_coor ( 1 .. ($#pat_hash-1) ) {	
+	for $geno ( 3 .. $#{ $pat_hash[$chr_coor] }  -2 ) { # the minus 2 is so we don't replace the indexes of the upper and lower buffer
+		if(($pat_hash[$chr_coor][$geno] ne $pat_hash[$chr_coor-1][$geno])&&
+		($pat_hash[$chr_coor][$geno] ne $pat_hash[$chr_coor+1][$geno])){
+			$pat_hash[$chr_coor][$geno] = "--"
+		}	
+	}
+}	
+
+
+my $buffer_index = scalar(@{$mat_hash[0]})-2; # this should be the index of the lower buffer index
+print "@{$mat_hash[0]}\n";
+# now go through each mat individual and check for double recombs within a 5million bp window; replace with missing as needed
+# this is needed due to bad tags (e.g. that match repetitive seqs) and have a run of weird base calls in a small 
+# genomic window
+# first update the lower coordinates
+# start from the top
+#for $chr_coor ( ($#mat_hash) .. 1 ) {	# don't do the first row
+for ($chr_coor = $#mat_hash ; $chr_coor >= 1; $chr_coor-- ){
+	# find positions that are $buffer bp downstream
+	INNER: for ($y = 1 ; $y <= $#mat_hash; $y++ ) { # search down from the top
+		if(($mat_hash[$chr_coor][0] - $mat_hash[$chr_coor - $y][0]) > $buffer) {
+			$mat_hash[$chr_coor][$buffer_index] = $chr_coor - $y; 
+			# this is the beginning index to compare to
+			last INNER;
+		}
+	}
+	print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+}
+
+# first update the upper coordinates
+# start from the bottom
+for ($chr_coor = 1 ; $chr_coor < $#mat_hash; $chr_coor++ ){ # don't do last row
+	# find positions that are $buffer bp downstream
+	INNER: for ($y = 1 ; $y <= $#mat_hash; $y++ ) { # search up from the bottom
+		if($mat_hash[$chr_coor + $y][0] < $mat_hash[$chr_coor][0]) { # this check was needed in case the markers are not in ascending order
+			last INNER;
+		}	
+		elsif(($mat_hash[$chr_coor + $y][0] - $mat_hash[$chr_coor][0]) > $buffer) {
+			$mat_hash[$chr_coor][$buffer_index+1] = $chr_coor + $y; 
+			# this is the beginning index to compare to
+			last INNER;
+		}
+	}
+	print "hi ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+}
+	
+
+my $buffer_index = scalar(@{$pat_hash[0]})-2; # this should be the index of the lower buffer index
+print "@{$pat_hash[0]}\n";
+# now go through each pat individual and check for double recombs within a 5million bp window; replace with missing as needed
+# this is needed due to bad tags (e.g. that patch repetitive seqs) and have a run of weird base calls in a small 
+# genomic window
+# first update the lower coordinates
+# start from the top
+for ($chr_coor = $#pat_hash ; $chr_coor >= 1; $chr_coor-- ){
+	# find positions that are $buffer bp downstream
+	INNER: for ($y = 1 ; $y <= $#pat_hash; $y++ ) { # search down from the top
+		if(($pat_hash[$chr_coor][0] - $pat_hash[$chr_coor - $y][0]) > $buffer) {
+			$pat_hash[$chr_coor][$buffer_index] = $chr_coor - $y; 
+			# this is the beginning index to compare to
+			last INNER;
+		}
+	}
+	print "hello ",$chr_coor ," ",$buffer_index," ",$y,"\n";		
+}
+
+
+# first update the upper coordinates
+# start from the bottom
+for ($chr_coor = 1 ; $chr_coor < $#pat_hash; $chr_coor++ ){ # don't do last row
+	# find positions that are $buffer bp downstream
+	INNER: for ($y = 1 ; $y < $#pat_hash; $y++ ) { # search up from the bottom
+		if($pat_hash[$chr_coor + $y][0] < $pat_hash[$chr_coor][0]) {# this check was needed in case the markers are not in ascending order
+			last INNER;
+		}	
+		elsif(($pat_hash[$chr_coor + $y][0] - $pat_hash[$chr_coor][0]) > $buffer) {
+				$pat_hash[$chr_coor][$buffer_index+1] = $chr_coor + $y; 
+			# this is the beginning index to compare to
+			last INNER;
+		}
+	}
+	print "howdy ",$#pat_hash," ",$chr_coor ," ",$buffer_index," ",$pat_hash[$chr_coor][0]," ",$y,"\n";		
+}
+
+
+
+# OK now check if there is a change for each individual within each buffer. Swap to missing if yes.
+# first mat
+for $chr_coor ( 1 .. ($#mat_hash-1) ) {	
+	for $geno ( 3 .. $#{ $mat_hash[$chr_coor] } -2 ) { # the minus 2 is so we don't replace the indexes of the upper and lower buffer
+		if(($mat_hash[$chr_coor][$geno] ne $mat_hash[$mat_hash[$chr_coor][$buffer_index]][$geno])&&
+		($mat_hash[$chr_coor][$geno] ne $mat_hash[$mat_hash[$chr_coor][$buffer_index+1]][$geno])){
+			$mat_hash[$chr_coor][$geno] = "--"
+		}	
+	}
+}		
+
+# now pat
+for $chr_coor ( 1 .. ($#pat_hash-1) ) {	
+	for $geno ( 3 .. $#{ $pat_hash[$chr_coor] } -2 ) { # the minus 2 is so we don't replace the indexes of the upper and lower buffer
+		if(($pat_hash[$chr_coor][$geno] ne $pat_hash[$pat_hash[$chr_coor][$buffer_index]][$geno])&&
+		($pat_hash[$chr_coor][$geno] ne $pat_hash[$pat_hash[$chr_coor][$buffer_index+1]][$geno])){
+			$pat_hash[$chr_coor][$geno] = "--"
+		}	
+	}
+}		
+
+
+
+
+	
+
+# Now print out the header, data, and footer for the mat loc
+# need to swap out $header[2] with the appropriate number of mat loc
+
+
+for $chr_coor ( 0 .. ($#mat_hash) -1 ) {	
+	print $chr_coor," ";
+	for $geno ( 0 .. $#{ $mat_hash[$chr_coor] } ) { 
+		print $mat_hash[$chr_coor][$geno]," "; 
+	}
+	print "\n";	
+}		
+
+
+
+
+close OUTFILE1;
+# Now printo out the header, data, and footer for the pat loc
+# need to swap out $header[2] with the appropriate number of pat loc
+
+close OUTFILE2;
+
+```
+
 # Fixed sites
 Use cut to get a list of the fixed sites:
 ```
