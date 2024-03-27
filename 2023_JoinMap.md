@@ -431,10 +431,11 @@ for $chr_coor ( 1 .. ($#pat_hash-2) ) {	# for some reason the pat_hash has an ex
 print OUTFILE1 $header[0],"\n";
 print OUTFILE1 $header[1],"\n";
 print OUTFILE1 "nloc = ",$#mat_hash+1,"\n";
-print OUTFILE1 $header[1],"\n";
+print OUTFILE1 $header[3],"\n";
 for $chr_coor ( 0 .. ($#mat_hash) ) {	
 	# print $chr_coor," ";
-	for $geno ( 1 .. ($#{ $mat_hash[$chr_coor] } -2) ) { 
+	print OUTFILE1 $mat_hash[$chr_coor][1]," <lmxll>\n";
+	for $geno ( 2 .. ($#{ $mat_hash[$chr_coor] } -2) ) { 
 		print OUTFILE1 $mat_hash[$chr_coor][$geno]," "; 
 	}
 	print OUTFILE1 "\n";	
@@ -448,10 +449,11 @@ close OUTFILE1;
 print OUTFILE2 $header[0],"\n";
 print OUTFILE2 $header[1],"\n";
 print OUTFILE2 "nloc = ",$#pat_hash,"\n";
-print OUTFILE2 $header[1],"\n";
+print OUTFILE2 $header[3],"\n";
 for $chr_coor ( 0 .. ($#pat_hash)-1 ) {	
 	# print $chr_coor," ";
-	for $geno ( 1 .. ($#{ $pat_hash[$chr_coor] } -2) ) { 
+	print OUTFILE2 $pat_hash[$chr_coor][1]," <nnxnp>\n";
+	for $geno ( 2 .. ($#{ $pat_hash[$chr_coor] } -2) ) { 
 		print OUTFILE2 $pat_hash[$chr_coor][$geno]," "; 
 	}
 	print OUTFILE2 "\n";	
@@ -460,7 +462,6 @@ for ($y = 0 ; $y <= $#footer; $y++ ) {
 	print OUTFILE2 $footer[$y],"\n";
 }
 close OUTFILE2;
-
 ```
 
 # Fixed sites
