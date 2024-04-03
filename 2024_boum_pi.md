@@ -6,6 +6,10 @@ In this directory:
 ```
 /home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2022_boum/mapped_to_XLv10_concatscaf
 ```
+load vcftools:
+```
+module load StdEnv/2020 vcftools/0.1.16
+```
 I did this using vcftools:
 For ten sons:
 ```
