@@ -33,6 +33,16 @@ vcftools --vcf DB__Chr8L_out.vcf --site-pi --positions SNP_list.txt --indv pyg_f
 ```
 vcftools --vcf DB__Chr8L_out.vcf --site-pi --positions SNP_list.txt --indv pyg_mal_Z23337_CTCG_sorted.bam --indv pyg_mal_Z23339_ACTA_sorted.bam --indv pyg_mal_Z23349_CGCTT_sorted.bam --indv pyg_mal_Z23350_TCACG_sorted.bam --indv pyg_mal_Z23353_TTCTG_sorted.bam --indv pyg_mal_Z23356_CTGTA_sorted.bam --indv pyg_mal_Z23359_GGTGT_sorted.bam --indv pyg_mal_Z23362_CATCT_sorted.bam --indv pyg_mal_Z23365_GGAAG_sorted.bam --indv pyg_mal_Z23366_GTCAA_sorted.bam --indv pyg_mal_Z23368_TACAT_sorted.bam --indv pyg_mal_Z23376_CTTCCA_sorted.bam --out pygm_nucleotide_diversity_males
 ```
+# fischbergi
+```
+/home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2023_fischbergi/mapped_to_XLv10_unfiltered
+```
+```
+vcftools --vcf DB__Chr3L_out.vcf --site-pi --positions SNP_list.txt --indv ./fisch_Z23798_F_TAGCATGG_sorted --indv ./fisch_Z23799_F_TAGGCCAT_sorted --indv ./fisch_Z23774_F_CGCGATAT_TATTTTT_sorted --indv ./fisch_Z23777_F_AAAAGTT_CGCCTTAT_sorted --indv ./fisch_Z23778_F_GAATTCA_sorted --indv ./fisch_Z23779_F_GAACTTG_sorted --indv ./fisch_Z23780_F_GGACCTA_sorted --indv ./fisch_Z23782_F_AACGCCT_ACAGGGA_sorted --indv ./fisch_Z23783_F_AATATGG_sorted --indv ./fisch_Z23784_F_ACGTGTT_sorted --indv ./fisch_Z23785_F_ATTAATT_sorted --indv ./fisch_Z23787_F_CATAAGT_sorted --indv ./fisch_Z23788_F_CGCTGAT_sorted --indv ./fisch_Z23789_F_CGGTAGA_sorted --indv ./fisch_Z23790_F_CTACGGA_sorted --indv ./fisch_Z23792_F_TAGCGGA_sorted --indv ./fisch_Z23793_F_TCGAAGA_sorted --indv ./fisch_Z23794_F_TCTGTGA_sorted --indv ./fisch_Z23795_F_TGCTGGA_sorted --out fisc_nucleotide_diversity_females
+```
+```
+vcftools --vcf DB__Chr3L_out.vcf --site-pi --positions SNP_list.txt --indv ./fisch_Z23786_M_ATTGGAT_sorted --indv ./fisch_Z23791_M_GCGGAAT_sorted --indv ./fisch_Z23781_M_AACCGAGA_GTCGATT_sorted --indv ./fisch_Z23796_M_ACGACTAG_sorted --indv ./fisch_Z23771_M_GTTGAA_TGGTACGT_sorted --indv ./fisch_Z23772_M_TAACGA_TCTCAGTG_sorted --indv ./fisch_Z23773_M_TGGCTA_sorted --indv ./fisch_Z23775_M_CTTGCTT_sorted --indv ./fisch_Z23776_M_ATGAAAG_sorted --out fisc_nucleotide_diversity_males
+```
 
 # allofraseri family 1
 ```
