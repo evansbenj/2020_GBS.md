@@ -43,7 +43,16 @@ vcftools --vcf DB__Chr3L_out.vcf --site-pi --positions SNP_list.txt --indv ./fis
 ```
 vcftools --vcf DB__Chr3L_out.vcf --site-pi --positions SNP_list.txt --indv ./fisch_Z23786_M_ATTGGAT_sorted --indv ./fisch_Z23791_M_GCGGAAT_sorted --indv ./fisch_Z23781_M_AACCGAGA_GTCGATT_sorted --indv ./fisch_Z23796_M_ACGACTAG_sorted --indv ./fisch_Z23771_M_GTTGAA_TGGTACGT_sorted --indv ./fisch_Z23772_M_TAACGA_TCTCAGTG_sorted --indv ./fisch_Z23773_M_TGGCTA_sorted --indv ./fisch_Z23775_M_CTTGCTT_sorted --indv ./fisch_Z23776_M_ATGAAAG_sorted --out fisc_nucleotide_diversity_males
 ```
-
+# Muelleri
+```
+/home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2023_muelleri/mapped_to_XLv10_unfiltered
+```
+```
+vcftools --vcf DB__Chr4L_out.vcf --site-pi --positions SNP_list.txt  --indv ./muel_Z23752_F_AACCGAGA_CGCGGAGA_sorted --indv ./muel_Z23754_F_ACGTGGTA_CGTGTGGT_sorted --indv ./muel_Z23755_F_CCATGGGT_sorted --indv ./muel_Z23756_F_CGCGGAGA_sorted --indv ./muel_Z23757_F_CGTGTGGT_sorted --indv ./muel_Z23759_F_GGATTGGT_sorted --indv ./muel_Z23761_F_TATCGGGA_TATCGGGA_plate1and2_sorted --indv ./muel_Z23762_F_CTCG_sorted --indv ./muel_Z23763_F_ACGTGGTA_TGCA_sorted --indv ./muel_Z23768_F_CGAT_sorted --indv ./muel_Z23769_F_GTAA_TCACG_sorted --out muel_nucleotide_diversity_females
+```
+```
+vcftools --vcf DB__Chr4L_out.vcf --site-pi --positions SNP_list.txt --indv ./muel_Z23770_M_AGCG_TTCTG_sorted --indv ./muel_Z23751_M_CGCCTTAT_sorted --indv ./muel_Z23753_M_ACAGGGA_sorted --indv ./muel_Z23758_M_GCTGTGGA_sorted --indv ./muel_Z23760_M_GTGAGGGT_GTGAGGGT_plate1and2_sorted --indv ./muel_Z23764_M_ACTA_CCATGGGT_sorted --indv ./muel_Z23765_M_CAGA_sorted --indv ./muel_Z23766_M_AACT_GCTGTGGA_sorted --indv ./muel_Z23767_M_GCGT_GGATTGGT_sorted --out muel_nucleotide_diversity_males
+```
 # allofraseri family 1
 ```
 /home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/individual_gvcfs_by_species/2022_allofraseri/mapped_to_XLv10_concatscaf
