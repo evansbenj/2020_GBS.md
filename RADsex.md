@@ -131,7 +131,7 @@ use lib qw(~/perl_modules);
 # module load perl/5.30.2
 # module load gcc/9.3.0
 # cpan
-# 
+# install List::MoreUtils
 
 #  This program reads in a tab delimited marker file generated
 #  by RADsex and outputs the fastaseqs that are present in some minimum
