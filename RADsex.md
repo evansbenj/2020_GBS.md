@@ -235,6 +235,16 @@ while ( my $line = <DATAINPUT>) {
 close OUTFILE;
 
 ```
+# example commandlines for 2024 parafraseri
+
+For female only seqs:
+```
+perl parse_marker_table.pl 2022_2024_para_catR1R2_markers_table_all_para_nounknowns.tsv 1010100000010111010100110100121001000 minF10_maxM0.fasta 0 10 W
+```
+For male only seqs:
+```
+parse_marker_table.pl 2022_2024_para_catR1R2_markers_table_all_para_nounknowns.tsv 0101011111101000101011001011020110111 maxF0_minM8.fasta 0 8 Y
+```
 # Blast
 ```
 module load StdEnv/2020  gcc/9.3.0 blast+/2.14.0
