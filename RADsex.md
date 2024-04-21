@@ -245,6 +245,21 @@ For male only seqs:
 ```
 parse_marker_table.pl 2022_2024_para_catR1R2_markers_table_all_para_nounknowns.tsv 0101011111101000101011001011020110111 maxF0_minM8.fasta 0 8 Y
 ```
+
+# examples of commandlines for mellotrop
+For female only seqs:
+```
+parse_marker_table.pl markers_table.tsv 11010100001100011101 minF8_maxM1.fasta 0 8 W
+```
+For male only seqs:
+```
+parse_marker_table.pl markers_table.tsv 00101011110011100010 minM8_maxF0.fasta 0 8 Y
+```
+blasting...
+```
+blastn -query minF8_maxM1.fasta -db ../../../../../2020_XT_v10_refgenome/XENTR_10.0_genome.fasta_blastable -outfmt 6 -out minF8_maxM1_to_XTv10
+```
+
 # Blast
 ```
 module load StdEnv/2020  gcc/9.3.0 blast+/2.14.0
