@@ -1,3 +1,66 @@
+# Pi per site analysis of sex-associated sites in boumbaensis
+A reviewer suggested we standardize pi per site over all sites instead of focusing only on diversity of sex-associated sites. I'm not sure if this will be better but I am trying anyway so I can report the results in the response.
+
+In this directory:
+```
+/home/ben/projects/rrg-ben/ben/2024_RADseq/raw_data/boum_trim
+```
+I used samtools to extract the sex-associated region:
+```
+/home/ben/projects/rrg-ben/ben/2022_Liberia/2023_XT_genomz/ben_scripts/2023_samtools_subset_bam.sh
+```
+```
+#!/bin/sh
+#SBATCH --job-name=samtools_subset_bam
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=2gb
+#SBATCH --output=samtools_subset_bam.%J.out
+#SBATCH --error=samtools_subset_bam.%J.err
+#SBATCH --account=rrg-ben
+
+
+module load StdEnv/2020 samtools/1.16.1
+
+samtools view ${1} --region-file Chr8L:117000000–135449133.txt -b > ${1}_Chr8L:117000000–135449133.bam
+#echo "Chr8L:117000000–135449133" | xargs samtools view ${1} -b > ${1}_Chr8L:117000000–135449133.bam
+# I had to hard code the region because it did not work as a variable
+#samtools view ${1} /`echo ${2}/` -b > ${1}_${2}.bam
+#echo "${2}" | xargs samtools view ${1} -b > ${1}_${2}.bam
+```
+and then i made a text file with the path of each of these subsetted bam files
+
+and then I used angsd to calculate pi per site
+```
+/home/ben/projects/rrg-ben/ben/2022_Liberia/2023_XT_genomz/ben_scripts/2023_angsd_genomicwindows_pi_XLgenome.sh
+```
+```
+#!/bin/sh
+#SBATCH --job-name=angsd
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=2:00:00
+#SBATCH --mem=2gb
+#SBATCH --output=angsd.%J.out
+#SBATCH --error=angsd.%J.err
+#SBATCH --account=def-ben
+
+
+module load StdEnv/2020 angsd/0.939
+
+#angsd -bam ${1}.txt -doSaf 1 -anc /home/ben/projects/rrg-ben/ben/2020_XT_v10_refgenome/XENTR_10.0_genome_scafconcat.fasta -GL 1 -out ${1}_angsd_out
+
+angsd -bam ${1}.txt -doSaf 1 -anc /home/ben/projects/rrg-ben/ben/2021_XL_v10_refgenome/XL_v10.1_concatenatedscaffolds.fa -GL 1 -out ${1}_out
+realSFS ${1}_out.saf.idx -P 24 -fold 1 > ${1}_out.sfs
+realSFS saf2theta ${1}_out.saf.idx -sfs ${1}_out.sfs -outname ${1}_out
+thetaStat do_stat ${1}_out.thetas.idx -win 1000000 -step 1000000  -outnames ${1}_theta.thetasWindow.gz
+```
+
+
+
+# Original approach below
+
 # Diversity of sex-associated sites in boumbaensis
 
 Unfortunately we do not have the parents of the boumbaensis family. This means we can't focus on maternal and paternal variation. Instead we can quantify diversity of sex-associated positions in daughters and sons. The sex with the higher diversity should be the heterogametic sex.
