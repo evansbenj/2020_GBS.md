@@ -57,6 +57,14 @@ realSFS saf2theta ${1}_out.saf.idx -sfs ${1}_out.sfs -outname ${1}_out
 thetaStat do_stat ${1}_out.thetas.idx -win 1000000 -step 1000000  -outnames ${1}_theta.thetasWindow.gz
 ```
 
+Then get sum of pi per window and the number of sites like this:
+```
+awk -F'        ' '{sum+=$5;} END{print sum;}'  boum_F_F1_path_theta.thetasWindow.gz.pestPG
+```
+and
+```
+awk -F'        ' '{sum+=$14;} END{print sum;}'  boum_F_F1_path_theta.thetasWindow.gz.pestPG
+```
 
 
 # Original approach below
