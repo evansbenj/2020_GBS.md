@@ -83,10 +83,18 @@ It is also possible to map the results and print this by chr, including the prob
 #SBATCH --mem=32gb
 #SBATCH --output=radsex_map.%J.out
 #SBATCH --error=radsex_map.%J.err
-#SBATCH --account=def-ben
+#SBATCH --account=rrg-ben
 
-/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex map --markers-file markers_table.tsv --output-file cliv_significant_markers_alignment_results.tsv --popmap 2023_cliv_sex.txt --genome-file ~/projects/rrg-ben/ben/2021_XL_v10_refgenome/XENLA_10.1_genome.fa.gz --min-quality 20 --min-frequency 0.01 --min-depth 1 --groups M,F
+# sbatch 2024_radsex_map.sh markerfile outputfile popmap
+# sbatch /home/ben/projects/rrg-ben/ben/2022_GBS_lotsofxennies/ben_scripts/2024_radsex_map.sh markers_table.tsv 2024_cliv_map.tsv 2023_cliv_sex.txt
 
+/home/ben/projects/rrg-ben/ben/2023_RADsex/radsex/bin/radsex map --markers-file ${1} --output-file ${2} --popmap ${3} --genome-file /home/ben/projects/rrg-ben/ben/2021_XL_v10_refgenome/XL_v10.1_concatenatedscaffolds.fa --min-quality 30 --min-frequency 0.1 --min-depth 1 --groups M,F --signif-threshold 0.0001
+
+```
+
+You can identify significantly biased markers like this:
+```
+awk 'NF && $6<0.0001' 2024_muel_map.tsv
 ```
 
 Get rid of scaffolds like this:
