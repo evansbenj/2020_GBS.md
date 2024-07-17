@@ -14,3 +14,15 @@ Now load angsd
 ```
 module load StdEnv/2023 angsd/0.940
 ```
+now step2:
+```
+realSFS fem_bamz_.saf.idx mal_bamz_.saf.idx >fem.mal.ml
+```
+now step3:
+```
+realSFS fst index pop1.saf.idx pop2.saf.idx -sfs pop1.pop2.ml -fstout here
+```
+now step4:
+```
+realSFS fst stats2 here.fst.idx -win 50000 -step 10000 >slidingwindow
+```
