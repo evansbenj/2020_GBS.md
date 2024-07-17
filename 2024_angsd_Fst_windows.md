@@ -45,7 +45,7 @@ module load StdEnv/2023 angsd/0.940
 ```
 now step2:
 ```
-realSFS fem_bamz_Chr3L_.saf.idx mal_bamz_Chr3L_.saf.idx >fem.mal.ml
+realSFS fem_bamz_Chr3L_.saf.idx mal_bamz_Chr3L_.saf.idx >fem_mal_Chr3L.ml
 ```
 now step3:
 ```
