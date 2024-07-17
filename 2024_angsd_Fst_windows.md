@@ -49,7 +49,7 @@ realSFS fem_bamz_Chr3L_.saf.idx mal_bamz_Chr3L_.saf.idx >fem_mal_Chr3L.ml
 ```
 now step3:
 ```
-realSFS fst index fem_bamz_Chr3L.saf.idx mal_bamz_Chr3L.saf.idx -sfs fem_mal_Chr3L.ml -fstout fem_mal_Chr3L__
+realSFS fst index fem_bamz_Chr3L_.saf.idx mal_bamz_Chr3L_.saf.idx -sfs fem_mal_Chr3L.ml -fstout fem_mal_Chr3L__
 ```
 now step4:
 ```
