@@ -53,5 +53,5 @@ realSFS fst index fem_bamz_Chr3L_.saf.idx mal_bamz_Chr3L_.saf.idx -sfs fem_mal_C
 ```
 now step4:
 ```
-realSFS fst stats2 fem_mal_Chr3L__.fst.idx -win 50000 -step 10000 > slidingwindow
+realSFS fst stats2 fem_mal_Chr3L__.fst.idx -win 500000 -step 500000 > slidingwindow
 ```
