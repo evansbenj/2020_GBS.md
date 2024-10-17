@@ -1,6 +1,6 @@
 # Concatenate files from each chr
 ```
-module load StdEnv/2020  gcc/9.3.0 bcftools/1.13
+module load StdEnv/2023  gcc/12.3 bcftools/1.19
 ```
 ```
 bcftools concat DB_new_Chr1L_genotyped.vcf DB_new_Chr1S_genotyped.vcf DB_new_Chr2L_genotyped.vcf DB_new_Chr2S_genotyped.vcf DB_new_Chr3L_genotyped.vcf DB_new_Chr3S_genotyped.vcf DB_new_Chr4L_genotyped.vcf DB_new_Chr4S_genotyped.vcf DB_new_Chr5L_genotyped.vcf DB_new_Chr5S_genotyped.vcf DB_new_Chr6L_genotyped.vcf DB_new_Chr6S_genotyped.vcf DB_new_Chr7L_genotyped.vcf DB_new_Chr7S_genotyped.vcf DB_new_Chr8L_genotyped.vcf DB_new_Chr8S_genotyped.vcf DB_new_Chr9_10L_genotyped.vcf DB_new_Chr9_10S_genotyped.vcf -O z -o clivii_unfiltered_allChrs.vcf.gz
