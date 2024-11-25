@@ -196,7 +196,7 @@ done
 # sbatch ./2021_picard_add_read_groups.sh /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutadd
 apted_by_species_across_three_plates/clivii/ 
 
-module load picard/2.23.3
+module load StdEnv/2023  picard/3.1.0
 
 for file in ${1}*_sorted.bam
 do
