@@ -161,6 +161,29 @@ module load StdEnv/2023 bwa/0.7.18
 bwa index ${1}
 ```
 
+```
+#!/bin/sh
+#SBATCH --job-name=trimmomatic
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=24:00:00
+#SBATCH --mem=8gb
+#SBATCH --output=trimmomatic.%J.out
+#SBATCH --error=trimmomatic.%J.err
+#SBATCH --account=def-ben
+
+# run by passing an argument like this
+# sbatch ./2021_picard_dict_file.sh path_to_reference_genome/reference_genome (without the `.fa` suffix)
+
+module load StdEnv/2023 gcc/12.3 picard/3.1.0 samtools/1.20
+
+# make a .fai file
+samtools faidx ${1}.fa
+
+# make a .dict file
+java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary REFERENCE=${1}.fa.gz OUTPUT=${1}.dict
+```
+
 # Map data
 
 For cliv, allo, para, muel, fisch, and laevis I used the XL genome:
