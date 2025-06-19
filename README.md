@@ -142,6 +142,25 @@ I renamed and concatenated data from the same sample and organized them by speci
 /home/ben/projects/rrg-ben/ben/2020_GBS_muel_fish_allo_cliv_laev/raw_data/cutaddapted_by_species_across_three_plates
 
 ```
+# Prepare reference genome:
+```
+#!/bin/sh
+#SBATCH --job-name=bwa_index
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=8:00:00
+#SBATCH --mem=128gb
+#SBATCH --output=bwa_index.%J.out
+#SBATCH --error=bwa_index.%J.err
+#SBATCH --account=rrg-ben
+
+# run by passing an argument like this
+# sbatch ./2020_bwa_index_ref_genome.sh path_and_name_ofrefgenome
+
+module load bwa/0.7.17
+bwa index ${1}
+```
+
 # Map data
 
 For cliv, allo, para, muel, fisch, and laevis I used the XL genome:
