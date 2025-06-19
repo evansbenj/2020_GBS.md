@@ -163,14 +163,14 @@ bwa index ${1}
 
 ```
 #!/bin/sh
-#SBATCH --job-name=trimmomatic
+#SBATCH --job-name=samtools_fai_picard_dict
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=24:00:00
 #SBATCH --mem=8gb
-#SBATCH --output=trimmomatic.%J.out
-#SBATCH --error=trimmomatic.%J.err
-#SBATCH --account=def-ben
+#SBATCH --output=samtools_fai_picard_dict.%J.out
+#SBATCH --error=samtools_fai_picard_dict.%J.err
+#SBATCH --account=rrg-ben
 
 # run by passing an argument like this
 # sbatch ./2021_picard_dict_file.sh path_to_reference_genome/reference_genome (without the `.fa` suffix)
