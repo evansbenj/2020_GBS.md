@@ -200,15 +200,15 @@ map with bwa mem:
 #SBATCH --mem=32gb
 #SBATCH --output=bwa_align.%J.out
 #SBATCH --error=bwa_align.%J.err
-#SBATCH --account=def-ben
+#SBATCH --account=rrg-ben
 
 # run by passing an argument like this (in the directory with the files)
 # sbatch 2020_align_paired_fq_to_ref.sh pathandname_of_ref path_to_paired_fq_filez
 # sbatch 2020_align_paired_fq_to_ref.sh /home/ben/projects/rrg-ben/ben/2018_Austin_XB_genome/Austin_genome/Xbo.
 v1.fa.gz pathtofqfilez
 
-module load bwa/0.7.17
-module load samtools/1.10
+module load StdEnv/2023 bwa/0.7.18
+module load StdEnv/2023 gcc/12.3 samtools/1.20
 
 
 for file in ${2}/*.R1.fq.gz ; do         # Use ./* ... NEVER bare *    
