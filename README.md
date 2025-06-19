@@ -157,7 +157,7 @@ I renamed and concatenated data from the same sample and organized them by speci
 # run by passing an argument like this
 # sbatch ./2020_bwa_index_ref_genome.sh path_and_name_ofrefgenome
 
-module load bwa/0.7.17
+module load StdEnv/2023 bwa/0.7.18
 bwa index ${1}
 ```
 
