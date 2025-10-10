@@ -37,7 +37,7 @@ sabre pe -f NS.1413.003.D701.Xenopus_Plate1_R1.fastq.gz -r NS.1413.003.D701.Xeno
 #SBATCH --mem=2gb
 #SBATCH --output=cutadapt.%J.out
 #SBATCH --error=cutadapt.%J.err
-#SBATCH --account=def-ben
+#SBATCH --account=rrg-ben
 
 # run by passing an argument like this
 # sbatch ./2020_cutadapt.sh ../raw_data/plate1
@@ -79,7 +79,7 @@ And then I used trimmomatic to filter out low quality reads (but no adapter clip
 #SBATCH --mem=8gb
 #SBATCH --output=trimmomatic.%J.out
 #SBATCH --error=trimmomatic.%J.err
-#SBATCH --account=def-ben
+#SBATCH --account=rrg-ben
 
 # run by passing an argument like this
 # sbatch ./2020_trimmomatic.sh ../raw_data/plate1
